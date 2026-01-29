@@ -1,0 +1,21 @@
+# Environment files
+.env
+.env.local
+
+# Generated data and logs
+data/contexts/
+data/*.log
+
+# Compiled binaries
+mcp-repo-context
+mcp-server
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db

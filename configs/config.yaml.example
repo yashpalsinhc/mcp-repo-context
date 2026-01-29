@@ -1,0 +1,33 @@
+# MCP Repo Context Server Configuration
+
+server:
+  name: "mcp-repo-context"
+  version: "0.1.0"
+
+storage:
+  # Path to store context JSON files
+  path: "./data/contexts"
+
+github:
+  # GitHub personal access token (can also use GITHUB_TOKEN env var)
+  # token: "ghp_..."
+
+  # Temporary directory for cloning repos
+  temp_dir: "/tmp/mcp-repos"
+
+analyzer:
+  # Maximum file size to analyze (bytes)
+  max_file_size: 1048576  # 1MB
+
+  # File/directory patterns to exclude
+  exclude_patterns:
+    - "node_modules/**"
+    - "vendor/**"
+    - ".git/**"
+    - "dist/**"
+    - "build/**"
+    - "*.min.js"
+    - "*.min.css"
+    - "package-lock.json"
+    - "yarn.lock"
+    - "go.sum"

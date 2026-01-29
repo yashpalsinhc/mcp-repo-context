@@ -1,0 +1,27 @@
+# Git
+.git
+.gitignore
+
+# Build artifacts
+*.exe
+*.dll
+*.so
+*.dylib
+mcp-server
+
+# IDE
+.idea
+.vscode
+*.swp
+*.swo
+
+# Data
+data/
+*.db
+
+# Docs
+*.md
+!README.md
+
+# Test files
+*_test.go

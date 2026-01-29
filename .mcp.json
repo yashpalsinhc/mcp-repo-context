@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "repo-context": {
+      "command": "docker",
+      "args": ["exec", "-i", "mcp-repo-context", "/usr/local/bin/mcp-server"]
+    }
+  }
+}

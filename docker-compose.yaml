@@ -1,0 +1,43 @@
+version: '3.8'
+
+services:
+  mcp-server:
+    build: .
+    container_name: mcp-repo-context
+    environment:
+      - MCP_STORAGE_PATH=/home/mcp/data/contexts
+      - MCP_TEMP_DIR=/home/mcp/tmp
+      - GITHUB_TOKEN=${GITHUB_TOKEN}
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
+      - ANTHROPIC_MODEL=${ANTHROPIC_MODEL:-claude-sonnet-4-20250514}
+      - LOG_LEVEL=${LOG_LEVEL:-debug}
+      - LOG_FILE=/home/mcp/data/mcp-server.log
+    volumes:
+      # Mount local directory for persistent context storage
+      - ./data:/home/mcp/data
+    # For stdio transport, we need to run interactively
+    stdin_open: true
+    tty: true
+    restart: always
+
+  # Optional: PostgreSQL for future index storage
+  postgres:
+    image: postgres:16-alpine
+    container_name: mcp-postgres
+    profiles:
+      - with-postgres
+    environment:
+      POSTGRES_DB: mcp_context
+      POSTGRES_USER: mcp
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-mcppassword}
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U mcp -d mcp_context"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  mcp-temp:
+  postgres-data:
