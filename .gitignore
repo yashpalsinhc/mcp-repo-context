@@ -3,7 +3,7 @@
 .env.local
 
 # Generated data and logs
-data/contexts/
+# data/contexts/
 data/*.log
 
 # Compiled binaries

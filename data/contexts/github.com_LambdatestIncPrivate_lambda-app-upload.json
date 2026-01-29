@@ -1,0 +1,746 @@
+{
+  "id": "github.com/LambdatestIncPrivate/lambda-app-upload",
+  "url": "https://github.com/LambdatestIncPrivate/lambda-app-upload",
+  "branch": "stage",
+  "commit_hash": "f0099153c8d0d6d474e7b00a6f50dbda88e36291",
+  "analyzed_at": "2026-01-28T20:28:41.583934005Z",
+  "files": {
+    ".npmignore": {
+      "path": ".npmignore",
+      "hash": "10a0148d53336dfb",
+      "language": "unknown",
+      "size": 86,
+      "line_count": 6,
+      "purpose": "unknown source file",
+      "imports": null,
+      "exports": null,
+      "types": null,
+      "functions": null,
+      "constants": null,
+      "concepts": [],
+      "analyzed_at": "2026-01-28T20:28:41.583984672Z"
+    },
+    "README.md": {
+      "path": "README.md",
+      "hash": "fac08f9d40f546e7",
+      "language": "markdown",
+      "size": 456,
+      "line_count": 11,
+      "purpose": "Project documentation",
+      "imports": null,
+      "exports": null,
+      "types": null,
+      "functions": null,
+      "constants": null,
+      "concepts": [
+        "readme.md"
+      ],
+      "analyzed_at": "2026-01-28T20:28:41.583996672Z"
+    },
+    "app.js": {
+      "path": "app.js",
+      "hash": "a7710c4ab7451012",
+      "language": "javascript",
+      "size": 4719,
+      "line_count": 149,
+      "purpose": "javascript source file",
+      "imports": null,
+      "exports": null,
+      "types": null,
+      "functions": null,
+      "constants": null,
+      "concepts": [],
+      "analyzed_at": "2026-01-28T20:28:41.584010713Z"
+    },
+    "cmd/main.go": {
+      "path": "cmd/main.go",
+      "hash": "6752fe8b530a6bff",
+      "language": "go",
+      "size": 13151,
+      "line_count": 431,
+      "purpose": "Package main",
+      "imports": [
+        {
+          "path": "bytes"
+        },
+        {
+          "path": "context"
+        },
+        {
+          "path": "encoding/json"
+        },
+        {
+          "path": "fmt"
+        },
+        {
+          "path": "io"
+        },
+        {
+          "path": "log"
+        },
+        {
+          "path": "net/http"
+        },
+        {
+          "path": "os"
+        },
+        {
+          "path": "path/filepath"
+        },
+        {
+          "path": "strings"
+        },
+        {
+          "path": "time"
+        },
+        {
+          "path": "github.com/aws/aws-lambda-go/events"
+        },
+        {
+          "path": "github.com/aws/aws-lambda-go/lambda"
+        }
+      ],
+      "exports": [
+        {
+          "name": "CallbackAuthUsername",
+          "kind": "var",
+          "line_start": 22,
+          "line_end": 0
+        },
+        {
+          "name": "CallbackAuthPassword",
+          "kind": "var",
+          "line_start": 23,
+          "line_end": 0
+        },
+        {
+          "name": "RequestBody",
+          "kind": "type",
+          "signature": "struct",
+          "description": "RequestBody for sync upload (backward compatible)",
+          "line_start": 45,
+          "line_end": 48
+        },
+        {
+          "name": "AsyncRequestBody",
+          "kind": "type",
+          "signature": "struct",
+          "description": "AsyncRequestBody for async upload with callback (direct Lambda invocation)",
+          "line_start": 51,
+          "line_end": 56
+        },
+        {
+          "name": "Response",
+          "kind": "type",
+          "signature": "struct",
+          "line_start": 58,
+          "line_end": 63
+        },
+        {
+          "name": "CallbackPayload",
+          "kind": "type",
+          "signature": "struct",
+          "description": "CallbackPayload is sent to the callback URL after async upload",
+          "line_start": 66,
+          "line_end": 71
+        }
+      ],
+      "types": [
+        {
+          "name": "RequestBody",
+          "kind": "struct",
+          "description": "RequestBody for sync upload (backward compatible)",
+          "fields": [
+            {
+              "name": "URL",
+              "type": "string",
+              "tag": "`json:\"url\"`",
+              "is_public": true
+            },
+            {
+              "name": "UploadURL",
+              "type": "string",
+              "tag": "`json:\"uploadUrl\"`",
+              "is_public": true
+            }
+          ],
+          "is_public": true,
+          "line_start": 45,
+          "line_end": 48
+        },
+        {
+          "name": "AsyncRequestBody",
+          "kind": "struct",
+          "description": "AsyncRequestBody for async upload with callback (direct Lambda invocation)",
+          "fields": [
+            {
+              "name": "URL",
+              "type": "string",
+              "tag": "`json:\"url\"`",
+              "is_public": true
+            },
+            {
+              "name": "UploadURL",
+              "type": "string",
+              "tag": "`json:\"uploadUrl\"`",
+              "is_public": true
+            },
+            {
+              "name": "RequestID",
+              "type": "string",
+              "tag": "`json:\"requestId\"`",
+              "is_public": true
+            },
+            {
+              "name": "CallbackURL",
+              "type": "string",
+              "tag": "`json:\"callbackUrl\"`",
+              "is_public": true
+            }
+          ],
+          "is_public": true,
+          "line_start": 51,
+          "line_end": 56
+        },
+        {
+          "name": "Response",
+          "kind": "struct",
+          "fields": [
+            {
+              "name": "Status",
+              "type": "int",
+              "tag": "`json:\"status\"`",
+              "is_public": true
+            },
+            {
+              "name": "Message",
+              "type": "string",
+              "tag": "`json:\"message,omitempty\"`",
+              "is_public": true
+            },
+            {
+              "name": "URL",
+              "type": "string",
+              "tag": "`json:\"url,omitempty\"`",
+              "is_public": true
+            },
+            {
+              "name": "Error",
+              "type": "string",
+              "tag": "`json:\"error,omitempty\"`",
+              "is_public": true
+            }
+          ],
+          "is_public": true,
+          "line_start": 58,
+          "line_end": 63
+        },
+        {
+          "name": "CallbackPayload",
+          "kind": "struct",
+          "description": "CallbackPayload is sent to the callback URL after async upload",
+          "fields": [
+            {
+              "name": "RequestID",
+              "type": "string",
+              "tag": "`json:\"requestId\"`",
+              "is_public": true
+            },
+            {
+              "name": "Status",
+              "type": "string",
+              "tag": "`json:\"status\"`",
+              "is_public": true
+            },
+            {
+              "name": "URL",
+              "type": "string",
+              "tag": "`json:\"url,omitempty\"`",
+              "is_public": true
+            },
+            {
+              "name": "Error",
+              "type": "string",
+              "tag": "`json:\"error,omitempty\"`",
+              "is_public": true
+            }
+          ],
+          "is_public": true,
+          "line_start": 66,
+          "line_end": 71
+        }
+      ],
+      "functions": [
+        {
+          "name": "init",
+          "signature": "init()",
+          "is_public": false,
+          "line_start": 34,
+          "line_end": 42,
+          "complexity": 3
+        },
+        {
+          "name": "main",
+          "signature": "main()",
+          "is_public": false,
+          "line_start": 73,
+          "line_end": 75,
+          "complexity": 1
+        },
+        {
+          "name": "handler",
+          "signature": "handler(ctx context.Context, event json.RawMessage) (events.APIGatewayProxyResponse, error)",
+          "description": "handler handles both API Gateway events (sync) and direct Lambda invocations (async)",
+          "parameters": [
+            {
+              "name": "ctx",
+              "type": "context.Context"
+            },
+            {
+              "name": "event",
+              "type": "json.RawMessage"
+            }
+          ],
+          "returns": [
+            "events.APIGatewayProxyResponse",
+            "error"
+          ],
+          "is_public": false,
+          "line_start": 78,
+          "line_end": 101,
+          "complexity": 6
+        },
+        {
+          "name": "handleAPIGatewayRequest",
+          "signature": "handleAPIGatewayRequest(request events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error)",
+          "description": "handleAPIGatewayRequest handles sync requests coming through API Gateway",
+          "parameters": [
+            {
+              "name": "request",
+              "type": "events.APIGatewayProxyRequest"
+            }
+          ],
+          "returns": [
+            "events.APIGatewayProxyResponse",
+            "error"
+          ],
+          "is_public": false,
+          "line_start": 104,
+          "line_end": 159,
+          "complexity": 7
+        },
+        {
+          "name": "handleAsyncUpload",
+          "signature": "handleAsyncUpload(reqBody AsyncRequestBody) (events.APIGatewayProxyResponse, error)",
+          "description": "handleAsyncUpload performs upload and sends callback (for direct Lambda invocation)",
+          "parameters": [
+            {
+              "name": "reqBody",
+              "type": "AsyncRequestBody"
+            }
+          ],
+          "returns": [
+            "events.APIGatewayProxyResponse",
+            "error"
+          ],
+          "is_public": false,
+          "line_start": 162,
+          "line_end": 216,
+          "complexity": 5
+        },
+        {
+          "name": "performUpload",
+          "signature": "performUpload(sourceURL string, uploadURL string) (string, error)",
+          "description": "performUpload downloads from sourceURL to temp file, then uploads to uploadURL\nThis avoids loading the entire file into memory",
+          "parameters": [
+            {
+              "name": "sourceURL",
+              "type": "string"
+            },
+            {
+              "name": "uploadURL",
+              "type": "string"
+            }
+          ],
+          "returns": [
+            "string",
+            "error"
+          ],
+          "is_public": false,
+          "line_start": 220,
+          "line_end": 312,
+          "complexity": 20
+        },
+        {
+          "name": "sendCallback",
+          "signature": "sendCallback(callbackURL string, payload CallbackPayload) error",
+          "description": "sendCallback sends the upload result to the callback URL with basic auth",
+          "parameters": [
+            {
+              "name": "callbackURL",
+              "type": "string"
+            },
+            {
+              "name": "payload",
+              "type": "CallbackPayload"
+            }
+          ],
+          "returns": [
+            "error"
+          ],
+          "is_public": false,
+          "line_start": 315,
+          "line_end": 351,
+          "complexity": 9
+        },
+        {
+          "name": "sendCallbackError",
+          "signature": "sendCallbackError(callbackURL string, requestID string, errorMsg string)",
+          "description": "sendCallbackError is a helper to send error callback",
+          "parameters": [
+            {
+              "name": "callbackURL",
+              "type": "string"
+            },
+            {
+              "name": "requestID",
+              "type": "string"
+            },
+            {
+              "name": "errorMsg",
+              "type": "string"
+            }
+          ],
+          "is_public": false,
+          "line_start": 354,
+          "line_end": 363,
+          "complexity": 3
+        },
+        {
+          "name": "getFilename",
+          "signature": "getFilename(url string) string",
+          "parameters": [
+            {
+              "name": "url",
+              "type": "string"
+            }
+          ],
+          "returns": [
+            "string"
+          ],
+          "is_public": false,
+          "line_start": 365,
+          "line_end": 374,
+          "complexity": 2
+        },
+        {
+          "name": "isValidFileType",
+          "signature": "isValidFileType(filename string) bool",
+          "parameters": [
+            {
+              "name": "filename",
+              "type": "string"
+            }
+          ],
+          "returns": [
+            "bool"
+          ],
+          "is_public": false,
+          "line_start": 376,
+          "line_end": 385,
+          "complexity": 3
+        },
+        {
+          "name": "uploadFileFromReader",
+          "signature": "uploadFileFromReader(uploadURL string, filename string, reader io.Reader, contentLength int64) (*http.Response, error)",
+          "parameters": [
+            {
+              "name": "uploadURL",
+              "type": "string"
+            },
+            {
+              "name": "filename",
+              "type": "string"
+            },
+            {
+              "name": "reader",
+              "type": "io.Reader"
+            },
+            {
+              "name": "contentLength",
+              "type": "int64"
+            }
+          ],
+          "returns": [
+            "*http.Response",
+            "error"
+          ],
+          "is_public": false,
+          "line_start": 387,
+          "line_end": 414,
+          "complexity": 8
+        },
+        {
+          "name": "sendErrorResponse",
+          "signature": "sendErrorResponse(statusCode int, message string) events.APIGatewayProxyResponse",
+          "parameters": [
+            {
+              "name": "statusCode",
+              "type": "int"
+            },
+            {
+              "name": "message",
+              "type": "string"
+            }
+          ],
+          "returns": [
+            "events.APIGatewayProxyResponse"
+          ],
+          "is_public": false,
+          "line_start": 416,
+          "line_end": 430,
+          "complexity": 1
+        }
+      ],
+      "constants": [
+        {
+          "name": "copyBufferSize",
+          "value": "...",
+          "is_public": false,
+          "line_start": 27
+        }
+      ],
+      "concepts": [
+        "valid",
+        "file",
+        "from",
+        "response",
+        "gateway",
+        "error",
+        "filename",
+        "perform",
+        "get",
+        "reader",
+        "requestbody",
+        "asyncrequestbody",
+        "main",
+        "async",
+        "send",
+        "callback",
+        "callbackpayload",
+        "handle",
+        "request",
+        "upload",
+        "init",
+        "handler",
+        "type"
+      ],
+      "analyzed_at": "2026-01-28T20:28:41.58450388Z"
+    },
+    "go.mod": {
+      "path": "go.mod",
+      "hash": "d6c8533111007335",
+      "language": "go-mod",
+      "size": 80,
+      "line_count": 6,
+      "purpose": "go-mod source file",
+      "imports": null,
+      "exports": null,
+      "types": null,
+      "functions": null,
+      "constants": null,
+      "concepts": [],
+      "analyzed_at": "2026-01-28T20:28:41.584630547Z"
+    },
+    "package.json": {
+      "path": "package.json",
+      "hash": "524d7117320b7fd3",
+      "language": "json",
+      "size": 372,
+      "line_count": 19,
+      "purpose": "JSON data/configuration",
+      "imports": null,
+      "exports": null,
+      "types": null,
+      "functions": null,
+      "constants": null,
+      "concepts": [],
+      "analyzed_at": "2026-01-28T20:28:41.584641713Z"
+    },
+    "serverless-go.yml": {
+      "path": "serverless-go.yml",
+      "hash": "bd971e0ba8263666",
+      "language": "yaml",
+      "size": 1426,
+      "line_count": 52,
+      "purpose": "YAML configuration",
+      "imports": null,
+      "exports": null,
+      "types": null,
+      "functions": null,
+      "constants": null,
+      "concepts": [],
+      "analyzed_at": "2026-01-28T20:28:41.58466363Z"
+    },
+    "serverless.yml": {
+      "path": "serverless.yml",
+      "hash": "0f093330ff983006",
+      "language": "yaml",
+      "size": 572,
+      "line_count": 21,
+      "purpose": "YAML configuration",
+      "imports": null,
+      "exports": null,
+      "types": null,
+      "functions": null,
+      "constants": null,
+      "concepts": [],
+      "analyzed_at": "2026-01-28T20:28:41.584838755Z"
+    },
+    "yamllint.yaml": {
+      "path": "yamllint.yaml",
+      "hash": "c855d5bb6c914407",
+      "language": "yaml",
+      "size": 587,
+      "line_count": 32,
+      "purpose": "YAML configuration",
+      "imports": null,
+      "exports": null,
+      "types": null,
+      "functions": null,
+      "constants": null,
+      "concepts": [],
+      "analyzed_at": "2026-01-28T20:28:41.584947713Z"
+    }
+  },
+  "architecture": {
+    "overview": "Repository with 9 files across 2 modules. 6 public exports, 4 types, 12 functions.",
+    "modules": [
+      {
+        "path": "root",
+        "name": "root",
+        "files": [
+          ".npmignore",
+          "go.mod",
+          "serverless-go.yml",
+          "serverless.yml",
+          "README.md",
+          "app.js",
+          "package.json",
+          "yamllint.yaml"
+        ],
+        "is_internal": false
+      },
+      {
+        "path": "cmd",
+        "name": "cmd",
+        "files": [
+          "cmd/main.go"
+        ],
+        "is_internal": false
+      }
+    ],
+    "entry_points": [
+      {
+        "path": "cmd/main.go",
+        "type": "main",
+        "purpose": "Application entry point"
+      }
+    ],
+    "dependencies": null,
+    "build_system": "npm",
+    "main_packages": [
+      "cmd"
+    ],
+    "ai_analysis": {
+      "pattern": "Simple CLI Application",
+      "layers": [
+        {
+          "name": "Entry Point",
+          "purpose": "Application bootstrapping and CLI interface",
+          "components": [
+            "cmd/main.go"
+          ]
+        },
+        {
+          "name": "Core Logic",
+          "purpose": "Business logic and application functionality",
+          "components": [
+            "root module files"
+          ]
+        }
+      ],
+      "data_flow": "CLI commands are processed by main.go, which delegates to core business logic in root module files for app upload functionality to LambdaTest platform",
+      "strengths": [
+        "Simple and straightforward structure",
+        "Clear separation of entry point from business logic",
+        "Minimal complexity for CLI tool"
+      ],
+      "weaknesses": [
+        "Flat structure may not scale well",
+        "Limited modularity and separation of concerns",
+        "Potential for tight coupling between components",
+        "No clear abstraction layers"
+      ],
+      "recommendations": [
+        "Consider introducing internal packages for better organization",
+        "Implement proper separation of concerns with dedicated service/handler layers",
+        "Add configuration management layer",
+        "Consider adding interfaces for better testability"
+      ],
+      "generated_at": "2026-01-29T13:34:54.443500213Z",
+      "tokens_used": 463,
+      "provider": "anthropic"
+    }
+  },
+  "statistics": {
+    "total_files": 9,
+    "total_lines": 727,
+    "languages": {
+      "go": 1,
+      "go-mod": 1,
+      "javascript": 1,
+      "json": 1,
+      "markdown": 1,
+      "unknown": 1,
+      "yaml": 3
+    },
+    "function_count": 12,
+    "type_count": 4,
+    "export_count": 6
+  },
+  "version": 1,
+  "ai_summary": {
+    "overview": "This repository appears to be a Go-based application upload service for LambdaTest's platform. It provides functionality to upload and manage application files with both synchronous and asynchronous processing capabilities.",
+    "purpose": "To handle application file uploads for LambdaTest's testing platform, enabling users to upload mobile apps or other testing assets that can be used in their automated testing workflows",
+    "key_features": [
+      "Synchronous and asynchronous file upload processing",
+      "Callback mechanism for async operations",
+      "RESTful API interface for upload operations",
+      "File validation and processing pipeline"
+    ],
+    "technology_stack": [
+      "Go",
+      "JavaScript",
+      "YAML configuration",
+      "JSON for data exchange"
+    ],
+    "architecture_style": "Microservice with REST API",
+    "main_components": [
+      "Upload handler service",
+      "Request/Response data structures",
+      "Async processing with callback system",
+      "Configuration management"
+    ],
+    "suggestions": [
+      "Add comprehensive error handling and logging",
+      "Implement file size and type validation",
+      "Add authentication and authorization mechanisms",
+      "Include unit tests and integration tests",
+      "Add API documentation and OpenAPI specification"
+    ],
+    "generated_at": "2026-01-29T13:34:48.42680796Z",
+    "tokens_used": 661,
+    "provider": "anthropic"
+  }
+}

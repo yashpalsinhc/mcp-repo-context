@@ -1,0 +1,3944 @@
+{
+  "id": "github.com/LambdatestIncPrivate/test-management-service-automation",
+  "url": "https://github.com/LambdatestIncPrivate/test-management-service-automation.git",
+  "branch": "prod",
+  "commit_hash": "744cc98fdaf8f2bb1a69173e42421723876b6aba",
+  "analyzed_at": "2026-01-28T20:12:40.098996171Z",
+  "files": {
+    ".editorconfig": {
+      "path": ".editorconfig",
+      "hash": "fd63ff454db72803",
+      "language": "unknown",
+      "size": 574,
+      "line_count": 28,
+      "purpose": "Configuration file",
+      "imports": null,
+      "exports": null,
+      "types": null,
+      "functions": null,
+      "constants": null,
+      "concepts": [],
+      "analyzed_at": "2026-01-28T20:12:40.099057421Z"
+    },
+    ".eslintrc.js": {
+      "path": ".eslintrc.js",
+      "hash": "461fb25041b4b7db",
+      "language": "javascript",
+      "size": 872,
+      "line_count": 35,
+      "purpose": "javascript source file",
+      "imports": null,
+      "exports": null,
+      "types": null,
+      "functions": null,
+      "constants": null,
+      "concepts": [],
+      "analyzed_at": "2026-01-28T20:12:40.099070921Z"
+    },
+    ".prettierrc": {
+      "path": ".prettierrc",
+      "hash": "abb97928e4edbbda",
+      "language": "unknown",
+      "size": 473,
+      "line_count": 20,
+      "purpose": "unknown source file",
+      "imports": null,
+      "exports": null,
+      "types": null,
+      "functions": null,
+      "constants": null,
+      "concepts": [],
+      "analyzed_at": "2026-01-28T20:12:40.099083838Z"
+    },
+    ".sailsrc": {
+      "path": ".sailsrc",
+      "hash": "a734fe42d9a8f4c7",
+      "language": "unknown",
+      "size": 81,
+      "line_count": 8,
+      "purpose": "unknown source file",
+      "imports": null,
+      "exports": null,
+      "types": null,
+      "functions": null,
+      "constants": null,
+      "concepts": [],
+      "analyzed_at": "2026-01-28T20:12:40.099092921Z"
+    },
+    "Dockerfile": {
+      "path": "Dockerfile",
+      "hash": "a84d1a7b7020ef0f",
+      "language": "dockerfile",
+      "size": 1837,
+      "line_count": 49,
+      "purpose": "Docker container definition",
+      "imports": null,
+      "exports": null,
+      "types": null,
+      "functions": null,
+      "constants": null,
+      "concepts": [
+        "dockerfile"
+      ],
+      "analyzed_at": "2026-01-28T20:12:40.099104754Z"
+    },
+    "Dockerfile_dev": {
+      "path": "Dockerfile_dev",
+      "hash": "24537b2aef57957f",
+      "language": "unknown",
+      "size": 1498,
+      "line_count": 34,
+      "purpose": "Docker container definition",
+      "imports": null,
+      "exports": null,
+      "types": null,
+      "functions": null,
+      "constants": null,
+      "concepts": [
+        "dockerfile_dev"
+      ],
+      "analyzed_at": "2026-01-28T20:12:40.099116671Z"
+    },
+    "README.md": {
+      "path": "README.md",
+      "hash": "4b62964814d519ac",
+      "language": "markdown",
+      "size": 1462,
+      "line_count": 26,
+      "purpose": "Project documentation",
+      "imports": null,
+      "exports": null,
+      "types": null,
+      "functions": null,
+      "constants": null,
+      "concepts": [
+        "readme.md"
+      ],
+      "analyzed_at": "2026-01-28T20:12:40.099128338Z"
+    },
+    "__tests__/__mocks__/testDetails.js": {
+      "path": "__tests__/__mocks__/testDetails.js",
+      "hash": "f6e66fa55f572b53",
+      "language": "javascript",
+      "size": 2649,
+      "line_count": 42,
+      "purpose": "Test file",
+      "imports": null,
+      "exports": null,
+      "types": null,
+      "functions": null,
+      "constants": null,
+      "concepts": [
+        "testdetails.js"
+      ],
+      "analyzed_at": "2026-01-28T20:12:40.099156421Z"
+    },
+    "__tests__/__mocks__/userInfo.js": {
+      "path": "__tests__/__mocks__/userInfo.js",
+      "hash": "14fb9e06f1f469ba",
+      "language": "javascript",
+      "size": 70,
+      "line_count": 2,
+      "purpose": "Test file",
+      "imports": null,
+      "exports": null,
+      "types": null,
+      "functions": null,
+      "constants": null,
+      "concepts": [
+        "userinfo.js"
+      ],
+      "analyzed_at": "2026-01-28T20:12:40.099166588Z"
+    },
+    "__tests__/api/controllers/analytics/build.test.js": {
+      "path": "__tests__/api/controllers/analytics/build.test.js",
+      "hash": "cfe08eef752c9433",
+      "language": "javascript",
+      "size": 3924,
+      "line_count": 110,
+      "purpose": "Test file",
+      "imports": null,
+      "exports": null,
+      "types": null,
+      "functions": null,
+      "constants": null,
+      "concepts": [],
+      "analyzed_at": "2026-01-28T20:12:40.099200213Z"
+    },
+    "__tests__/api/controllers/exposed-apis/geolocation.test.js": {
+      "path": "__tests__/api/controllers/exposed-apis/geolocation.test.js",
+      "hash": "b73e140733f21218",
+      "language": "javascript",
+      "size": 1089,
+      "line_count": 30,
+      "purpose": "Test file",
+      "imports": null,
+      "exports": null,
+      "types": null,
+      "functions": null,
+      "constants": null,
+      "concepts": [],
+      "analyzed_at": "2026-01-28T20:12:40.099217254Z"
+    },
+    "__tests__/api/controllers/test/concurrency.test.js": {
+      "path": "__tests__/api/controllers/test/concurrency.test.js",
+      "hash": "5696285f639d9ed8",
+      "language": "javascript",
+      "size": 3238,
+      "line_count": 58,
+      "purpose": "Test file",
+      "imports": null,
+      "exports": null,
+      "types": null,
+      "functions": null,
+      "constants": null,
+      "concepts": [],
+      "analyzed_at": "2026-01-28T20:12:40.099243838Z"
+    },
+    "__tests__/api/controllers/test/get.test.js": {
+      "path": "__tests__/api/controllers/test/get.test.js",
+      "hash": "7800a9bead3eed6f",
+      "language": "javascript",
+      "size": 3701,
+      "line_count": 74,
+      "purpose": "Test file",
+      "imports": null,
+      "exports": null,
+      "types": null,
+      "functions": null,
+      "constants": null,
+      "concepts": [],
+      "analyzed_at": "2026-01-28T20:12:40.099257838Z"
+    },
+    "__tests__/api/controllers/test/update.test.js": {
+      "path": "__tests__/api/controllers/test/update.test.js",
+      "hash": "7ff6683fd5f47c88",
+      "language": "javascript",
+      "size": 3604,
+      "line_count": 105,
+      "purpose": "Test file",
+      "imports": null,
+      "exports": null,
+      "types": null,
+      "functions": null,
+      "constants": null,
+      "concepts": [],
+      "analyzed_at": "2026-01-28T20:12:40.099270713Z"
+    },
+    "__tests__/api/controllers/v2/analytics/concurrency.test.js": {
+      "path": "__tests__/api/controllers/v2/analytics/concurrency.test.js",
+      "hash": "7766ee550d3fa38d",
+      "language": "javascript",
+      "size": 2160,
+      "line_count": 80,
+      "purpose": "Test file",
+      "imports": null,
+      "exports": null,
+      "types": null,
+      "functions": null,
+      "constants": null,
+      "concepts": [],
+      "analyzed_at": "2026-01-28T20:12:40.099296004Z"
+    },
+    "__tests__/api/controllers/v2/test/org-details.test.js": {
+      "path": "__tests__/api/controllers/v2/test/org-details.test.js",
+      "hash": "78a40c77c108488c",
+      "language": "javascript",
+      "size": 3826,
+      "line_count": 66,
+      "purpose": "Test file",
+      "imports": null,
+      "exports": null,
+      "types": null,
+      "functions": null,
+      "constants": null,
+      "concepts": [],
+      "analyzed_at": "2026-01-28T20:12:40.099316088Z"
+    },
+    "__tests__/api/controllers/v2/test/update.test.js": {
+      "path": "__tests__/api/controllers/v2/test/update.test.js",
+      "hash": "97b5feec25aca20a",
+      "language": "javascript",
+      "size": 2090,
+      "line_count": 54,
+      "purpose": "Test file",
+      "imports": null,
+      "exports": null,
+      "types": null,
+      "functions": null,
+      "constants": null,
+      "concepts": [],
+      "analyzed_at": "2026-01-28T20:12:40.099327796Z"
+    },
+    "__tests__/api/services/httphandler.test.js": {
+      "path": "__tests__/api/services/httphandler.test.js",
+      "hash": "880bedcd03d45216",
+      "language": "javascript",
+      "size": 1500,
+      "line_count": 28,
+      "purpose": "Test file",
+      "imports": null,
+      "exports": null,
+      "types": null,
+      "functions": null,
+      "constants": null,
+      "concepts": [],
+      "analyzed_at": "2026-01-28T20:12:40.099345338Z"
+    },
+    "__tests__/api/services/utils.test.js": {
+      "path": "__tests__/api/services/utils.test.js",
+      "hash": "eb81764a70c4f442",
+      "language": "javascript",
+      "size": 778,
+      "line_count": 22,
+      "purpose": "Test file",
+      "imports": null,
+      "exports": null,
+      "types": null,
+      "functions": null,
+      "constants": null,
+      "concepts": [],
+      "analyzed_at": "2026-01-28T20:12:40.099355629Z"
+    },
+    "api/controllers/analytics/build.js": {
+      "path": "api/controllers/analytics/build.js",
+      "hash": "e54bda3e65450406",
+      "language": "javascript",
+      "size": 7366,
+      "line_count": 172,
+      "purpose": "javascript source file",
+      "imports": null,
+      "exports": null,
+      "types": null,
+      "functions": null,
+      "constants": null,
+      "concepts": [],
+      "analyzed_at": "2026-01-28T20:12:40.099399421Z"
+    },
+    "api/controllers/analytics/concurrency.js": {
+      "path": "api/controllers/analytics/concurrency.js",
+      "hash": "e2c90756180e0084",
+      "language": "javascript",
+      "size": 8455,
+      "line_count": 177,
+      "purpose": "javascript source file",
+      "imports": null,
+      "exports": null,
+      "types": null,
+      "functions": null,
+      "constants": null,
+      "concepts": [],
+      "analyzed_at": "2026-01-28T20:12:40.099418379Z"
+    },
+    "api/controllers/analytics/stats.js": {
+      "path": "api/controllers/analytics/stats.js",
+      "hash": "f3980bfb08863a6a",
+      "language": "javascript",
+      "size": 11494,
+      "line_count": 262,
+      "purpose": "javascript source file",
+      "imports": null,
+      "exports": null,
+      "types": null,
+      "functions": null,
+      "constants": null,
+      "concepts": [],
+      "analyzed_at": "2026-01-28T20:12:40.099442963Z"
+    },
+    "api/controllers/analytics/test.js": {
+      "path": "api/controllers/analytics/test.js",
+      "hash": "0619dd1d0654d6f9",
+      "language": "javascript",
+      "size": 7285,
+      "line_count": 168,
+      "purpose": "Test file",
+      "imports": null,
+      "exports": null,
+      "types": null,
+      "functions": null,
+      "constants": null,
+      "concepts": [],
+      "analyzed_at": "2026-01-28T20:12:40.099459588Z"
+    },
+    "api/controllers/analytics/v2/concurrency.js": {
+      "path": "api/controllers/analytics/v2/concurrency.js",
+      "hash": "8351ba52e0a5a8d3",
+      "language": "javascript",
+      "size": 12256,
+      "line_count": 311,
+      "purpose": "javascript source file",
+      "imports": null,
+      "exports": null,
+      "types": null,
+      "functions": null,
+      "constants": null,
+      "concepts": [],
+      "analyzed_at": "2026-01-28T20:12:40.099486213Z"
+    },
+    "api/controllers/app/config.js": {
+      "path": "api/controllers/app/config.js",
+      "hash": "fbf130d4a38ab537",
+      "language": "javascript",
+      "size": 1286,
+      "line_count": 45,
+      "purpose": "Configuration file",
+      "imports": null,
+      "exports": null,
+      "types": null,
+      "functions": null,
+      "constants": null,
+      "concepts": [],
+      "analyzed_at": "2026-01-28T20:12:40.099504588Z"
+    },
+    "api/controllers/app/middleware/authorisation.js": {
+      "path": "api/controllers/app/middleware/authorisation.js",
+      "hash": "c2e16a80e065c27f",
+      "language": "javascript",
+      "size": 1008,
+      "line_count": 34,
+      "purpose": "javascript source file",
+      "imports": null,
+      "exports": null,
+      "types": null,
+      "functions": null,
+      "constants": null,
+      "concepts": [],
+      "analyzed_at": "2026-01-28T20:12:40.099522254Z"
+    },
+    "api/controllers/app/update-config.js": {
+      "path": "api/controllers/app/update-config.js",
+      "hash": "7a4fc81970eabdbe",
+      "language": "javascript",
+      "size": 1804,
+      "line_count": 57,
+      "purpose": "Configuration file",
+      "imports": null,
+      "exports": null,
+      "types": null,
+      "functions": null,
+      "constants": null,
+      "concepts": [],
+      "analyzed_at": "2026-01-28T20:12:40.099534463Z"
+    },
+    "api/controllers/browsers/add-browser.js": {
+      "path": "api/controllers/browsers/add-browser.js",
+      "hash": "74b58de247f8dd9b",
+      "language": "javascript",
+      "size": 10890,
+      "line_count": 229,
+      "purpose": "javascript source file",
+      "imports": null,
+      "exports": null,
+      "types": null,
+      "functions": null,
+      "constants": null,
+      "concepts": [],
+      "analyzed_at": "2026-01-28T20:12:40.099561546Z"
+    },
+    "api/controllers/browsers/latest-browsers.js": {
+      "path": "api/controllers/browsers/latest-browsers.js",
+      "hash": "d1048270546dee3b",
+      "language": "javascript",
+      "size": 2833,
+      "line_count": 78,
+      "purpose": "Test file",
+      "imports": null,
+      "exports": null,
+      "types": null,
+      "functions": null,
+      "constants": null,
+      "concepts": [],
+      "analyzed_at": "2026-01-28T20:12:40.099574004Z"
+    },
+    "api/controllers/browsers/latest-selenium-versions.js": {
+      "path": "api/controllers/browsers/latest-selenium-versions.js",
+      "hash": "501f6286b0270ce5",
+      "language": "javascript",
+      "size": 2662,
+      "line_count": 74,
+      "purpose": "Test file",
+      "imports": null,
+      "exports": null,
+      "types": null,
+      "functions": null,
+      "constants": null,
+      "concepts": [],
+      "analyzed_at": "2026-01-28T20:12:40.099587171Z"
+    },
+    "api/controllers/browsers/selenium.js": {
+      "path": "api/controllers/browsers/selenium.js",
+      "hash": "7f1ed2c23778da2f",
+      "language": "javascript",
+      "size": 4050,
+      "line_count": 109,
+      "purpose": "javascript source file",
+      "imports": null,
+      "exports": null,
+      "types": null,
+      "functions": null,
+      "constants": null,
+      "concepts": [],
+      "analyzed_at": "2026-01-28T20:12:40.099600379Z"
+    },
+    "api/controllers/browsers/update-browser.js": {
+      "path": "api/controllers/browsers/update-browser.js",
+      "hash": "1ad948f35fc545cf",
+      "language": "javascript",
+      "size": 5341,
+      "line_count": 135,
+      "purpose": "javascript source file",
+      "imports": null,
+      "exports": null,
+      "types": null,
+      "functions": null,
+      "constants": null,
+      "concepts": [],
+      "analyzed_at": "2026-01-28T20:12:40.099616254Z"
+    },
+    "api/controllers/build/bulk-delete.js": {
+      "path": "api/controllers/build/bulk-delete.js",
+      "hash": "c426f477b4b22065",
+      "language": "javascript",
+      "size": 6614,
+      "line_count": 133,
+      "purpose": "javascript source file",
+      "imports": null,
+      "exports": null,
+      "types": null,
+      "functions": null,
+      "constants": null,
+      "concepts": [],
+      "analyzed_at": "2026-01-28T20:12:40.099639129Z"
+    },
+    "api/controllers/build/delete.js": {
+      "path": "api/controllers/build/delete.js",
+      "hash": "8cb59ae2af8d430d",
+      "language": "javascript",
+      "size": 6573,
+      "line_count": 125,
+      "purpose": "javascript source file",
+      "imports": null,
+      "exports": null,
+      "types": null,
+      "functions": null,
+      "constants": null,
+      "concepts": [],
+      "analyzed_at": "2026-01-28T20:12:40.099655629Z"
+    },
+    "api/controllers/build/search.js": {
+      "path": "api/controllers/build/search.js",
+      "hash": "52cf454c8307147e",
+      "language": "javascript",
+      "size": 8848,
+      "line_count": 187,
+      "purpose": "javascript source file",
+      "imports": null,
+      "exports": null,
+      "types": null,
+      "functions": null,
+      "constants": null,
+      "concepts": [],
+      "analyzed_at": "2026-01-28T20:12:40.099677296Z"
+    },
+    "api/controllers/build/update-build-name.js": {
+      "path": "api/controllers/build/update-build-name.js",
+      "hash": "ad90d97e604e6e30",
+      "language": "javascript",
+      "size": 4827,
+      "line_count": 94,
+      "purpose": "javascript source file",
+      "imports": null,
+      "exports": null,
+      "types": null,
+      "functions": null,
+      "constants": null,
+      "concepts": [],
+      "analyzed_at": "2026-01-28T20:12:40.099692379Z"
+    },
+    "api/controllers/charts/index.js": {
+      "path": "api/controllers/charts/index.js",
+      "hash": "4b4a91fa4dfa5317",
+      "language": "javascript",
+      "size": 2088,
+      "line_count": 49,
+      "purpose": "javascript source file",
+      "imports": null,
+      "exports": null,
+      "types": null,
+      "functions": null,
+      "constants": null,
+      "concepts": [],
+      "analyzed_at": "2026-01-28T20:12:40.099709629Z"
+    },
+    "api/controllers/exposed-apis/geolocation.js": {
+      "path": "api/controllers/exposed-apis/geolocation.js",
+      "hash": "af8d82ddda5ed056",
+      "language": "javascript",
+      "size": 2086,
+      "line_count": 53,
+      "purpose": "javascript source file",
+      "imports": null,
+      "exports": null,
+      "types": null,
+      "functions": null,
+      "constants": null,
+      "concepts": [],
+      "analyzed_at": "2026-01-28T20:12:40.099726713Z"
+    },
+    "api/controllers/exposed-apis/platform.js": {
+      "path": "api/controllers/exposed-apis/platform.js",
+      "hash": "c758827c1960d1a7",
+      "language": "javascript",
+      "size": 1513,
+      "line_count": 39,
+      "purpose": "javascript source file",
+      "imports": null,
+      "exports": null,
+      "types": null,
+      "functions": null,
+      "constants": null,
+      "concepts": [],
+      "analyzed_at": "2026-01-28T20:12:40.099738004Z"
+    },
+    "api/controllers/health/api.js": {
+      "path": "api/controllers/health/api.js",
+      "hash": "1dc6ed8c98e1fd15",
+      "language": "javascript",
+      "size": 481,
+      "line_count": 19,
+      "purpose": "javascript source file",
+      "imports": null,
+      "exports": null,
+      "types": null,
+      "functions": null,
+      "constants": null,
+      "concepts": [],
+      "analyzed_at": "2026-01-28T20:12:40.099754171Z"
+    },
+    "api/controllers/internal/update-browser-upload-timestamp.js": {
+      "path": "api/controllers/internal/update-browser-upload-timestamp.js",
+      "hash": "5c79a8acccae1e14",
+      "language": "javascript",
+      "size": 2025,
+      "line_count": 68,
+      "purpose": "javascript source file",
+      "imports": null,
+      "exports": null,
+      "types": null,
+      "functions": null,
+      "constants": null,
+      "concepts": [],
+      "analyzed_at": "2026-01-28T20:12:40.099770796Z"
+    },
+    "api/controllers/master/browser.js": {
+      "path": "api/controllers/master/browser.js",
+      "hash": "c208158bb71a62fc",
+      "language": "javascript",
+      "size": 1448,
+      "line_count": 43,
+      "purpose": "javascript source file",
+      "imports": null,
+      "exports": null,
+      "types": null,
+      "functions": null,
+      "constants": null,
+      "concepts": [],
+      "analyzed_at": "2026-01-28T20:12:40.099788338Z"
+    },
+    "api/controllers/master/capability.js": {
+      "path": "api/controllers/master/capability.js",
+      "hash": "0eaa6415a79a4691",
+      "language": "javascript",
+      "size": 24349,
+      "line_count": 542,
+      "purpose": "javascript source file",
+      "imports": null,
+      "exports": null,
+      "types": null,
+      "functions": null,
+      "constants": null,
+      "concepts": [],
+      "analyzed_at": "2026-01-28T20:12:40.099818379Z"
+    },
+    "api/controllers/master/config.js": {
+      "path": "api/controllers/master/config.js",
+      "hash": "f491069475438792",
+      "language": "javascript",
+      "size": 1172,
+      "line_count": 31,
+      "purpose": "Configuration file",
+      "imports": null,
+      "exports": null,
+      "types": null,
+      "functions": null,
+      "constants": null,
+      "concepts": [],
+      "analyzed_at": "2026-01-28T20:12:40.099829796Z"
+    },
+    "api/controllers/master/device.js": {
+      "path": "api/controllers/master/device.js",
+      "hash": "53d74b632ac936cb",
+      "language": "javascript",
+      "size": 1554,
+      "line_count": 46,
+      "purpose": "javascript source file",
+      "imports": null,
+      "exports": null,
+      "types": null,
+      "functions": null,
+      "constants": null,
+      "concepts": [],
+      "analyzed_at": "2026-01-28T20:12:40.099840713Z"
+    },
+    "api/controllers/master/org-details.js": {
+      "path": "api/controllers/master/org-details.js",
+      "hash": "8961de764760b32d",
+      "language": "javascript",
+      "size": 4479,
+      "line_count": 80,
+      "purpose": "javascript source file",
+      "imports": null,
+      "exports": null,
+      "types": null,
+      "functions": null,
+      "constants": null,
+      "concepts": [],
+      "analyzed_at": "2026-01-28T20:12:40.099854421Z"
+    },
+    "api/controllers/master/os.js": {
+      "path": "api/controllers/master/os.js",
+      "hash": "62774d0b35308f12",
+      "language": "javascript",
+      "size": 2001,
+      "line_count": 62,
+      "purpose": "javascript source file",
+      "imports": null,
+      "exports": null,
+      "types": null,
+      "functions": null,
+      "constants": null,
+      "concepts": [],
+      "analyzed_at": "2026-01-28T20:12:40.099866588Z"
+    },
+    "api/controllers/master/plan.js": {
+      "path": "api/controllers/master/plan.js",
+      "hash": "d71697406a42978b",
+      "language": "javascript",
+      "size": 611,
+      "line_count": 17,
+      "purpose": "javascript source file",
+      "imports": null,
+      "exports": null,
+      "types": null,
+      "functions": null,
+      "constants": null,
+      "concepts": [],
+      "analyzed_at": "2026-01-28T20:12:40.099878046Z"
+    },
+    "api/controllers/master/test.js": {
+      "path": "api/controllers/master/test.js",
+      "hash": "4c0198e807b46107",
+      "language": "javascript",
+      "size": 2428,
+      "line_count": 50,
+      "purpose": "Test file",
+      "imports": null,
+      "exports": null,
+      "types": null,
+      "functions": null,
+      "constants": null,
+      "concepts": [],
+      "analyzed_at": "2026-01-28T20:12:40.099890504Z"
+    },
+    "api/controllers/project/search.js": {
+      "path": "api/controllers/project/search.js",
+      "hash": "a92c50991f7c3d49",
+      "language": "javascript",
+      "size": 3068,
+      "line_count": 81,
+      "purpose": "javascript source file",
+      "imports": null,
+      "exports": null,
+      "types": null,
+      "functions": null,
+      "constants": null,
+      "concepts": [],
+      "analyzed_at": "2026-01-28T20:12:40.099910713Z"
+    },
+    "api/controllers/report/report.js": {
+      "path": "api/controllers/report/report.js",
+      "hash": "de07047b470e3159",
+      "language": "javascript",
+      "size": 6240,
+      "line_count": 115,
+      "purpose": "javascript source file",
+      "imports": null,
+      "exports": null,
+      "types": null,
+      "functions": null,
+      "constants": null,
+      "concepts": [],
+      "analyzed_at": "2026-01-28T20:12:40.099930713Z"
+    },
+    "api/controllers/session/stop.js": {
+      "path": "api/controllers/session/stop.js",
+      "hash": "9fedafb55f40da7c",
+      "language": "javascript",
+      "size": 3986,
+      "line_count": 74,
+      "purpose": "javascript source file",
+      "imports": null,
+      "exports": null,
+      "types": null,
+      "functions": null,
+      "constants": null,
+      "concepts": [],
+      "analyzed_at": "2026-01-28T20:12:40.099948338Z"
+    },
+    "api/controllers/sse/index.js": {
+      "path": "api/controllers/sse/index.js",
+      "hash": "fcb92164bc10f4d0",
+      "language": "javascript",
+      "size": 221,
+      "line_count": 9,
+      "purpose": "javascript source file",
+      "imports": null,
+      "exports": null,
+      "types": null,
+      "functions": null,
+      "constants": null,
+      "concepts": [],
+      "analyzed_at": "2026-01-28T20:12:40.099962588Z"
+    },
+    "api/controllers/sumologic/metric.js": {
+      "path": "api/controllers/sumologic/metric.js",
+      "hash": "2b2df327d1eb850c",
+      "language": "javascript",
+      "size": 626,
+      "line_count": 29,
+      "purpose": "javascript source file",
+      "imports": null,
+      "exports": null,
+      "types": null,
+      "functions": null,
+      "constants": null,
+      "concepts": [],
+      "analyzed_at": "2026-01-28T20:12:40.099978254Z"
+    },
+    "api/controllers/tag/get.js": {
+      "path": "api/controllers/tag/get.js",
+      "hash": "bc2c81b97546d274",
+      "language": "javascript",
+      "size": 7885,
+      "line_count": 186,
+      "purpose": "javascript source file",
+      "imports": null,
+      "exports": null,
+      "types": null,
+      "functions": null,
+      "constants": null,
+      "concepts": [],
+      "analyzed_at": "2026-01-28T20:12:40.099999254Z"
+    },
+    "api/controllers/test-additional-param/get.js": {
+      "path": "api/controllers/test-additional-param/get.js",
+      "hash": "6412cb144b0baba1",
+      "language": "javascript",
+      "size": 2773,
+      "line_count": 62,
+      "purpose": "Test file",
+      "imports": null,
+      "exports": null,
+      "types": null,
+      "functions": null,
+      "constants": null,
+      "concepts": [],
+      "analyzed_at": "2026-01-28T20:12:40.100273754Z"
+    },
+    "api/controllers/test/create.js": {
+      "path": "api/controllers/test/create.js",
+      "hash": "90e39a7c754ab7c5",
+      "language": "javascript",
+      "size": 1736,
+      "line_count": 60,
+      "purpose": "Test file",
+      "imports": null,
+      "exports": null,
+      "types": null,
+      "functions": null,
+      "constants": null,
+      "concepts": [],
+      "analyzed_at": "2026-01-28T20:12:40.100019296Z"
+    },
+    "api/controllers/test/delete.js": {
+      "path": "api/controllers/test/delete.js",
+      "hash": "75c27ef06b86e27f",
+      "language": "javascript",
+      "size": 7308,
+      "line_count": 142,
+      "purpose": "Test file",
+      "imports": null,
+      "exports": null,
+      "types": null,
+      "functions": null,
+      "constants": null,
+      "concepts": [],
+      "analyzed_at": "2026-01-28T20:12:40.100035421Z"
+    },
+    "api/controllers/test/get.js": {
+      "path": "api/controllers/test/get.js",
+      "hash": "e22c5ccd469aeb51",
+      "language": "javascript",
+      "size": 13882,
+      "line_count": 247,
+      "purpose": "Test file",
+      "imports": null,
+      "exports": null,
+      "types": null,
+      "functions": null,
+      "constants": null,
+      "concepts": [],
+      "analyzed_at": "2026-01-28T20:12:40.100059171Z"
+    },
+    "api/controllers/test/interaction.js": {
+      "path": "api/controllers/test/interaction.js",
+      "hash": "a037293f115949d9",
+      "language": "javascript",
+      "size": 3950,
+      "line_count": 79,
+      "purpose": "Test file",
+      "imports": null,
+      "exports": null,
+      "types": null,
+      "functions": null,
+      "constants": null,
+      "concepts": [],
+      "analyzed_at": "2026-01-28T20:12:40.100072296Z"
+    },
+    "api/controllers/test/multipledelete.js": {
+      "path": "api/controllers/test/multipledelete.js",
+      "hash": "356f7e1d2eea02e3",
+      "language": "javascript",
+      "size": 7853,
+      "line_count": 158,
+      "purpose": "Test file",
+      "imports": null,
+      "exports": null,
+      "types": null,
+      "functions": null,
+      "constants": null,
+      "concepts": [],
+      "analyzed_at": "2026-01-28T20:12:40.100087921Z"
+    },
+    "api/controllers/test/multiplestop.js": {
+      "path": "api/controllers/test/multiplestop.js",
+      "hash": "46f61f79d42e1422",
+      "language": "javascript",
+      "size": 18334,
+      "line_count": 460,
+      "purpose": "Test file",
+      "imports": null,
+      "exports": null,
+      "types": null,
+      "functions": null,
+      "constants": null,
+      "concepts": [],
+      "analyzed_at": "2026-01-28T20:12:40.100115838Z"
+    },
+    "api/controllers/test/mute.js": {
+      "path": "api/controllers/test/mute.js",
+      "hash": "c68877df9baf50e7",
+      "language": "javascript",
+      "size": 3643,
+      "line_count": 96,
+      "purpose": "Test file",
+      "imports": null,
+      "exports": null,
+      "types": null,
+      "functions": null,
+      "constants": null,
+      "concepts": [],
+      "analyzed_at": "2026-01-28T20:12:40.100128504Z"
+    },
+    "api/controllers/test/orgid.js": {
+      "path": "api/controllers/test/orgid.js",
+      "hash": "66d4133b7004211b",
+      "language": "javascript",
+      "size": 2606,
+      "line_count": 50,
+      "purpose": "Test file",
+      "imports": null,
+      "exports": null,
+      "types": null,
+      "functions": null,
+      "constants": null,
+      "concepts": [],
+      "analyzed_at": "2026-01-28T20:12:40.100140046Z"
+    },
+    "api/controllers/test/pause.js": {
+      "path": "api/controllers/test/pause.js",
+      "hash": "81fa30870f796a44",
+      "language": "javascript",
+      "size": 6493,
+      "line_count": 157,
+      "purpose": "Test file",
+      "imports": null,
+      "exports": null,
+      "types": null,
+      "functions": null,
+      "constants": null,
+      "concepts": [],
+      "analyzed_at": "2026-01-28T20:12:40.100155171Z"
+    },
+    "api/controllers/test/polling.js": {
+      "path": "api/controllers/test/polling.js",
+      "hash": "7d4add834a590651",
+      "language": "javascript",
+      "size": 4068,
+      "line_count": 78,
+      "purpose": "Test file",
+      "imports": null,
+      "exports": null,
+      "types": null,
+      "functions": null,
+      "constants": null,
+      "concepts": [],
+      "analyzed_at": "2026-01-28T20:12:40.100168421Z"
+    },
+    "api/controllers/test/search.js": {
+      "path": "api/controllers/test/search.js",
+      "hash": "fe27fa83325bed61",
+      "language": "javascript",
+      "size": 9954,
+      "line_count": 241,
+      "purpose": "Test file",
+      "imports": null,
+      "exports": null,
+      "types": null,
+      "functions": null,
+      "constants": null,
+      "concepts": [],
+      "analyzed_at": "2026-01-28T20:12:40.100188629Z"
+    },
+    "api/controllers/test/stop.js": {
+      "path": "api/controllers/test/stop.js",
+      "hash": "fc8edda3f97ce1d8",
+      "language": "javascript",
+      "size": 8890,
+      "line_count": 218,
+      "purpose": "Test file",
+      "imports": null,
+      "exports": null,
+      "types": null,
+      "functions": null,
+      "constants": null,
+      "concepts": [],
+      "analyzed_at": "2026-01-28T20:12:40.100206838Z"
+    },
+    "api/controllers/test/update-test-name.js": {
+      "path": "api/controllers/test/update-test-name.js",
+      "hash": "c163470bcf26f5aa",
+      "language": "javascript",
+      "size": 4008,
+      "line_count": 80,
+      "purpose": "Test file",
+      "imports": null,
+      "exports": null,
+      "types": null,
+      "functions": null,
+      "constants": null,
+      "concepts": [],
+      "analyzed_at": "2026-01-28T20:12:40.100219296Z"
+    },
+    "api/controllers/test/update.js": {
+      "path": "api/controllers/test/update.js",
+      "hash": "28db4fc48644c053",
+      "language": "javascript",
+      "size": 1915,
+      "line_count": 45,
+      "purpose": "Test file",
+      "imports": null,
+      "exports": null,
+      "types": null,
+      "functions": null,
+      "constants": null,
+      "concepts": [],
+      "analyzed_at": "2026-01-28T20:12:40.100229963Z"
+    },
+    "api/controllers/v2/analytics/build.js": {
+      "path": "api/controllers/v2/analytics/build.js",
+      "hash": "fdd2080df3446595",
+      "language": "javascript",
+      "size": 7516,
+      "line_count": 185,
+      "purpose": "javascript source file",
+      "imports": null,
+      "exports": null,
+      "types": null,
+      "functions": null,
+      "constants": null,
+      "concepts": [],
+      "analyzed_at": "2026-01-28T20:12:40.100302671Z"
+    },
+    "api/controllers/v2/analytics/concurrency.js": {
+      "path": "api/controllers/v2/analytics/concurrency.js",
+      "hash": "ebc20b8f2de9ccdb",
+      "language": "javascript",
+      "size": 35960,
+      "line_count": 756,
+      "purpose": "javascript source file",
+      "imports": null,
+      "exports": null,
+      "types": null,
+      "functions": null,
+      "constants": null,
+      "concepts": [],
+      "analyzed_at": "2026-01-28T20:12:40.100343088Z"
+    },
+    "api/controllers/v2/build/search.js": {
+      "path": "api/controllers/v2/build/search.js",
+      "hash": "1ae2161c7f67027e",
+      "language": "javascript",
+      "size": 44711,
+      "line_count": 1049,
+      "purpose": "javascript source file",
+      "imports": null,
+      "exports": null,
+      "types": null,
+      "functions": null,
+      "constants": null,
+      "concepts": [],
+      "analyzed_at": "2026-01-28T20:12:40.100396879Z"
+    },
+    "api/controllers/v2/concurrency/clear.js": {
+      "path": "api/controllers/v2/concurrency/clear.js",
+      "hash": "79753418a381b472",
+      "language": "javascript",
+      "size": 1543,
+      "line_count": 44,
+      "purpose": "javascript source file",
+      "imports": null,
+      "exports": null,
+      "types": null,
+      "functions": null,
+      "constants": null,
+      "concepts": [],
+      "analyzed_at": "2026-01-28T20:12:40.100413546Z"
+    },
+    "api/controllers/v2/master/capability.js": {
+      "path": "api/controllers/v2/master/capability.js",
+      "hash": "70400feb44ecfe32",
+      "language": "javascript",
+      "size": 34587,
+      "line_count": 853,
+      "purpose": "javascript source file",
+      "imports": null,
+      "exports": null,
+      "types": null,
+      "functions": null,
+      "constants": null,
+      "concepts": [],
+      "analyzed_at": "2026-01-28T20:12:40.100461963Z"
+    },
+    "api/controllers/v2/rbac/internal.js": {
+      "path": "api/controllers/v2/rbac/internal.js",
+      "hash": "d2496252d81040c6",
+      "language": "javascript",
+      "size": 3232,
+      "line_count": 76,
+      "purpose": "javascript source file",
+      "imports": null,
+      "exports": null,
+      "types": null,
+      "functions": null,
+      "constants": null,
+      "concepts": [],
+      "analyzed_at": "2026-01-28T20:12:40.100480213Z"
+    },
+    "api/controllers/v2/rbac/verify.js": {
+      "path": "api/controllers/v2/rbac/verify.js",
+      "hash": "c650063006afc428",
+      "language": "javascript",
+      "size": 1031,
+      "line_count": 29,
+      "purpose": "javascript source file",
+      "imports": null,
+      "exports": null,
+      "types": null,
+      "functions": null,
+      "constants": null,
+      "concepts": [],
+      "analyzed_at": "2026-01-28T20:12:40.100490838Z"
+    },
+    "api/controllers/v2/test/org-details.js": {
+      "path": "api/controllers/v2/test/org-details.js",
+      "hash": "a896c05e9fa2cdf0",
+      "language": "javascript",
+      "size": 7603,
+      "line_count": 150,
+      "purpose": "Test file",
+      "imports": null,
+      "exports": null,
+      "types": null,
+      "functions": null,
+      "constants": null,
+      "concepts": [],
+      "analyzed_at": "2026-01-28T20:12:40.100513296Z"
+    },
+    "api/controllers/v2/test/search.js": {
+      "path": "api/controllers/v2/test/search.js",
+      "hash": "b50e0db1f1db74bc",
+      "language": "javascript",
+      "size": 46379,
+      "line_count": 1138,
+      "purpose": "Test file",
+      "imports": null,
+      "exports": null,
+      "types": null,
+      "functions": null,
+      "constants": null,
+      "concepts": [],
+      "analyzed_at": "2026-01-28T20:12:40.100562921Z"
+    },
+    "api/controllers/v2/test/update.js": {
+      "path": "api/controllers/v2/test/update.js",
+      "hash": "a786891826cad9d1",
+      "language": "javascript",
+      "size": 1997,
+      "line_count": 54,
+      "purpose": "Test file",
+      "imports": null,
+      "exports": null,
+      "types": null,
+      "functions": null,
+      "constants": null,
+      "concepts": [],
+      "analyzed_at": "2026-01-28T20:12:40.100574796Z"
+    },
+    "api/helpers/build.js": {
+      "path": "api/helpers/build.js",
+      "hash": "f53e49a90cc74fd8",
+      "language": "javascript",
+      "size": 999,
+      "line_count": 31,
+      "purpose": "javascript source file",
+      "imports": null,
+      "exports": null,
+      "types": null,
+      "functions": null,
+      "constants": null,
+      "concepts": [],
+      "analyzed_at": "2026-01-28T20:12:40.100592588Z"
+    },
+    "api/helpers/capability.js": {
+      "path": "api/helpers/capability.js",
+      "hash": "bf44d5ead3d5aaaf",
+      "language": "javascript",
+      "size": 47418,
+      "line_count": 1098,
+      "purpose": "javascript source file",
+      "imports": null,
+      "exports": null,
+      "types": null,
+      "functions": null,
+      "constants": null,
+      "concepts": [],
+      "analyzed_at": "2026-01-28T20:12:40.100644629Z"
+    },
+    "api/helpers/charts/coverage.js": {
+      "path": "api/helpers/charts/coverage.js",
+      "hash": "b0b5ef6559543bf7",
+      "language": "javascript",
+      "size": 7912,
+      "line_count": 186,
+      "purpose": "javascript source file",
+      "imports": null,
+      "exports": null,
+      "types": null,
+      "functions": null,
+      "constants": null,
+      "concepts": [],
+      "analyzed_at": "2026-01-28T20:12:40.100669546Z"
+    },
+    "api/helpers/charts/defaultChart.js": {
+      "path": "api/helpers/charts/defaultChart.js",
+      "hash": "b0b2eda8d7c5ffd5",
+      "language": "javascript",
+      "size": 11931,
+      "line_count": 276,
+      "purpose": "javascript source file",
+      "imports": null,
+      "exports": null,
+      "types": null,
+      "functions": null,
+      "constants": null,
+      "concepts": [
+        "defaultchart.js"
+      ],
+      "analyzed_at": "2026-01-28T20:12:40.100689213Z"
+    },
+    "api/helpers/charts/minuteConsumed.js": {
+      "path": "api/helpers/charts/minuteConsumed.js",
+      "hash": "b97be3dfced8af41",
+      "language": "javascript",
+      "size": 19774,
+      "line_count": 399,
+      "purpose": "javascript source file",
+      "imports": null,
+      "exports": null,
+      "types": null,
+      "functions": null,
+      "constants": null,
+      "concepts": [
+        "minuteconsumed.js"
+      ],
+      "analyzed_at": "2026-01-28T20:12:40.100719713Z"
+    },
+    "api/helpers/charts/passFailRatio.js": {
+      "path": "api/helpers/charts/passFailRatio.js",
+      "hash": "64ffdc2068765fc9",
+      "language": "javascript",
+      "size": 19907,
+      "line_count": 400,
+      "purpose": "javascript source file",
+      "imports": null,
+      "exports": null,
+      "types": null,
+      "functions": null,
+      "constants": null,
+      "concepts": [
+        "passfailratio.js"
+      ],
+      "analyzed_at": "2026-01-28T20:12:40.100746629Z"
+    },
+    "api/helpers/charts/queueUtilization.js": {
+      "path": "api/helpers/charts/queueUtilization.js",
+      "hash": "ff4e8cfe1c7effab",
+      "language": "javascript",
+      "size": 8002,
+      "line_count": 177,
+      "purpose": "javascript source file",
+      "imports": null,
+      "exports": null,
+      "types": null,
+      "functions": null,
+      "constants": null,
+      "concepts": [
+        "queueutilization.js"
+      ],
+      "analyzed_at": "2026-01-28T20:12:40.100763463Z"
+    },
+    "api/helpers/concurrency.js": {
+      "path": "api/helpers/concurrency.js",
+      "hash": "de09d4da98867a99",
+      "language": "javascript",
+      "size": 71153,
+      "line_count": 1595,
+      "purpose": "javascript source file",
+      "imports": null,
+      "exports": null,
+      "types": null,
+      "functions": null,
+      "constants": null,
+      "concepts": [],
+      "analyzed_at": "2026-01-28T20:12:40.100833546Z"
+    },
+    "api/helpers/create.js": {
+      "path": "api/helpers/create.js",
+      "hash": "6fd3ad5f1a2b262a",
+      "language": "javascript",
+      "size": 144140,
+      "line_count": 3107,
+      "purpose": "javascript source file",
+      "imports": null,
+      "exports": null,
+      "types": null,
+      "functions": null,
+      "constants": null,
+      "concepts": [],
+      "analyzed_at": "2026-01-28T20:12:40.100969838Z"
+    },
+    "api/helpers/test.js": {
+      "path": "api/helpers/test.js",
+      "hash": "6983dd8cc96cb287",
+      "language": "javascript",
+      "size": 119626,
+      "line_count": 2988,
+      "purpose": "Test file",
+      "imports": null,
+      "exports": null,
+      "types": null,
+      "functions": null,
+      "constants": null,
+      "concepts": [],
+      "analyzed_at": "2026-01-28T20:12:40.101082254Z"
+    },
+    "api/models/AppiumConfig.js": {
+      "path": "api/models/AppiumConfig.js",
+      "hash": "4aeca98c6126f4cb",
+      "language": "javascript",
+      "size": 1134,
+      "line_count": 28,
+      "purpose": "Configuration file",
+      "imports": null,
+      "exports": null,
+      "types": null,
+      "functions": null,
+      "constants": null,
+      "concepts": [
+        "appiumconfig.js"
+      ],
+      "analyzed_at": "2026-01-28T20:12:40.101111504Z"
+    },
+    "api/models/AppiumVersionMap.js": {
+      "path": "api/models/AppiumVersionMap.js",
+      "hash": "d5a86ab328d61fc5",
+      "language": "javascript",
+      "size": 896,
+      "line_count": 20,
+      "purpose": "javascript source file",
+      "imports": null,
+      "exports": null,
+      "types": null,
+      "functions": null,
+      "constants": null,
+      "concepts": [
+        "appiumversionmap.js"
+      ],
+      "analyzed_at": "2026-01-28T20:12:40.101126004Z"
+    },
+    "api/models/Brand.js": {
+      "path": "api/models/Brand.js",
+      "hash": "25625c0c4d2d796b",
+      "language": "javascript",
+      "size": 790,
+      "line_count": 24,
+      "purpose": "javascript source file",
+      "imports": null,
+      "exports": null,
+      "types": null,
+      "functions": null,
+      "constants": null,
+      "concepts": [
+        "brand.js"
+      ],
+      "analyzed_at": "2026-01-28T20:12:40.101135963Z"
+    },
+    "api/models/Browser.js": {
+      "path": "api/models/Browser.js",
+      "hash": "d813eec997acebbd",
+      "language": "javascript",
+      "size": 970,
+      "line_count": 28,
+      "purpose": "javascript source file",
+      "imports": null,
+      "exports": null,
+      "types": null,
+      "functions": null,
+      "constants": null,
+      "concepts": [
+        "browser.js"
+      ],
+      "analyzed_at": "2026-01-28T20:12:40.101145671Z"
+    },
+    "api/models/BrowserOsData.js": {
+      "path": "api/models/BrowserOsData.js",
+      "hash": "80e5ae947b0959b4",
+      "language": "javascript",
+      "size": 1135,
+      "line_count": 29,
+      "purpose": "javascript source file",
+      "imports": null,
+      "exports": null,
+      "types": null,
+      "functions": null,
+      "constants": null,
+      "concepts": [
+        "browserosdata.js"
+      ],
+      "analyzed_at": "2026-01-28T20:12:40.101156254Z"
+    },
+    "api/models/BrowserVersion.js": {
+      "path": "api/models/BrowserVersion.js",
+      "hash": "f3e8d9a5f7dc1130",
+      "language": "javascript",
+      "size": 1768,
+      "line_count": 36,
+      "purpose": "javascript source file",
+      "imports": null,
+      "exports": null,
+      "types": null,
+      "functions": null,
+      "constants": null,
+      "concepts": [
+        "browserversion.js"
+      ],
+      "analyzed_at": "2026-01-28T20:12:40.101166963Z"
+    },
+    "api/models/Build.js": {
+      "path": "api/models/Build.js",
+      "hash": "0fb47e22ec0fa98b",
+      "language": "javascript",
+      "size": 1969,
+      "line_count": 36,
+      "purpose": "javascript source file",
+      "imports": null,
+      "exports": null,
+      "types": null,
+      "functions": null,
+      "constants": null,
+      "concepts": [
+        "build.js"
+      ],
+      "analyzed_at": "2026-01-28T20:12:40.101178171Z"
+    },
+    "api/models/BuildTag.js": {
+      "path": "api/models/BuildTag.js",
+      "hash": "0596031d9d9549d7",
+      "language": "javascript",
+      "size": 848,
+      "line_count": 27,
+      "purpose": "javascript source file",
+      "imports": null,
+      "exports": null,
+      "types": null,
+      "functions": null,
+      "constants": null,
+      "concepts": [
+        "buildtag.js"
+      ],
+      "analyzed_at": "2026-01-28T20:12:40.101188379Z"
+    },
+    "api/models/BuildTeam.js": {
+      "path": "api/models/BuildTeam.js",
+      "hash": "0eb27cc971873034",
+      "language": "javascript",
+      "size": 890,
+      "line_count": 27,
+      "purpose": "javascript source file",
+      "imports": null,
+      "exports": null,
+      "types": null,
+      "functions": null,
+      "constants": null,
+      "concepts": [
+        "buildteam.js"
+      ],
+      "analyzed_at": "2026-01-28T20:12:40.101198379Z"
+    },
+    "api/models/CDPConfig.js": {
+      "path": "api/models/CDPConfig.js",
+      "hash": "45e254093a52c050",
+      "language": "javascript",
+      "size": 1667,
+      "line_count": 35,
+      "purpose": "Configuration file",
+      "imports": null,
+      "exports": null,
+      "types": null,
+      "functions": null,
+      "constants": null,
+      "concepts": [
+        "cdpconfig.js"
+      ],
+      "analyzed_at": "2026-01-28T20:12:40.101209379Z"
+    },
+    "api/models/Config.js": {
+      "path": "api/models/Config.js",
+      "hash": "cb3b012ea7444a5c",
+      "language": "javascript",
+      "size": 749,
+      "line_count": 23,
+      "purpose": "Configuration file",
+      "imports": null,
+      "exports": null,
+      "types": null,
+      "functions": null,
+      "constants": null,
+      "concepts": [
+        "config.js"
+      ],
+      "analyzed_at": "2026-01-28T20:12:40.101219671Z"
+    },
+    "api/models/CypressConfig.js": {
+      "path": "api/models/CypressConfig.js",
+      "hash": "48db8dd643789dd5",
+      "language": "javascript",
+      "size": 1215,
+      "line_count": 30,
+      "purpose": "Configuration file",
+      "imports": null,
+      "exports": null,
+      "types": null,
+      "functions": null,
+      "constants": null,
+      "concepts": [
+        "cypressconfig.js"
+      ],
+      "analyzed_at": "2026-01-28T20:12:40.101230213Z"
+    },
+    "api/models/CypressQueuedTest.js": {
+      "path": "api/models/CypressQueuedTest.js",
+      "hash": "da7909b448e032d9",
+      "language": "javascript",
+      "size": 1815,
+      "line_count": 57,
+      "purpose": "Test file",
+      "imports": null,
+      "exports": null,
+      "types": null,
+      "functions": null,
+      "constants": null,
+      "concepts": [
+        "cypressqueuedtest.js"
+      ],
+      "analyzed_at": "2026-01-28T20:12:40.101249254Z"
+    },
+    "api/models/DebugTest.js": {
+      "path": "api/models/DebugTest.js",
+      "hash": "2f7c382863fda8f6",
+      "language": "javascript",
+      "size": 2136,
+      "line_count": 76,
+      "purpose": "Test file",
+      "imports": null,
+      "exports": null,
+      "types": null,
+      "functions": null,
+      "constants": null,
+      "concepts": [
+        "debugtest.js"
+      ],
+      "analyzed_at": "2026-01-28T20:12:40.101261213Z"
+    },
+    "api/models/Device.js": {
+      "path": "api/models/Device.js",
+      "hash": "dc89c4b74b8f900e",
+      "language": "javascript",
+      "size": 1985,
+      "line_count": 38,
+      "purpose": "javascript source file",
+      "imports": null,
+      "exports": null,
+      "types": null,
+      "functions": null,
+      "constants": null,
+      "concepts": [
+        "device.js"
+      ],
+      "analyzed_at": "2026-01-28T20:12:40.101272046Z"
+    },
+    "api/models/DeviceAlias.js": {
+      "path": "api/models/DeviceAlias.js",
+      "hash": "3201564a3ed19409",
+      "language": "javascript",
+      "size": 685,
+      "line_count": 22,
+      "purpose": "javascript source file",
+      "imports": null,
+      "exports": null,
+      "types": null,
+      "functions": null,
+      "constants": null,
+      "concepts": [
+        "devicealias.js"
+      ],
+      "analyzed_at": "2026-01-28T20:12:40.101283588Z"
+    },
+    "api/models/DeviceBrand.js": {
+      "path": "api/models/DeviceBrand.js",
+      "hash": "6ee95a1916804340",
+      "language": "javascript",
+      "size": 913,
+      "line_count": 27,
+      "purpose": "javascript source file",
+      "imports": null,
+      "exports": null,
+      "types": null,
+      "functions": null,
+      "constants": null,
+      "concepts": [
+        "devicebrand.js"
+      ],
+      "analyzed_at": "2026-01-28T20:12:40.101293671Z"
+    },
+    "api/models/GeoLocationVendorMap.js": {
+      "path": "api/models/GeoLocationVendorMap.js",
+      "hash": "ecb66d1d0eb25c2d",
+      "language": "javascript",
+      "size": 1474,
+      "line_count": 35,
+      "purpose": "javascript source file",
+      "imports": null,
+      "exports": null,
+      "types": null,
+      "functions": null,
+      "constants": null,
+      "concepts": [
+        "geolocationvendormap.js"
+      ],
+      "analyzed_at": "2026-01-28T20:12:40.101304463Z"
+    },
+    "api/models/GlobalSeleniumConfig.js": {
+      "path": "api/models/GlobalSeleniumConfig.js",
+      "hash": "2206c74d710bc812",
+      "language": "javascript",
+      "size": 1140,
+      "line_count": 32,
+      "purpose": "Configuration file",
+      "imports": null,
+      "exports": null,
+      "types": null,
+      "functions": null,
+      "constants": null,
+      "concepts": [
+        "globalseleniumconfig.js"
+      ],
+      "analyzed_at": "2026-01-28T20:12:40.101315629Z"
+    },
+    "api/models/OsAlias.js": {
+      "path": "api/models/OsAlias.js",
+      "hash": "015766abef2eff25",
+      "language": "javascript",
+      "size": 796,
+      "line_count": 26,
+      "purpose": "javascript source file",
+      "imports": null,
+      "exports": null,
+      "types": null,
+      "functions": null,
+      "constants": null,
+      "concepts": [
+        "osalias.js"
+      ],
+      "analyzed_at": "2026-01-28T20:12:40.101326129Z"
+    },
+    "api/models/OsVersion.js": {
+      "path": "api/models/OsVersion.js",
+      "hash": "3cdce6804d49b27a",
+      "language": "javascript",
+      "size": 1901,
+      "line_count": 38,
+      "purpose": "javascript source file",
+      "imports": null,
+      "exports": null,
+      "types": null,
+      "functions": null,
+      "constants": null,
+      "concepts": [
+        "osversion.js"
+      ],
+      "analyzed_at": "2026-01-28T20:12:40.101337546Z"
+    },
+    "api/models/Plan.js": {
+      "path": "api/models/Plan.js",
+      "hash": "50cf750012503c2a",
+      "language": "javascript",
+      "size": 1338,
+      "line_count": 29,
+      "purpose": "javascript source file",
+      "imports": null,
+      "exports": null,
+      "types": null,
+      "functions": null,
+      "constants": null,
+      "concepts": [
+        "plan.js"
+      ],
+      "analyzed_at": "2026-01-28T20:12:40.101347713Z"
+    },
+    "api/models/Project.js": {
+      "path": "api/models/Project.js",
+      "hash": "562f39c4498351d4",
+      "language": "javascript",
+      "size": 1197,
+      "line_count": 26,
+      "purpose": "javascript source file",
+      "imports": null,
+      "exports": null,
+      "types": null,
+      "functions": null,
+      "constants": null,
+      "concepts": [
+        "project.js"
+      ],
+      "analyzed_at": "2026-01-28T20:12:40.101358879Z"
+    },
+    "api/models/PwBrowserCompatibility.js": {
+      "path": "api/models/PwBrowserCompatibility.js",
+      "hash": "5736f209f15e6672",
+      "language": "javascript",
+      "size": 1359,
+      "line_count": 31,
+      "purpose": "javascript source file",
+      "imports": null,
+      "exports": null,
+      "types": null,
+      "functions": null,
+      "constants": null,
+      "concepts": [
+        "pwbrowsercompatibility.js"
+      ],
+      "analyzed_at": "2026-01-28T20:12:40.101369629Z"
+    },
+    "api/models/RealDevice.js": {
+      "path": "api/models/RealDevice.js",
+      "hash": "56ce67c6967f58a9",
+      "language": "javascript",
+      "size": 1707,
+      "line_count": 34,
+      "purpose": "javascript source file",
+      "imports": null,
+      "exports": null,
+      "types": null,
+      "functions": null,
+      "constants": null,
+      "concepts": [
+        "realdevice.js"
+      ],
+      "analyzed_at": "2026-01-28T20:12:40.101380296Z"
+    },
+    "api/models/RealDeviceAlias.js": {
+      "path": "api/models/RealDeviceAlias.js",
+      "hash": "6fb09f06c1a93f67",
+      "language": "javascript",
+      "size": 697,
+      "line_count": 22,
+      "purpose": "javascript source file",
+      "imports": null,
+      "exports": null,
+      "types": null,
+      "functions": null,
+      "constants": null,
+      "concepts": [
+        "realdevicealias.js"
+      ],
+      "analyzed_at": "2026-01-28T20:12:40.101390629Z"
+    },
+    "api/models/RealtimeOsBrowsers.js": {
+      "path": "api/models/RealtimeOsBrowsers.js",
+      "hash": "d5afbf8a6b4a999a",
+      "language": "javascript",
+      "size": 820,
+      "line_count": 24,
+      "purpose": "javascript source file",
+      "imports": null,
+      "exports": null,
+      "types": null,
+      "functions": null,
+      "constants": null,
+      "concepts": [
+        "realtimeosbrowsers.js"
+      ],
+      "analyzed_at": "2026-01-28T20:12:40.101401088Z"
+    },
+    "api/models/RejectedTest.js": {
+      "path": "api/models/RejectedTest.js",
+      "hash": "7baccd8b25b6dc24",
+      "language": "javascript",
+      "size": 930,
+      "line_count": 25,
+      "purpose": "Test file",
+      "imports": null,
+      "exports": null,
+      "types": null,
+      "functions": null,
+      "constants": null,
+      "concepts": [
+        "rejectedtest.js"
+      ],
+      "analyzed_at": "2026-01-28T20:12:40.101411338Z"
+    },
+    "api/models/SeleniumConfig.js": {
+      "path": "api/models/SeleniumConfig.js",
+      "hash": "c0538b4a356c3bd3",
+      "language": "javascript",
+      "size": 1448,
+      "line_count": 33,
+      "purpose": "Configuration file",
+      "imports": null,
+      "exports": null,
+      "types": null,
+      "functions": null,
+      "constants": null,
+      "concepts": [
+        "seleniumconfig.js"
+      ],
+      "analyzed_at": "2026-01-28T20:12:40.101422004Z"
+    },
+    "api/models/SeleniumConfigBeta.js": {
+      "path": "api/models/SeleniumConfigBeta.js",
+      "hash": "1c830d8c29d835c6",
+      "language": "javascript",
+      "size": 1115,
+      "line_count": 28,
+      "purpose": "Configuration file",
+      "imports": null,
+      "exports": null,
+      "types": null,
+      "functions": null,
+      "constants": null,
+      "concepts": [
+        "seleniumconfigbeta.js"
+      ],
+      "analyzed_at": "2026-01-28T20:12:40.101432254Z"
+    },
+    "api/models/Tag.js": {
+      "path": "api/models/Tag.js",
+      "hash": "a23582b8bebd80f3",
+      "language": "javascript",
+      "size": 1016,
+      "line_count": 29,
+      "purpose": "javascript source file",
+      "imports": null,
+      "exports": null,
+      "types": null,
+      "functions": null,
+      "constants": null,
+      "concepts": [
+        "tag.js"
+      ],
+      "analyzed_at": "2026-01-28T20:12:40.101442338Z"
+    },
+    "api/models/TagTest.js": {
+      "path": "api/models/TagTest.js",
+      "hash": "608dd9ec23cf6d7f",
+      "language": "javascript",
+      "size": 996,
+      "line_count": 29,
+      "purpose": "Test file",
+      "imports": null,
+      "exports": null,
+      "types": null,
+      "functions": null,
+      "constants": null,
+      "concepts": [
+        "tagtest.js"
+      ],
+      "analyzed_at": "2026-01-28T20:12:40.101452088Z"
+    },
+    "api/models/Test.js": {
+      "path": "api/models/Test.js",
+      "hash": "e29f18ff3dd1fc4f",
+      "language": "javascript",
+      "size": 3802,
+      "line_count": 85,
+      "purpose": "Test file",
+      "imports": null,
+      "exports": null,
+      "types": null,
+      "functions": null,
+      "constants": null,
+      "concepts": [
+        "test.js"
+      ],
+      "analyzed_at": "2026-01-28T20:12:40.101463921Z"
+    },
+    "api/models/TestAdditionalParam.js": {
+      "path": "api/models/TestAdditionalParam.js",
+      "hash": "62e115e042643f26",
+      "language": "javascript",
+      "size": 1969,
+      "line_count": 46,
+      "purpose": "Test file",
+      "imports": null,
+      "exports": null,
+      "types": null,
+      "functions": null,
+      "constants": null,
+      "concepts": [
+        "testadditionalparam.js"
+      ],
+      "analyzed_at": "2026-01-28T20:12:40.101475129Z"
+    },
+    "api/models/TestAggregateDaily.js": {
+      "path": "api/models/TestAggregateDaily.js",
+      "hash": "25cea7ab9746c638",
+      "language": "javascript",
+      "size": 1136,
+      "line_count": 37,
+      "purpose": "Test file",
+      "imports": null,
+      "exports": null,
+      "types": null,
+      "functions": null,
+      "constants": null,
+      "concepts": [
+        "testaggregatedaily.js"
+      ],
+      "analyzed_at": "2026-01-28T20:12:40.101485463Z"
+    },
+    "api/models/TestAnnotationInfo.js": {
+      "path": "api/models/TestAnnotationInfo.js",
+      "hash": "7877bd30c56b231a",
+      "language": "javascript",
+      "size": 1050,
+      "line_count": 28,
+      "purpose": "Test file",
+      "imports": null,
+      "exports": null,
+      "types": null,
+      "functions": null,
+      "constants": null,
+      "concepts": [
+        "testannotationinfo.js"
+      ],
+      "analyzed_at": "2026-01-28T20:12:40.101496463Z"
+    },
+    "api/models/TestCapability.js": {
+      "path": "api/models/TestCapability.js",
+      "hash": "3344c40093fa9580",
+      "language": "javascript",
+      "size": 907,
+      "line_count": 26,
+      "purpose": "Test file",
+      "imports": null,
+      "exports": null,
+      "types": null,
+      "functions": null,
+      "constants": null,
+      "concepts": [
+        "testcapability.js"
+      ],
+      "analyzed_at": "2026-01-28T20:12:40.101506421Z"
+    },
+    "api/models/TestConfig.js": {
+      "path": "api/models/TestConfig.js",
+      "hash": "96bbcc1d727b2bfa",
+      "language": "javascript",
+      "size": 2120,
+      "line_count": 41,
+      "purpose": "Configuration file",
+      "imports": null,
+      "exports": null,
+      "types": null,
+      "functions": null,
+      "constants": null,
+      "concepts": [
+        "testconfig.js"
+      ],
+      "analyzed_at": "2026-01-28T20:12:40.101517546Z"
+    },
+    "api/models/TestCounters.js": {
+      "path": "api/models/TestCounters.js",
+      "hash": "2eb4305f6cd12630",
+      "language": "javascript",
+      "size": 830,
+      "line_count": 26,
+      "purpose": "Test file",
+      "imports": null,
+      "exports": null,
+      "types": null,
+      "functions": null,
+      "constants": null,
+      "concepts": [
+        "testcounters.js"
+      ],
+      "analyzed_at": "2026-01-28T20:12:40.101528004Z"
+    },
+    "api/models/TestGeoMapping.js": {
+      "path": "api/models/TestGeoMapping.js",
+      "hash": "14c33432ea34b53e",
+      "language": "javascript",
+      "size": 823,
+      "line_count": 26,
+      "purpose": "Test file",
+      "imports": null,
+      "exports": null,
+      "types": null,
+      "functions": null,
+      "constants": null,
+      "concepts": [
+        "testgeomapping.js"
+      ],
+      "analyzed_at": "2026-01-28T20:12:40.101538171Z"
+    },
+    "api/models/VirtualDeviceBrowserConfigs.js": {
+      "path": "api/models/VirtualDeviceBrowserConfigs.js",
+      "hash": "0c7d203328d5f3b2",
+      "language": "javascript",
+      "size": 2102,
+      "line_count": 45,
+      "purpose": "Configuration file",
+      "imports": null,
+      "exports": null,
+      "types": null,
+      "functions": null,
+      "constants": null,
+      "concepts": [
+        "virtualdevicebrowserconfigs.js"
+      ],
+      "analyzed_at": "2026-01-28T20:12:40.101549713Z"
+    },
+    "api/responses/serverError.js": {
+      "path": "api/responses/serverError.js",
+      "hash": "a66562390d14555b",
+      "language": "javascript",
+      "size": 2048,
+      "line_count": 73,
+      "purpose": "javascript source file",
+      "imports": null,
+      "exports": null,
+      "types": null,
+      "functions": null,
+      "constants": null,
+      "concepts": [
+        "servererror.js"
+      ],
+      "analyzed_at": "2026-01-28T20:12:40.101565796Z"
+    },
+    "api/services/allocationFailure.js": {
+      "path": "api/services/allocationFailure.js",
+      "hash": "c71d72f71f9e3dd1",
+      "language": "javascript",
+      "size": 1098,
+      "line_count": 29,
+      "purpose": "javascript source file",
+      "imports": null,
+      "exports": null,
+      "types": null,
+      "functions": null,
+      "constants": null,
+      "concepts": [
+        "allocationfailure.js"
+      ],
+      "analyzed_at": "2026-01-28T20:12:40.101588546Z"
+    },
+    "api/services/annotations.js": {
+      "path": "api/services/annotations.js",
+      "hash": "dc850688fbb46f46",
+      "language": "javascript",
+      "size": 631,
+      "line_count": 21,
+      "purpose": "javascript source file",
+      "imports": null,
+      "exports": null,
+      "types": null,
+      "functions": null,
+      "constants": null,
+      "concepts": [],
+      "analyzed_at": "2026-01-28T20:12:40.101598213Z"
+    },
+    "api/services/auth.js": {
+      "path": "api/services/auth.js",
+      "hash": "ea5c53f19ef502f5",
+      "language": "javascript",
+      "size": 2655,
+      "line_count": 80,
+      "purpose": "javascript source file",
+      "imports": null,
+      "exports": null,
+      "types": null,
+      "functions": null,
+      "constants": null,
+      "concepts": [],
+      "analyzed_at": "2026-01-28T20:12:40.101609463Z"
+    },
+    "api/services/edgeCachingHandler.js": {
+      "path": "api/services/edgeCachingHandler.js",
+      "hash": "00f11afe2a6eacea",
+      "language": "javascript",
+      "size": 183,
+      "line_count": 6,
+      "purpose": "javascript source file",
+      "imports": null,
+      "exports": null,
+      "types": null,
+      "functions": null,
+      "constants": null,
+      "concepts": [
+        "edgecachinghandler.js"
+      ],
+      "analyzed_at": "2026-01-28T20:12:40.101618879Z"
+    },
+    "api/services/featureFlags.js": {
+      "path": "api/services/featureFlags.js",
+      "hash": "7c0057c0d632e127",
+      "language": "javascript",
+      "size": 2417,
+      "line_count": 54,
+      "purpose": "javascript source file",
+      "imports": null,
+      "exports": null,
+      "types": null,
+      "functions": null,
+      "constants": null,
+      "concepts": [
+        "featureflags.js"
+      ],
+      "analyzed_at": "2026-01-28T20:12:40.101630213Z"
+    },
+    "api/services/graphUtils.js": {
+      "path": "api/services/graphUtils.js",
+      "hash": "a0203d63eca7f269",
+      "language": "javascript",
+      "size": 3152,
+      "line_count": 100,
+      "purpose": "javascript source file",
+      "imports": null,
+      "exports": null,
+      "types": null,
+      "functions": null,
+      "constants": null,
+      "concepts": [
+        "graphutils.js"
+      ],
+      "analyzed_at": "2026-01-28T20:12:40.101642754Z"
+    },
+    "api/services/httphandler.js": {
+      "path": "api/services/httphandler.js",
+      "hash": "79bc695903ea2232",
+      "language": "javascript",
+      "size": 6663,
+      "line_count": 213,
+      "purpose": "javascript source file",
+      "imports": null,
+      "exports": null,
+      "types": null,
+      "functions": null,
+      "constants": null,
+      "concepts": [],
+      "analyzed_at": "2026-01-28T20:12:40.101659754Z"
+    },
+    "api/services/jwt.js": {
+      "path": "api/services/jwt.js",
+      "hash": "15a7a23b156c011f",
+      "language": "javascript",
+      "size": 3211,
+      "line_count": 81,
+      "purpose": "javascript source file",
+      "imports": null,
+      "exports": null,
+      "types": null,
+      "functions": null,
+      "constants": null,
+      "concepts": [],
+      "analyzed_at": "2026-01-28T20:12:40.101671671Z"
+    },
+    "api/services/kafka.js": {
+      "path": "api/services/kafka.js",
+      "hash": "e1cc55e0eb220aa5",
+      "language": "javascript",
+      "size": 21200,
+      "line_count": 523,
+      "purpose": "javascript source file",
+      "imports": null,
+      "exports": null,
+      "types": null,
+      "functions": null,
+      "constants": null,
+      "concepts": [],
+      "analyzed_at": "2026-01-28T20:12:40.101699213Z"
+    },
+    "api/services/logger.js": {
+      "path": "api/services/logger.js",
+      "hash": "ce834f23e7070942",
+      "language": "javascript",
+      "size": 3415,
+      "line_count": 105,
+      "purpose": "javascript source file",
+      "imports": null,
+      "exports": null,
+      "types": null,
+      "functions": null,
+      "constants": null,
+      "concepts": [],
+      "analyzed_at": "2026-01-28T20:12:40.101710754Z"
+    },
+    "api/services/mobilerediscached.js": {
+      "path": "api/services/mobilerediscached.js",
+      "hash": "31879c2e501ad7fc",
+      "language": "javascript",
+      "size": 3012,
+      "line_count": 105,
+      "purpose": "javascript source file",
+      "imports": null,
+      "exports": null,
+      "types": null,
+      "functions": null,
+      "constants": null,
+      "concepts": [],
+      "analyzed_at": "2026-01-28T20:12:40.101723254Z"
+    },
+    "api/services/notifications.js": {
+      "path": "api/services/notifications.js",
+      "hash": "60e20d7f05f8d43d",
+      "language": "javascript",
+      "size": 2870,
+      "line_count": 80,
+      "purpose": "javascript source file",
+      "imports": null,
+      "exports": null,
+      "types": null,
+      "functions": null,
+      "constants": null,
+      "concepts": [],
+      "analyzed_at": "2026-01-28T20:12:40.101734296Z"
+    },
+    "api/services/plan.js": {
+      "path": "api/services/plan.js",
+      "hash": "1829f09aa2d4f45e",
+      "language": "javascript",
+      "size": 4457,
+      "line_count": 137,
+      "purpose": "javascript source file",
+      "imports": null,
+      "exports": null,
+      "types": null,
+      "functions": null,
+      "constants": null,
+      "concepts": [],
+      "analyzed_at": "2026-01-28T20:12:40.101747213Z"
+    },
+    "api/services/project.js": {
+      "path": "api/services/project.js",
+      "hash": "fd66432a78928e1f",
+      "language": "javascript",
+      "size": 7952,
+      "line_count": 213,
+      "purpose": "javascript source file",
+      "imports": null,
+      "exports": null,
+      "types": null,
+      "functions": null,
+      "constants": null,
+      "concepts": [],
+      "analyzed_at": "2026-01-28T20:12:40.101762879Z"
+    },
+    "api/services/rbac.js": {
+      "path": "api/services/rbac.js",
+      "hash": "e7a2ca4506f4efde",
+      "language": "javascript",
+      "size": 20990,
+      "line_count": 566,
+      "purpose": "javascript source file",
+      "imports": null,
+      "exports": null,
+      "types": null,
+      "functions": null,
+      "constants": null,
+      "concepts": [],
+      "analyzed_at": "2026-01-28T20:12:40.101789463Z"
+    },
+    "api/services/redis.js": {
+      "path": "api/services/redis.js",
+      "hash": "6232ae4906c5c5b2",
+      "language": "javascript",
+      "size": 7424,
+      "line_count": 279,
+      "purpose": "javascript source file",
+      "imports": null,
+      "exports": null,
+      "types": null,
+      "functions": null,
+      "constants": null,
+      "concepts": [],
+      "analyzed_at": "2026-01-28T20:12:40.101808921Z"
+    },
+    "api/services/rediscached.js": {
+      "path": "api/services/rediscached.js",
+      "hash": "b6913fecfdc46a31",
+      "language": "javascript",
+      "size": 12454,
+      "line_count": 429,
+      "purpose": "javascript source file",
+      "imports": null,
+      "exports": null,
+      "types": null,
+      "functions": null,
+      "constants": null,
+      "concepts": [],
+      "analyzed_at": "2026-01-28T20:12:40.101831213Z"
+    },
+    "api/services/retention.js": {
+      "path": "api/services/retention.js",
+      "hash": "c2a6d852d3bbce91",
+      "language": "javascript",
+      "size": 581,
+      "line_count": 18,
+      "purpose": "javascript source file",
+      "imports": null,
+      "exports": null,
+      "types": null,
+      "functions": null,
+      "constants": null,
+      "concepts": [],
+      "analyzed_at": "2026-01-28T20:12:40.101840838Z"
+    },
+    "api/services/sanctum.js": {
+      "path": "api/services/sanctum.js",
+      "hash": "1de0d0dd9b2c91db",
+      "language": "javascript",
+      "size": 10924,
+      "line_count": 268,
+      "purpose": "javascript source file",
+      "imports": null,
+      "exports": null,
+      "types": null,
+      "functions": null,
+      "constants": null,
+      "concepts": [],
+      "analyzed_at": "2026-01-28T20:12:40.101858588Z"
+    },
+    "api/services/scheduler.js": {
+      "path": "api/services/scheduler.js",
+      "hash": "c7e66089e50204c6",
+      "language": "javascript",
+      "size": 5407,
+      "line_count": 135,
+      "purpose": "javascript source file",
+      "imports": null,
+      "exports": null,
+      "types": null,
+      "functions": null,
+      "constants": null,
+      "concepts": [],
+      "analyzed_at": "2026-01-28T20:12:40.101873921Z"
+    },
+    "api/services/sequelize.js": {
+      "path": "api/services/sequelize.js",
+      "hash": "66bb610d3de14ac1",
+      "language": "javascript",
+      "size": 2067,
+      "line_count": 62,
+      "purpose": "javascript source file",
+      "imports": null,
+      "exports": null,
+      "types": null,
+      "functions": null,
+      "constants": null,
+      "concepts": [],
+      "analyzed_at": "2026-01-28T20:12:40.101884504Z"
+    },
+    "api/services/share.js": {
+      "path": "api/services/share.js",
+      "hash": "478aff7fd88ee8a2",
+      "language": "javascript",
+      "size": 1035,
+      "line_count": 36,
+      "purpose": "javascript source file",
+      "imports": null,
+      "exports": null,
+      "types": null,
+      "functions": null,
+      "constants": null,
+      "concepts": [],
+      "analyzed_at": "2026-01-28T20:12:40.101893879Z"
+    },
+    "api/services/slackNotification.js": {
+      "path": "api/services/slackNotification.js",
+      "hash": "cc96ebb379d21fc9",
+      "language": "javascript",
+      "size": 39098,
+      "line_count": 927,
+      "purpose": "javascript source file",
+      "imports": null,
+      "exports": null,
+      "types": null,
+      "functions": null,
+      "constants": null,
+      "concepts": [
+        "slacknotification.js"
+      ],
+      "analyzed_at": "2026-01-28T20:12:40.101934713Z"
+    },
+    "api/services/sse.js": {
+      "path": "api/services/sse.js",
+      "hash": "4b5209a3631a6836",
+      "language": "javascript",
+      "size": 3344,
+      "line_count": 100,
+      "purpose": "javascript source file",
+      "imports": null,
+      "exports": null,
+      "types": null,
+      "functions": null,
+      "constants": null,
+      "concepts": [],
+      "analyzed_at": "2026-01-28T20:12:40.101946671Z"
+    },
+    "api/services/stopBuilds.js": {
+      "path": "api/services/stopBuilds.js",
+      "hash": "1729579ce13a92bf",
+      "language": "javascript",
+      "size": 7407,
+      "line_count": 224,
+      "purpose": "javascript source file",
+      "imports": null,
+      "exports": null,
+      "types": null,
+      "functions": null,
+      "constants": null,
+      "concepts": [
+        "stopbuilds.js"
+      ],
+      "analyzed_at": "2026-01-28T20:12:40.101962588Z"
+    },
+    "api/services/teams.js": {
+      "path": "api/services/teams.js",
+      "hash": "5653380bc249d2c7",
+      "language": "javascript",
+      "size": 3726,
+      "line_count": 116,
+      "purpose": "javascript source file",
+      "imports": null,
+      "exports": null,
+      "types": null,
+      "functions": null,
+      "constants": null,
+      "concepts": [],
+      "analyzed_at": "2026-01-28T20:12:40.101974254Z"
+    },
+    "api/services/teller.js": {
+      "path": "api/services/teller.js",
+      "hash": "be5ee78430d710fd",
+      "language": "javascript",
+      "size": 4711,
+      "line_count": 100,
+      "purpose": "javascript source file",
+      "imports": null,
+      "exports": null,
+      "types": null,
+      "functions": null,
+      "constants": null,
+      "concepts": [],
+      "analyzed_at": "2026-01-28T20:12:40.101988546Z"
+    },
+    "api/services/tellerkafka.js": {
+      "path": "api/services/tellerkafka.js",
+      "hash": "f9c34a8a3b7cf4ff",
+      "language": "javascript",
+      "size": 6642,
+      "line_count": 204,
+      "purpose": "javascript source file",
+      "imports": null,
+      "exports": null,
+      "types": null,
+      "functions": null,
+      "constants": null,
+      "concepts": [],
+      "analyzed_at": "2026-01-28T20:12:40.102003921Z"
+    },
+    "api/services/utils.js": {
+      "path": "api/services/utils.js",
+      "hash": "0940a9f6f03bcc2d",
+      "language": "javascript",
+      "size": 15363,
+      "line_count": 429,
+      "purpose": "javascript source file",
+      "imports": null,
+      "exports": null,
+      "types": null,
+      "functions": null,
+      "constants": null,
+      "concepts": [],
+      "analyzed_at": "2026-01-28T20:12:40.102025504Z"
+    },
+    "api/services/webHookHandler.js": {
+      "path": "api/services/webHookHandler.js",
+      "hash": "a9963f7f08afefc8",
+      "language": "javascript",
+      "size": 7942,
+      "line_count": 195,
+      "purpose": "javascript source file",
+      "imports": null,
+      "exports": null,
+      "types": null,
+      "functions": null,
+      "constants": null,
+      "concepts": [
+        "webhookhandler.js"
+      ],
+      "analyzed_at": "2026-01-28T20:12:40.102041588Z"
+    },
+    "api/utils/cacheUtils.js": {
+      "path": "api/utils/cacheUtils.js",
+      "hash": "dfddaf1411d4a1e7",
+      "language": "javascript",
+      "size": 1037,
+      "line_count": 33,
+      "purpose": "javascript source file",
+      "imports": null,
+      "exports": null,
+      "types": null,
+      "functions": null,
+      "constants": null,
+      "concepts": [
+        "cacheutils.js"
+      ],
+      "analyzed_at": "2026-01-28T20:12:40.102057046Z"
+    },
+    "app.js": {
+      "path": "app.js",
+      "hash": "35eaa4f3271608a8",
+      "language": "javascript",
+      "size": 2291,
+      "line_count": 65,
+      "purpose": "javascript source file",
+      "imports": null,
+      "exports": null,
+      "types": null,
+      "functions": null,
+      "constants": null,
+      "concepts": [],
+      "analyzed_at": "2026-01-28T20:12:40.102068171Z"
+    },
+    "config/appConfig/browser_alias.js": {
+      "path": "config/appConfig/browser_alias.js",
+      "hash": "bb29d8927b9a4946",
+      "language": "javascript",
+      "size": 1082,
+      "line_count": 67,
+      "purpose": "Configuration file",
+      "imports": null,
+      "exports": null,
+      "types": null,
+      "functions": null,
+      "constants": null,
+      "concepts": [
+        "appconfig"
+      ],
+      "analyzed_at": "2026-01-28T20:12:40.102095254Z"
+    },
+    "config/appConfig/config_timedout.js": {
+      "path": "config/appConfig/config_timedout.js",
+      "hash": "47e18829ce708aff",
+      "language": "javascript",
+      "size": 837,
+      "line_count": 49,
+      "purpose": "Configuration file",
+      "imports": null,
+      "exports": null,
+      "types": null,
+      "functions": null,
+      "constants": null,
+      "concepts": [
+        "appconfig"
+      ],
+      "analyzed_at": "2026-01-28T20:12:40.102105213Z"
+    },
+    "config/appConfig/index.js": {
+      "path": "config/appConfig/index.js",
+      "hash": "41830fa7573799b6",
+      "language": "javascript",
+      "size": 471,
+      "line_count": 12,
+      "purpose": "Configuration file",
+      "imports": null,
+      "exports": null,
+      "types": null,
+      "functions": null,
+      "constants": null,
+      "concepts": [
+        "appconfig"
+      ],
+      "analyzed_at": "2026-01-28T20:12:40.102114838Z"
+    },
+    "config/appConfig/latest_config.js": {
+      "path": "config/appConfig/latest_config.js",
+      "hash": "e8494854754c00ca",
+      "language": "javascript",
+      "size": 1726,
+      "line_count": 107,
+      "purpose": "Configuration file",
+      "imports": null,
+      "exports": null,
+      "types": null,
+      "functions": null,
+      "constants": null,
+      "concepts": [
+        "appconfig"
+      ],
+      "analyzed_at": "2026-01-28T20:12:40.102126129Z"
+    },
+    "config/appConfig/os_alias.js": {
+      "path": "config/appConfig/os_alias.js",
+      "hash": "2a25f6274a888915",
+      "language": "javascript",
+      "size": 6717,
+      "line_count": 366,
+      "purpose": "Configuration file",
+      "imports": null,
+      "exports": null,
+      "types": null,
+      "functions": null,
+      "constants": null,
+      "concepts": [
+        "appconfig"
+      ],
+      "analyzed_at": "2026-01-28T20:12:40.102141088Z"
+    },
+    "config/appConfig/os_device_alias.js": {
+      "path": "config/appConfig/os_device_alias.js",
+      "hash": "3f35dbd60b7ccf7f",
+      "language": "javascript",
+      "size": 42882,
+      "line_count": 2147,
+      "purpose": "Configuration file",
+      "imports": null,
+      "exports": null,
+      "types": null,
+      "functions": null,
+      "constants": null,
+      "concepts": [
+        "appconfig"
+      ],
+      "analyzed_at": "2026-01-28T20:12:40.102184754Z"
+    },
+    "config/appConfig/os_info.js": {
+      "path": "config/appConfig/os_info.js",
+      "hash": "0168058fd4a61a6b",
+      "language": "javascript",
+      "size": 2096,
+      "line_count": 65,
+      "purpose": "Configuration file",
+      "imports": null,
+      "exports": null,
+      "types": null,
+      "functions": null,
+      "constants": null,
+      "concepts": [
+        "appconfig"
+      ],
+      "analyzed_at": "2026-01-28T20:12:40.102196213Z"
+    },
+    "config/blueprints.js": {
+      "path": "config/blueprints.js",
+      "hash": "293baeccb018f863",
+      "language": "javascript",
+      "size": 1642,
+      "line_count": 42,
+      "purpose": "Configuration file",
+      "imports": null,
+      "exports": null,
+      "types": null,
+      "functions": null,
+      "constants": null,
+      "concepts": [],
+      "analyzed_at": "2026-01-28T20:12:40.102206879Z"
+    },
+    "config/bootstrap.js": {
+      "path": "config/bootstrap.js",
+      "hash": "cddead5c0fbd0971",
+      "language": "javascript",
+      "size": 2979,
+      "line_count": 78,
+      "purpose": "Configuration file",
+      "imports": null,
+      "exports": null,
+      "types": null,
+      "functions": null,
+      "constants": null,
+      "concepts": [],
+      "analyzed_at": "2026-01-28T20:12:40.102218129Z"
+    },
+    "config/connections.js": {
+      "path": "config/connections.js",
+      "hash": "1acf0f16685925b5",
+      "language": "javascript",
+      "size": 3597,
+      "line_count": 119,
+      "purpose": "Configuration file",
+      "imports": null,
+      "exports": null,
+      "types": null,
+      "functions": null,
+      "constants": null,
+      "concepts": [],
+      "analyzed_at": "2026-01-28T20:12:40.102229588Z"
+    },
+    "config/constants.js": {
+      "path": "config/constants.js",
+      "hash": "33c36538bd202657",
+      "language": "javascript",
+      "size": 27806,
+      "line_count": 731,
+      "purpose": "Configuration file",
+      "imports": null,
+      "exports": null,
+      "types": null,
+      "functions": null,
+      "constants": null,
+      "concepts": [],
+      "analyzed_at": "2026-01-28T20:12:40.102275629Z"
+    },
+    "config/custom.js": {
+      "path": "config/custom.js",
+      "hash": "f11ba89f1ee0d68c",
+      "language": "javascript",
+      "size": 835,
+      "line_count": 23,
+      "purpose": "Configuration file",
+      "imports": null,
+      "exports": null,
+      "types": null,
+      "functions": null,
+      "constants": null,
+      "concepts": [],
+      "analyzed_at": "2026-01-28T20:12:40.102286588Z"
+    },
+    "config/demoTests/builds_list.js": {
+      "path": "config/demoTests/builds_list.js",
+      "hash": "f3e35c76c424d009",
+      "language": "javascript",
+      "size": 5500,
+      "line_count": 204,
+      "purpose": "Configuration file",
+      "imports": null,
+      "exports": null,
+      "types": null,
+      "functions": null,
+      "constants": null,
+      "concepts": [
+        "demotests"
+      ],
+      "analyzed_at": "2026-01-28T20:12:40.102307879Z"
+    },
+    "config/demoTests/tests_list.js": {
+      "path": "config/demoTests/tests_list.js",
+      "hash": "7615e33280d5dbe1",
+      "language": "javascript",
+      "size": 74276,
+      "line_count": 1534,
+      "purpose": "Configuration file",
+      "imports": null,
+      "exports": null,
+      "types": null,
+      "functions": null,
+      "constants": null,
+      "concepts": [
+        "demotests"
+      ],
+      "analyzed_at": "2026-01-28T20:12:40.102381713Z"
+    },
+    "config/edgeCacheConstants.js": {
+      "path": "config/edgeCacheConstants.js",
+      "hash": "fda4df6a253c572e",
+      "language": "javascript",
+      "size": 367,
+      "line_count": 19,
+      "purpose": "Configuration file",
+      "imports": null,
+      "exports": null,
+      "types": null,
+      "functions": null,
+      "constants": null,
+      "concepts": [
+        "edgecacheconstants.js"
+      ],
+      "analyzed_at": "2026-01-28T20:12:40.102391754Z"
+    },
+    "config/env/production.js": {
+      "path": "config/env/production.js",
+      "hash": "ba298f2a13d07495",
+      "language": "javascript",
+      "size": 22009,
+      "line_count": 397,
+      "purpose": "Configuration file",
+      "imports": null,
+      "exports": null,
+      "types": null,
+      "functions": null,
+      "constants": null,
+      "concepts": [],
+      "analyzed_at": "2026-01-28T20:12:40.102425838Z"
+    },
+    "config/globals.js": {
+      "path": "config/globals.js",
+      "hash": "4b52430ecb5d8bf1",
+      "language": "javascript",
+      "size": 2304,
+      "line_count": 49,
+      "purpose": "Configuration file",
+      "imports": null,
+      "exports": null,
+      "types": null,
+      "functions": null,
+      "constants": null,
+      "concepts": [],
+      "analyzed_at": "2026-01-28T20:12:40.102437213Z"
+    },
+    "config/http.js": {
+      "path": "config/http.js",
+      "hash": "7622b4986576acd8",
+      "language": "javascript",
+      "size": 2637,
+      "line_count": 58,
+      "purpose": "Configuration file",
+      "imports": null,
+      "exports": null,
+      "types": null,
+      "functions": null,
+      "constants": null,
+      "concepts": [],
+      "analyzed_at": "2026-01-28T20:12:40.102448171Z"
+    },
+    "config/local.js": {
+      "path": "config/local.js",
+      "hash": "6bcde410363346f7",
+      "language": "javascript",
+      "size": 463,
+      "line_count": 17,
+      "purpose": "Configuration file",
+      "imports": null,
+      "exports": null,
+      "types": null,
+      "functions": null,
+      "constants": null,
+      "concepts": [],
+      "analyzed_at": "2026-01-28T20:12:40.102458046Z"
+    },
+    "config/log.js": {
+      "path": "config/log.js",
+      "hash": "a65c2dc5cbfea84c",
+      "language": "javascript",
+      "size": 44,
+      "line_count": 4,
+      "purpose": "Configuration file",
+      "imports": null,
+      "exports": null,
+      "types": null,
+      "functions": null,
+      "constants": null,
+      "concepts": [],
+      "analyzed_at": "2026-01-28T20:12:40.102466921Z"
+    },
+    "config/models.js": {
+      "path": "config/models.js",
+      "hash": "ce1f593241ac8072",
+      "language": "javascript",
+      "size": 7118,
+      "line_count": 123,
+      "purpose": "Configuration file",
+      "imports": null,
+      "exports": null,
+      "types": null,
+      "functions": null,
+      "constants": null,
+      "concepts": [],
+      "analyzed_at": "2026-01-28T20:12:40.102481754Z"
+    },
+    "config/policies.js": {
+      "path": "config/policies.js",
+      "hash": "1982d8a59baaf949",
+      "language": "javascript",
+      "size": 758,
+      "line_count": 22,
+      "purpose": "Configuration file",
+      "imports": null,
+      "exports": null,
+      "types": null,
+      "functions": null,
+      "constants": null,
+      "concepts": [],
+      "analyzed_at": "2026-01-28T20:12:40.102492129Z"
+    },
+    "config/priorityConstants.js": {
+      "path": "config/priorityConstants.js",
+      "hash": "7d8bf470d1071edf",
+      "language": "javascript",
+      "size": 26753,
+      "line_count": 1054,
+      "purpose": "Configuration file",
+      "imports": null,
+      "exports": null,
+      "types": null,
+      "functions": null,
+      "constants": null,
+      "concepts": [
+        "priorityconstants.js"
+      ],
+      "analyzed_at": "2026-01-28T20:12:40.102528296Z"
+    },
+    "config/routes.js": {
+      "path": "config/routes.js",
+      "hash": "c8fc6202fe1cad76",
+      "language": "javascript",
+      "size": 4416,
+      "line_count": 102,
+      "purpose": "Configuration file",
+      "imports": null,
+      "exports": null,
+      "types": null,
+      "functions": null,
+      "constants": null,
+      "concepts": [],
+      "analyzed_at": "2026-01-28T20:12:40.102542129Z"
+    },
+    "config/secrets.js": {
+      "path": "config/secrets.js",
+      "hash": "4c956b8eeaa15f41",
+      "language": "javascript",
+      "size": 85,
+      "line_count": 3,
+      "purpose": "Configuration file",
+      "imports": null,
+      "exports": null,
+      "types": null,
+      "functions": null,
+      "constants": null,
+      "concepts": [],
+      "analyzed_at": "2026-01-28T20:12:40.102551046Z"
+    },
+    "config/security.js": {
+      "path": "config/security.js",
+      "hash": "b1e6710d4ce836f7",
+      "language": "javascript",
+      "size": 2678,
+      "line_count": 54,
+      "purpose": "Configuration file",
+      "imports": null,
+      "exports": null,
+      "types": null,
+      "functions": null,
+      "constants": null,
+      "concepts": [],
+      "analyzed_at": "2026-01-28T20:12:40.102561754Z"
+    },
+    "config/sequelize.js": {
+      "path": "config/sequelize.js",
+      "hash": "0b6144773f4a3ebc",
+      "language": "javascript",
+      "size": 97,
+      "line_count": 4,
+      "purpose": "Configuration file",
+      "imports": null,
+      "exports": null,
+      "types": null,
+      "functions": null,
+      "constants": null,
+      "concepts": [],
+      "analyzed_at": "2026-01-28T20:12:40.102571004Z"
+    },
+    "config/session.js": {
+      "path": "config/session.js",
+      "hash": "13291d2ce74334c3",
+      "language": "javascript",
+      "size": 2034,
+      "line_count": 43,
+      "purpose": "Configuration file",
+      "imports": null,
+      "exports": null,
+      "types": null,
+      "functions": null,
+      "constants": null,
+      "concepts": [],
+      "analyzed_at": "2026-01-28T20:12:40.102581296Z"
+    },
+    "config/sockets.js": {
+      "path": "config/sockets.js",
+      "hash": "09b9d7bed4e27940",
+      "language": "javascript",
+      "size": 3938,
+      "line_count": 83,
+      "purpose": "Configuration file",
+      "imports": null,
+      "exports": null,
+      "types": null,
+      "functions": null,
+      "constants": null,
+      "concepts": [],
+      "analyzed_at": "2026-01-28T20:12:40.102595963Z"
+    },
+    "jest.config.js": {
+      "path": "jest.config.js",
+      "hash": "06f9de97b02c7c31",
+      "language": "javascript",
+      "size": 189,
+      "line_count": 6,
+      "purpose": "Configuration file",
+      "imports": null,
+      "exports": null,
+      "types": null,
+      "functions": null,
+      "constants": null,
+      "concepts": [],
+      "analyzed_at": "2026-01-28T20:12:40.102604838Z"
+    },
+    "jest.setup.js": {
+      "path": "jest.setup.js",
+      "hash": "3cf047ae5454c738",
+      "language": "javascript",
+      "size": 376,
+      "line_count": 17,
+      "purpose": "javascript source file",
+      "imports": null,
+      "exports": null,
+      "types": null,
+      "functions": null,
+      "constants": null,
+      "concepts": [],
+      "analyzed_at": "2026-01-28T20:12:40.102613879Z"
+    },
+    "migrations/MLE-1247.sql": {
+      "path": "migrations/MLE-1247.sql",
+      "hash": "7b26775f12328bda",
+      "language": "sql",
+      "size": 557,
+      "line_count": 2,
+      "purpose": "SQL database script",
+      "imports": null,
+      "exports": null,
+      "types": null,
+      "functions": null,
+      "constants": null,
+      "concepts": [
+        "mle-1247.sql"
+      ],
+      "analyzed_at": "2026-01-28T20:12:40.102629588Z"
+    },
+    "migrations/MLE-1247_rollback.sql": {
+      "path": "migrations/MLE-1247_rollback.sql",
+      "hash": "5f1db952f0d88ae6",
+      "language": "sql",
+      "size": 193,
+      "line_count": 2,
+      "purpose": "SQL database script",
+      "imports": null,
+      "exports": null,
+      "types": null,
+      "functions": null,
+      "constants": null,
+      "concepts": [
+        "mle-1247_rollback.sql"
+      ],
+      "analyzed_at": "2026-01-28T20:12:40.102639504Z"
+    },
+    "migrations/MLE-1807.sql": {
+      "path": "migrations/MLE-1807.sql",
+      "hash": "237190361f941440",
+      "language": "sql",
+      "size": 427,
+      "line_count": 10,
+      "purpose": "SQL database script",
+      "imports": null,
+      "exports": null,
+      "types": null,
+      "functions": null,
+      "constants": null,
+      "concepts": [
+        "mle-1807.sql"
+      ],
+      "analyzed_at": "2026-01-28T20:12:40.102648671Z"
+    },
+    "migrations/MLE-2891.sql": {
+      "path": "migrations/MLE-2891.sql",
+      "hash": "61e51f08daf772e1",
+      "language": "sql",
+      "size": 1086,
+      "line_count": 24,
+      "purpose": "SQL database script",
+      "imports": null,
+      "exports": null,
+      "types": null,
+      "functions": null,
+      "constants": null,
+      "concepts": [
+        "mle-2891.sql"
+      ],
+      "analyzed_at": "2026-01-28T20:12:40.102658713Z"
+    },
+    "migrations/MLE-3240.sql": {
+      "path": "migrations/MLE-3240.sql",
+      "hash": "70837783d4e989a0",
+      "language": "sql",
+      "size": 1340,
+      "line_count": 14,
+      "purpose": "SQL database script",
+      "imports": null,
+      "exports": null,
+      "types": null,
+      "functions": null,
+      "constants": null,
+      "concepts": [
+        "mle-3240.sql"
+      ],
+      "analyzed_at": "2026-01-28T20:12:40.102668963Z"
+    },
+    "migrations/MLE-3240_rollback.sql": {
+      "path": "migrations/MLE-3240_rollback.sql",
+      "hash": "a0b054dc98b4c4e1",
+      "language": "sql",
+      "size": 36,
+      "line_count": 1,
+      "purpose": "SQL database script",
+      "imports": null,
+      "exports": null,
+      "types": null,
+      "functions": null,
+      "constants": null,
+      "concepts": [
+        "mle-3240_rollback.sql"
+      ],
+      "analyzed_at": "2026-01-28T20:12:40.102678046Z"
+    },
+    "newrelic.js": {
+      "path": "newrelic.js",
+      "hash": "4881eac538644adf",
+      "language": "javascript",
+      "size": 2895,
+      "line_count": 94,
+      "purpose": "javascript source file",
+      "imports": null,
+      "exports": null,
+      "types": null,
+      "functions": null,
+      "constants": null,
+      "concepts": [],
+      "analyzed_at": "2026-01-28T20:12:40.102690129Z"
+    },
+    "package.json": {
+      "path": "package.json",
+      "hash": "d0a9d9313d443f5d",
+      "language": "json",
+      "size": 1942,
+      "line_count": 68,
+      "purpose": "JSON data/configuration",
+      "imports": null,
+      "exports": null,
+      "types": null,
+      "functions": null,
+      "constants": null,
+      "concepts": [],
+      "analyzed_at": "2026-01-28T20:12:40.102700546Z"
+    },
+    "scripts/setupTestData.sql": {
+      "path": "scripts/setupTestData.sql",
+      "hash": "4e4e22963d285cb1",
+      "language": "sql",
+      "size": 46322,
+      "line_count": 1078,
+      "purpose": "Test file",
+      "imports": null,
+      "exports": null,
+      "types": null,
+      "functions": null,
+      "constants": null,
+      "concepts": [
+        "setuptestdata.sql"
+      ],
+      "analyzed_at": "2026-01-28T20:12:40.102750754Z"
+    },
+    "sonar-project.properties": {
+      "path": "sonar-project.properties",
+      "hash": "b784b5897771b820",
+      "language": "unknown",
+      "size": 94,
+      "line_count": 2,
+      "purpose": "unknown source file",
+      "imports": null,
+      "exports": null,
+      "types": null,
+      "functions": null,
+      "constants": null,
+      "concepts": [],
+      "analyzed_at": "2026-01-28T20:12:40.102759838Z"
+    },
+    "ssh-config": {
+      "path": "ssh-config",
+      "hash": "2678889d05189d08",
+      "language": "unknown",
+      "size": 126,
+      "line_count": 4,
+      "purpose": "Configuration file",
+      "imports": null,
+      "exports": null,
+      "types": null,
+      "functions": null,
+      "constants": null,
+      "concepts": [],
+      "analyzed_at": "2026-01-28T20:12:40.102768129Z"
+    },
+    "tracer.js": {
+      "path": "tracer.js",
+      "hash": "de154aca88eb3cfe",
+      "language": "javascript",
+      "size": 2323,
+      "line_count": 53,
+      "purpose": "javascript source file",
+      "imports": null,
+      "exports": null,
+      "types": null,
+      "functions": null,
+      "constants": null,
+      "concepts": [],
+      "analyzed_at": "2026-01-28T20:12:40.102778338Z"
+    }
+  },
+  "architecture": {
+    "overview": "Repository with 207 files across 45 modules. 0 public exports, 0 types, 0 functions.",
+    "modules": [
+      {
+        "path": "api/controllers/browsers",
+        "name": "browsers",
+        "files": [
+          "api/controllers/browsers/selenium.js",
+          "api/controllers/browsers/update-browser.js",
+          "api/controllers/browsers/latest-browsers.js",
+          "api/controllers/browsers/latest-selenium-versions.js",
+          "api/controllers/browsers/add-browser.js"
+        ],
+        "is_internal": false
+      },
+      {
+        "path": "api/controllers/build",
+        "name": "build",
+        "files": [
+          "api/controllers/build/update-build-name.js",
+          "api/controllers/build/delete.js",
+          "api/controllers/build/search.js",
+          "api/controllers/build/bulk-delete.js"
+        ],
+        "is_internal": false
+      },
+      {
+        "path": "api/controllers/v2/build",
+        "name": "build",
+        "files": [
+          "api/controllers/v2/build/search.js"
+        ],
+        "is_internal": false
+      },
+      {
+        "path": "api/controllers/project",
+        "name": "project",
+        "files": [
+          "api/controllers/project/search.js"
+        ],
+        "is_internal": false
+      },
+      {
+        "path": "config",
+        "name": "config",
+        "files": [
+          "config/session.js",
+          "config/connections.js",
+          "config/policies.js",
+          "config/secrets.js",
+          "config/bootstrap.js",
+          "config/sockets.js",
+          "config/globals.js",
+          "config/routes.js",
+          "config/constants.js",
+          "config/log.js",
+          "config/custom.js",
+          "config/edgeCacheConstants.js",
+          "config/local.js",
+          "config/http.js",
+          "config/security.js",
+          "config/blueprints.js",
+          "config/models.js",
+          "config/priorityConstants.js",
+          "config/sequelize.js"
+        ],
+        "is_internal": false
+      },
+      {
+        "path": "api/controllers/analytics",
+        "name": "analytics",
+        "files": [
+          "api/controllers/analytics/build.js",
+          "api/controllers/analytics/test.js",
+          "api/controllers/analytics/concurrency.js",
+          "api/controllers/analytics/stats.js"
+        ],
+        "is_internal": false
+      },
+      {
+        "path": "api/controllers/app/middleware",
+        "name": "middleware",
+        "files": [
+          "api/controllers/app/middleware/authorisation.js"
+        ],
+        "is_internal": false
+      },
+      {
+        "path": "api/controllers/v2/rbac",
+        "name": "rbac",
+        "files": [
+          "api/controllers/v2/rbac/verify.js",
+          "api/controllers/v2/rbac/internal.js"
+        ],
+        "is_internal": false
+      },
+      {
+        "path": "api/controllers/v2/analytics",
+        "name": "analytics",
+        "files": [
+          "api/controllers/v2/analytics/concurrency.js",
+          "api/controllers/v2/analytics/build.js"
+        ],
+        "is_internal": false
+      },
+      {
+        "path": "__tests__/__mocks__",
+        "name": "__mocks__",
+        "files": [
+          "__tests__/__mocks__/userInfo.js",
+          "__tests__/__mocks__/testDetails.js"
+        ],
+        "is_internal": false
+      },
+      {
+        "path": "__tests__/api/services",
+        "name": "services",
+        "files": [
+          "__tests__/api/services/httphandler.test.js",
+          "__tests__/api/services/utils.test.js"
+        ],
+        "is_internal": false
+      },
+      {
+        "path": "api/controllers/v2/concurrency",
+        "name": "concurrency",
+        "files": [
+          "api/controllers/v2/concurrency/clear.js"
+        ],
+        "is_internal": false
+      },
+      {
+        "path": "api/utils",
+        "name": "utils",
+        "files": [
+          "api/utils/cacheUtils.js"
+        ],
+        "is_internal": false
+      },
+      {
+        "path": "api/helpers",
+        "name": "helpers",
+        "files": [
+          "api/helpers/create.js",
+          "api/helpers/test.js",
+          "api/helpers/build.js",
+          "api/helpers/capability.js",
+          "api/helpers/concurrency.js"
+        ],
+        "is_internal": false
+      },
+      {
+        "path": "root",
+        "name": "root",
+        "files": [
+          "jest.config.js",
+          "package.json",
+          "ssh-config",
+          "Dockerfile_dev",
+          ".sailsrc",
+          ".eslintrc.js",
+          "newrelic.js",
+          ".editorconfig",
+          "app.js",
+          "sonar-project.properties",
+          "tracer.js",
+          "README.md",
+          "Dockerfile",
+          "jest.setup.js",
+          ".prettierrc"
+        ],
+        "is_internal": false
+      },
+      {
+        "path": "config/demoTests",
+        "name": "demoTests",
+        "files": [
+          "config/demoTests/builds_list.js",
+          "config/demoTests/tests_list.js"
+        ],
+        "is_internal": false
+      },
+      {
+        "path": "api/controllers/tag",
+        "name": "tag",
+        "files": [
+          "api/controllers/tag/get.js"
+        ],
+        "is_internal": false
+      },
+      {
+        "path": "__tests__/api/controllers/exposed-apis",
+        "name": "exposed-apis",
+        "files": [
+          "__tests__/api/controllers/exposed-apis/geolocation.test.js"
+        ],
+        "is_internal": false
+      },
+      {
+        "path": "api/models",
+        "name": "models",
+        "files": [
+          "api/models/AppiumConfig.js",
+          "api/models/Device.js",
+          "api/models/RejectedTest.js",
+          "api/models/TestConfig.js",
+          "api/models/SeleniumConfig.js",
+          "api/models/VirtualDeviceBrowserConfigs.js",
+          "api/models/Test.js",
+          "api/models/DeviceBrand.js",
+          "api/models/BrowserOsData.js",
+          "api/models/CDPConfig.js",
+          "api/models/TagTest.js",
+          "api/models/PwBrowserCompatibility.js",
+          "api/models/Build.js",
+          "api/models/CypressConfig.js",
+          "api/models/TestCounters.js",
+          "api/models/TestAggregateDaily.js",
+          "api/models/GlobalSeleniumConfig.js",
+          "api/models/OsVersion.js",
+          "api/models/DeviceAlias.js",
+          "api/models/Tag.js",
+          "api/models/DebugTest.js",
+          "api/models/SeleniumConfigBeta.js",
+          "api/models/TestAnnotationInfo.js",
+          "api/models/BuildTag.js",
+          "api/models/RealtimeOsBrowsers.js",
+          "api/models/Brand.js",
+          "api/models/Browser.js",
+          "api/models/GeoLocationVendorMap.js",
+          "api/models/Plan.js",
+          "api/models/AppiumVersionMap.js",
+          "api/models/RealDeviceAlias.js",
+          "api/models/BrowserVersion.js",
+          "api/models/BuildTeam.js",
+          "api/models/Project.js",
+          "api/models/CypressQueuedTest.js",
+          "api/models/OsAlias.js",
+          "api/models/TestGeoMapping.js",
+          "api/models/Config.js",
+          "api/models/RealDevice.js",
+          "api/models/TestAdditionalParam.js",
+          "api/models/TestCapability.js"
+        ],
+        "is_internal": false
+      },
+      {
+        "path": "api/responses",
+        "name": "responses",
+        "files": [
+          "api/responses/serverError.js"
+        ],
+        "is_internal": false
+      },
+      {
+        "path": "api/controllers/app",
+        "name": "app",
+        "files": [
+          "api/controllers/app/update-config.js",
+          "api/controllers/app/config.js"
+        ],
+        "is_internal": false
+      },
+      {
+        "path": "api/controllers/analytics/v2",
+        "name": "v2",
+        "files": [
+          "api/controllers/analytics/v2/concurrency.js"
+        ],
+        "is_internal": false
+      },
+      {
+        "path": "api/controllers/sumologic",
+        "name": "sumologic",
+        "files": [
+          "api/controllers/sumologic/metric.js"
+        ],
+        "is_internal": false
+      },
+      {
+        "path": "__tests__/api/controllers/v2/test",
+        "name": "test",
+        "files": [
+          "__tests__/api/controllers/v2/test/update.test.js",
+          "__tests__/api/controllers/v2/test/org-details.test.js"
+        ],
+        "is_internal": false
+      },
+      {
+        "path": "api/controllers/health",
+        "name": "health",
+        "files": [
+          "api/controllers/health/api.js"
+        ],
+        "is_internal": false
+      },
+      {
+        "path": "api/helpers/charts",
+        "name": "charts",
+        "files": [
+          "api/helpers/charts/queueUtilization.js",
+          "api/helpers/charts/defaultChart.js",
+          "api/helpers/charts/passFailRatio.js",
+          "api/helpers/charts/coverage.js",
+          "api/helpers/charts/minuteConsumed.js"
+        ],
+        "is_internal": false
+      },
+      {
+        "path": "api/controllers/sse",
+        "name": "sse",
+        "files": [
+          "api/controllers/sse/index.js"
+        ],
+        "is_internal": false
+      },
+      {
+        "path": "__tests__/api/controllers/analytics",
+        "name": "analytics",
+        "files": [
+          "__tests__/api/controllers/analytics/build.test.js"
+        ],
+        "is_internal": false
+      },
+      {
+        "path": "scripts",
+        "name": "scripts",
+        "files": [
+          "scripts/setupTestData.sql"
+        ],
+        "is_internal": false
+      },
+      {
+        "path": "api/controllers/internal",
+        "name": "internal",
+        "files": [
+          "api/controllers/internal/update-browser-upload-timestamp.js"
+        ],
+        "is_internal": false
+      },
+      {
+        "path": "api/controllers/test",
+        "name": "test",
+        "files": [
+          "api/controllers/test/multiplestop.js",
+          "api/controllers/test/delete.js",
+          "api/controllers/test/pause.js",
+          "api/controllers/test/stop.js",
+          "api/controllers/test/orgid.js",
+          "api/controllers/test/mute.js",
+          "api/controllers/test/interaction.js",
+          "api/controllers/test/multipledelete.js",
+          "api/controllers/test/get.js",
+          "api/controllers/test/polling.js",
+          "api/controllers/test/create.js",
+          "api/controllers/test/search.js",
+          "api/controllers/test/update-test-name.js",
+          "api/controllers/test/update.js"
+        ],
+        "is_internal": false
+      },
+      {
+        "path": "migrations",
+        "name": "migrations",
+        "files": [
+          "migrations/MLE-1247_rollback.sql",
+          "migrations/MLE-3240_rollback.sql",
+          "migrations/MLE-2891.sql",
+          "migrations/MLE-1247.sql",
+          "migrations/MLE-1807.sql",
+          "migrations/MLE-3240.sql"
+        ],
+        "is_internal": false
+      },
+      {
+        "path": "__tests__/api/controllers/test",
+        "name": "test",
+        "files": [
+          "__tests__/api/controllers/test/concurrency.test.js",
+          "__tests__/api/controllers/test/update.test.js",
+          "__tests__/api/controllers/test/get.test.js"
+        ],
+        "is_internal": false
+      },
+      {
+        "path": "api/controllers/charts",
+        "name": "charts",
+        "files": [
+          "api/controllers/charts/index.js"
+        ],
+        "is_internal": false
+      },
+      {
+        "path": "api/controllers/session",
+        "name": "session",
+        "files": [
+          "api/controllers/session/stop.js"
+        ],
+        "is_internal": false
+      },
+      {
+        "path": "config/env",
+        "name": "env",
+        "files": [
+          "config/env/production.js"
+        ],
+        "is_internal": false
+      },
+      {
+        "path": "api/controllers/v2/master",
+        "name": "master",
+        "files": [
+          "api/controllers/v2/master/capability.js"
+        ],
+        "is_internal": false
+      },
+      {
+        "path": "api/controllers/report",
+        "name": "report",
+        "files": [
+          "api/controllers/report/report.js"
+        ],
+        "is_internal": false
+      },
+      {
+        "path": "api/controllers/v2/test",
+        "name": "test",
+        "files": [
+          "api/controllers/v2/test/search.js",
+          "api/controllers/v2/test/org-details.js",
+          "api/controllers/v2/test/update.js"
+        ],
+        "is_internal": false
+      },
+      {
+        "path": "api/controllers/test-additional-param",
+        "name": "test-additional-param",
+        "files": [
+          "api/controllers/test-additional-param/get.js"
+        ],
+        "is_internal": false
+      },
+      {
+        "path": "api/controllers/exposed-apis",
+        "name": "exposed-apis",
+        "files": [
+          "api/controllers/exposed-apis/geolocation.js",
+          "api/controllers/exposed-apis/platform.js"
+        ],
+        "is_internal": false
+      },
+      {
+        "path": "__tests__/api/controllers/v2/analytics",
+        "name": "analytics",
+        "files": [
+          "__tests__/api/controllers/v2/analytics/concurrency.test.js"
+        ],
+        "is_internal": false
+      },
+      {
+        "path": "api/services",
+        "name": "services",
+        "files": [
+          "api/services/edgeCachingHandler.js",
+          "api/services/logger.js",
+          "api/services/retention.js",
+          "api/services/kafka.js",
+          "api/services/webHookHandler.js",
+          "api/services/annotations.js",
+          "api/services/sse.js",
+          "api/services/utils.js",
+          "api/services/auth.js",
+          "api/services/featureFlags.js",
+          "api/services/notifications.js",
+          "api/services/tellerkafka.js",
+          "api/services/redis.js",
+          "api/services/rediscached.js",
+          "api/services/sanctum.js",
+          "api/services/sequelize.js",
+          "api/services/httphandler.js",
+          "api/services/project.js",
+          "api/services/allocationFailure.js",
+          "api/services/share.js",
+          "api/services/teams.js",
+          "api/services/teller.js",
+          "api/services/mobilerediscached.js",
+          "api/services/scheduler.js",
+          "api/services/plan.js",
+          "api/services/slackNotification.js",
+          "api/services/rbac.js",
+          "api/services/graphUtils.js",
+          "api/services/jwt.js",
+          "api/services/stopBuilds.js"
+        ],
+        "is_internal": false
+      },
+      {
+        "path": "api/controllers/master",
+        "name": "master",
+        "files": [
+          "api/controllers/master/capability.js",
+          "api/controllers/master/os.js",
+          "api/controllers/master/device.js",
+          "api/controllers/master/org-details.js",
+          "api/controllers/master/browser.js",
+          "api/controllers/master/plan.js",
+          "api/controllers/master/config.js",
+          "api/controllers/master/test.js"
+        ],
+        "is_internal": false
+      },
+      {
+        "path": "config/appConfig",
+        "name": "appConfig",
+        "files": [
+          "config/appConfig/browser_alias.js",
+          "config/appConfig/os_alias.js",
+          "config/appConfig/os_info.js",
+          "config/appConfig/latest_config.js",
+          "config/appConfig/index.js",
+          "config/appConfig/os_device_alias.js",
+          "config/appConfig/config_timedout.js"
+        ],
+        "is_internal": false
+      }
+    ],
+    "entry_points": null,
+    "dependencies": null,
+    "build_system": "npm",
+    "main_packages": null,
+    "ai_analysis": {
+      "pattern": "Layered monolith with service-oriented components",
+      "layers": [
+        {
+          "name": "Presentation Layer",
+          "purpose": "Handle external communication and API endpoints",
+          "components": [
+            "exposed-apis",
+            "sse",
+            "middleware",
+            "responses"
+          ]
+        },
+        {
+          "name": "Application Layer",
+          "purpose": "Business logic orchestration and application services",
+          "components": [
+            "services",
+            "app",
+            "v2",
+            "analytics",
+            "rbac"
+          ]
+        },
+        {
+          "name": "Domain Layer",
+          "purpose": "Core business entities and domain models",
+          "components": [
+            "models",
+            "project",
+            "build",
+            "test",
+            "browsers",
+            "tag"
+          ]
+        },
+        {
+          "name": "Infrastructure Layer",
+          "purpose": "External integrations, persistence, and system utilities",
+          "components": [
+            "config",
+            "helpers",
+            "utils",
+            "migrations",
+            "sumologic",
+            "charts"
+          ]
+        },
+        {
+          "name": "Cross-cutting Layer",
+          "purpose": "Shared concerns across all layers",
+          "components": [
+            "middleware",
+            "health",
+            "session",
+            "concurrency",
+            "appConfig"
+          ]
+        }
+      ],
+      "data_flow": "Requests enter through exposed-apis, pass through middleware for authentication/authorization via rbac, are processed by services layer which interacts with models for data operations, with analytics collecting metrics throughout the flow, and responses formatted back through the presentation layer",
+      "strengths": [
+        "Clear separation of concerns with distinct service modules",
+        "Comprehensive testing strategy with dedicated test modules",
+        "Strong configuration management with dedicated config module",
+        "Built-in analytics and monitoring capabilities",
+        "Database migration support for schema evolution"
+      ],
+      "weaknesses": [
+        "Potential monolithic complexity with high coupling between modules",
+        "Multiple analytics modules suggest possible duplication",
+        "Large models directory (41 files) may indicate overly complex data layer",
+        "Unclear module boundaries with some overlapping responsibilities",
+        "Missing clear API versioning strategy despite v2 module presence"
+      ],
+      "recommendations": [
+        "Consider breaking down the large models module into domain-specific sub-modules",
+        "Consolidate analytics modules to reduce duplication and improve maintainability",
+        "Implement clear API versioning strategy across all endpoints",
+        "Extract shared utilities into a common library to reduce coupling",
+        "Consider microservices extraction for loosely coupled domains like analytics and reporting"
+      ],
+      "generated_at": "2026-01-29T13:36:53.743467712Z",
+      "tokens_used": 1257,
+      "provider": "anthropic"
+    }
+  },
+  "statistics": {
+    "total_files": 207,
+    "total_lines": 37939,
+    "languages": {
+      "dockerfile": 1,
+      "javascript": 191,
+      "json": 1,
+      "markdown": 1,
+      "sql": 7,
+      "unknown": 6
+    },
+    "function_count": 0,
+    "type_count": 0,
+    "export_count": 0
+  },
+  "version": 1,
+  "ai_summary": {
+    "overview": "This is a comprehensive test management service automation platform built for LambdaTest, providing APIs and services to manage test execution, analytics, and reporting. It appears to be a backend service that handles test orchestration, browser management, and analytics for automated testing workflows.",
+    "purpose": "To provide a centralized test management platform that automates test execution, tracks analytics, manages test builds and projects, and provides reporting capabilities for cross-browser testing services",
+    "key_features": [
+      "Test execution management and automation",
+      "Browser and build management",
+      "Analytics and reporting with charts",
+      "Project and session management",
+      "Role-based access control (RBAC)",
+      "Real-time updates via Server-Sent Events (SSE)",
+      "Concurrency management",
+      "Health monitoring and internal APIs"
+    ],
+    "technology_stack": [
+      "Node.js",
+      "JavaScript",
+      "SQL databases",
+      "Docker",
+      "RESTful APIs",
+      "Server-Sent Events"
+    ],
+    "architecture_style": "MVC (Model-View-Controller) with API-first architecture and versioned endpoints",
+    "main_components": [
+      "API Controllers (v1 and v2)",
+      "Data Models",
+      "Services Layer",
+      "Analytics Engine",
+      "Test Management System",
+      "Browser Management",
+      "Build and Project Management",
+      "Configuration Management"
+    ],
+    "suggestions": [
+      "Consider implementing API rate limiting and caching strategies",
+      "Add more comprehensive test coverage beyond the current test files",
+      "Implement OpenAPI/Swagger documentation for better API documentation",
+      "Consider breaking down large controller files into smaller, more focused modules",
+      "Add monitoring and alerting capabilities for production deployments"
+    ],
+    "generated_at": "2026-01-29T13:36:41.676693304Z",
+    "tokens_used": 1296,
+    "provider": "anthropic"
+  }
+}

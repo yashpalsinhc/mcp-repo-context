@@ -1,0 +1,3220 @@
+{
+  "id": "github.com/LambdatestIncPrivate/tms-migrator",
+  "url": "https://github.com/LambdatestIncPrivate/tms-migrator",
+  "branch": "master",
+  "commit_hash": "989f13d82e12729d27a23d0a22cc394a4b05d5b8",
+  "analyzed_at": "2026-01-29T14:57:17.756347679Z",
+  "files": {
+    "Makefile": {
+      "path": "Makefile",
+      "hash": "2ad7d05f5aede02f",
+      "language": "makefile",
+      "size": 5118,
+      "line_count": 182,
+      "purpose": "Build automation",
+      "imports": null,
+      "exports": null,
+      "types": null,
+      "functions": null,
+      "constants": null,
+      "concepts": [
+        "makefile"
+      ],
+      "analyzed_at": "2026-01-29T14:57:17.756832221Z"
+    },
+    "README.md": {
+      "path": "README.md",
+      "hash": "fdc5c604f6dfcd2a",
+      "language": "markdown",
+      "size": 17228,
+      "line_count": 472,
+      "purpose": "Project documentation",
+      "imports": null,
+      "exports": null,
+      "types": null,
+      "functions": null,
+      "constants": null,
+      "concepts": [
+        "readme.md"
+      ],
+      "analyzed_at": "2026-01-29T14:57:17.757183096Z"
+    },
+    "cmd/migrator/main.go": {
+      "path": "cmd/migrator/main.go",
+      "hash": "cd97c59a148389f6",
+      "language": "go",
+      "size": 4396,
+      "line_count": 150,
+      "purpose": "Package main",
+      "imports": [
+        {
+          "path": "flag"
+        },
+        {
+          "path": "io"
+        },
+        {
+          "path": "log"
+        },
+        {
+          "path": "os"
+        },
+        {
+          "path": "os/signal"
+        },
+        {
+          "path": "syscall"
+        },
+        {
+          "path": "github.com/LambdatestIncPrivate/tms-migrator/internal/config"
+        },
+        {
+          "path": "github.com/LambdatestIncPrivate/tms-migrator/internal/migrator"
+        }
+      ],
+      "exports": null,
+      "types": null,
+      "functions": [
+        {
+          "name": "main",
+          "signature": "main()",
+          "is_public": false,
+          "line_start": 15,
+          "line_end": 149,
+          "complexity": 24
+        }
+      ],
+      "constants": null,
+      "concepts": [
+        "main"
+      ],
+      "analyzed_at": "2026-01-29T14:57:17.763915762Z"
+    },
+    "configs/migration.yaml": {
+      "path": "configs/migration.yaml",
+      "hash": "3e4b760b66db41eb",
+      "language": "yaml",
+      "size": 58213,
+      "line_count": 1720,
+      "purpose": "Configuration file",
+      "imports": null,
+      "exports": null,
+      "types": null,
+      "functions": null,
+      "constants": null,
+      "concepts": [],
+      "analyzed_at": "2026-01-29T14:57:17.764585096Z"
+    },
+    "go.mod": {
+      "path": "go.mod",
+      "hash": "1c7e2c8f7f4eab0a",
+      "language": "go-mod",
+      "size": 138,
+      "line_count": 9,
+      "purpose": "go-mod source file",
+      "imports": null,
+      "exports": null,
+      "types": null,
+      "functions": null,
+      "constants": null,
+      "concepts": [],
+      "analyzed_at": "2026-01-29T14:57:17.764607012Z"
+    },
+    "internal/config/config.go": {
+      "path": "internal/config/config.go",
+      "hash": "1a54d8405ced4ed3",
+      "language": "go",
+      "size": 6672,
+      "line_count": 173,
+      "purpose": "Package config",
+      "imports": [
+        {
+          "path": "fmt"
+        },
+        {
+          "path": "os"
+        },
+        {
+          "path": "gopkg.in/yaml.v3"
+        }
+      ],
+      "exports": [
+        {
+          "name": "Config",
+          "kind": "type",
+          "signature": "struct",
+          "description": "Config represents the root configuration",
+          "line_start": 11,
+          "line_end": 13
+        },
+        {
+          "name": "MigrationConfig",
+          "kind": "type",
+          "signature": "struct",
+          "description": "MigrationConfig contains migration settings",
+          "line_start": 16,
+          "line_end": 26
+        },
+        {
+          "name": "DatabaseConfig",
+          "kind": "type",
+          "signature": "struct",
+          "description": "DatabaseConfig contains database connection settings",
+          "line_start": 29,
+          "line_end": 37
+        },
+        {
+          "name": "TableConfig",
+          "kind": "type",
+          "signature": "struct",
+          "description": "TableConfig defines source to destination table mapping",
+          "line_start": 40,
+          "line_end": 60
+        },
+        {
+          "name": "ColumnMapping",
+          "kind": "type",
+          "signature": "struct",
+          "description": "ColumnMapping defines source to destination column mapping",
+          "line_start": 63,
+          "line_end": 69
+        },
+        {
+          "name": "LookupConfig",
+          "kind": "type",
+          "signature": "struct",
+          "description": "LookupConfig defines a lookup from another database source\nUsed when cross-database JOINs are not possible (different DB instances)",
+          "line_start": 73,
+          "line_end": 80
+        },
+        {
+          "name": "MigrationFilters",
+          "kind": "type",
+          "signature": "struct",
+          "description": "MigrationFilters holds runtime filters for migration",
+          "line_start": 83,
+          "line_end": 87
+        },
+        {
+          "name": "DSN",
+          "kind": "function",
+          "signature": "(*DatabaseConfig) DSN() string",
+          "description": "DSN returns the MySQL DSN string for a database config",
+          "line_start": 90,
+          "line_end": 97
+        },
+        {
+          "name": "Load",
+          "kind": "function",
+          "signature": "Load(path string) (*Config, error)",
+          "description": "Load reads and parses the YAML configuration file",
+          "line_start": 100,
+          "line_end": 136
+        },
+        {
+          "name": "GetSource",
+          "kind": "function",
+          "signature": "(*Config) GetSource(key string) (*DatabaseConfig, error)",
+          "description": "GetSource returns a source database config by key",
+          "line_start": 139,
+          "line_end": 144
+        },
+        {
+          "name": "GetTablesForSource",
+          "kind": "function",
+          "signature": "(*Config) GetTablesForSource(sourceKey string) []TableConfig",
+          "description": "GetTablesForSource returns tables configured for a specific source",
+          "line_start": 147,
+          "line_end": 155
+        },
+        {
+          "name": "GetAvailableSources",
+          "kind": "function",
+          "signature": "(*Config) GetAvailableSources() []string",
+          "description": "GetAvailableSources returns a list of available source keys",
+          "line_start": 158,
+          "line_end": 164
+        },
+        {
+          "name": "ValidateSource",
+          "kind": "function",
+          "signature": "(*Config) ValidateSource(sourceKey string) error",
+          "description": "ValidateSource checks if a source key exists",
+          "line_start": 167,
+          "line_end": 172
+        }
+      ],
+      "types": [
+        {
+          "name": "Config",
+          "kind": "struct",
+          "description": "Config represents the root configuration",
+          "fields": [
+            {
+              "name": "Migration",
+              "type": "MigrationConfig",
+              "tag": "`yaml:\"migration\"`",
+              "is_public": true
+            }
+          ],
+          "is_public": true,
+          "line_start": 11,
+          "line_end": 13
+        },
+        {
+          "name": "MigrationConfig",
+          "kind": "struct",
+          "description": "MigrationConfig contains migration settings",
+          "fields": [
+            {
+              "name": "BatchSize",
+              "type": "int",
+              "tag": "`yaml:\"batch_size\"`",
+              "is_public": true
+            },
+            {
+              "name": "MaxRows",
+              "type": "int",
+              "tag": "`yaml:\"max_rows\"`",
+              "is_public": true
+            },
+            {
+              "name": "Workers",
+              "type": "int",
+              "tag": "`yaml:\"workers\"`",
+              "is_public": true
+            },
+            {
+              "name": "PartitionStartYear",
+              "type": "int",
+              "tag": "`yaml:\"partition_start_year\"`",
+              "is_public": true
+            },
+            {
+              "name": "StartTime",
+              "type": "string",
+              "tag": "`yaml:\"start_time\"`",
+              "is_public": true
+            },
+            {
+              "name": "EndTime",
+              "type": "string",
+              "tag": "`yaml:\"end_time\"`",
+              "is_public": true
+            },
+            {
+              "name": "Sources",
+              "type": "map[string]DatabaseConfig",
+              "tag": "`yaml:\"sources\"`",
+              "is_public": true
+            },
+            {
+              "name": "Destination",
+              "type": "DatabaseConfig",
+              "tag": "`yaml:\"destination\"`",
+              "is_public": true
+            },
+            {
+              "name": "Tables",
+              "type": "[]TableConfig",
+              "tag": "`yaml:\"tables\"`",
+              "is_public": true
+            }
+          ],
+          "is_public": true,
+          "line_start": 16,
+          "line_end": 26
+        },
+        {
+          "name": "DatabaseConfig",
+          "kind": "struct",
+          "description": "DatabaseConfig contains database connection settings",
+          "fields": [
+            {
+              "name": "Name",
+              "type": "string",
+              "tag": "`yaml:\"name\"`",
+              "is_public": true
+            },
+            {
+              "name": "Host",
+              "type": "string",
+              "tag": "`yaml:\"host\"`",
+              "is_public": true
+            },
+            {
+              "name": "Port",
+              "type": "int",
+              "tag": "`yaml:\"port\"`",
+              "is_public": true
+            },
+            {
+              "name": "User",
+              "type": "string",
+              "tag": "`yaml:\"user\"`",
+              "is_public": true
+            },
+            {
+              "name": "Password",
+              "type": "string",
+              "tag": "`yaml:\"password\"`",
+              "is_public": true
+            },
+            {
+              "name": "Database",
+              "type": "string",
+              "tag": "`yaml:\"database\"`",
+              "is_public": true
+            },
+            {
+              "name": "Charset",
+              "type": "string",
+              "tag": "`yaml:\"charset\"`",
+              "is_public": true
+            }
+          ],
+          "is_public": true,
+          "line_start": 29,
+          "line_end": 37
+        },
+        {
+          "name": "TableConfig",
+          "kind": "struct",
+          "description": "TableConfig defines source to destination table mapping",
+          "fields": [
+            {
+              "name": "Name",
+              "type": "string",
+              "tag": "`yaml:\"name\"`",
+              "is_public": true
+            },
+            {
+              "name": "Source",
+              "type": "string",
+              "tag": "`yaml:\"source\"`",
+              "is_public": true
+            },
+            {
+              "name": "SourceDB",
+              "type": "string",
+              "tag": "`yaml:\"source_db\"`",
+              "is_public": true
+            },
+            {
+              "name": "SourceTable",
+              "type": "string",
+              "tag": "`yaml:\"source_table\"`",
+              "is_public": true
+            },
+            {
+              "name": "DestTable",
+              "type": "string",
+              "tag": "`yaml:\"dest_table\"`",
+              "is_public": true
+            },
+            {
+              "name": "Workers",
+              "type": "int",
+              "tag": "`yaml:\"workers\"`",
+              "is_public": true
+            },
+            {
+              "name": "BatchSize",
+              "type": "int",
+              "tag": "`yaml:\"batch_size\"`",
+              "is_public": true
+            },
+            {
+              "name": "MaxRows",
+              "type": "int",
+              "tag": "`yaml:\"max_rows\"`",
+              "is_public": true
+            },
+            {
+              "name": "OrderBy",
+              "type": "string",
+              "tag": "`yaml:\"order_by\"`",
+              "is_public": true
+            },
+            {
+              "name": "WhereClause",
+              "type": "string",
+              "tag": "`yaml:\"where_clause\"`",
+              "is_public": true
+            },
+            {
+              "name": "JoinClause",
+              "type": "string",
+              "tag": "`yaml:\"join_clause,omitempty\"`",
+              "is_public": true
+            },
+            {
+              "name": "ChecksumColumn",
+              "type": "string",
+              "tag": "`yaml:\"checksum_column,omitempty\"`",
+              "is_public": true
+            },
+            {
+              "name": "FilterOrgID",
+              "type": "string",
+              "tag": "`yaml:\"filter_org_id,omitempty\"`",
+              "is_public": true
+            },
+            {
+              "name": "FilterTimestamp",
+              "type": "string",
+              "tag": "`yaml:\"filter_timestamp,omitempty\"`",
+              "is_public": true
+            },
+            {
+              "name": "DestJoinClause",
+              "type": "string",
+              "tag": "`yaml:\"dest_join_clause,omitempty\"`",
+              "is_public": true
+            },
+            {
+              "name": "DestFilterOrgID",
+              "type": "string",
+              "tag": "`yaml:\"dest_filter_org_id,omitempty\"`",
+              "is_public": true
+            },
+            {
+              "name": "DestFilterTimestamp",
+              "type": "string",
+              "tag": "`yaml:\"dest_filter_timestamp,omitempty\"`",
+              "is_public": true
+            },
+            {
+              "name": "DestWhereClause",
+              "type": "string",
+              "tag": "`yaml:\"dest_where_clause,omitempty\"`",
+              "is_public": true
+            },
+            {
+              "name": "Columns",
+              "type": "[]ColumnMapping",
+              "tag": "`yaml:\"columns\"`",
+              "is_public": true
+            }
+          ],
+          "is_public": true,
+          "line_start": 40,
+          "line_end": 60
+        },
+        {
+          "name": "ColumnMapping",
+          "kind": "struct",
+          "description": "ColumnMapping defines source to destination column mapping",
+          "fields": [
+            {
+              "name": "Source",
+              "type": "string",
+              "tag": "`yaml:\"source\"`",
+              "is_public": true
+            },
+            {
+              "name": "Destination",
+              "type": "string",
+              "tag": "`yaml:\"destination\"`",
+              "is_public": true
+            },
+            {
+              "name": "Transform",
+              "type": "string",
+              "tag": "`yaml:\"transform,omitempty\"`",
+              "is_public": true
+            },
+            {
+              "name": "Default",
+              "type": "string",
+              "tag": "`yaml:\"default,omitempty\"`",
+              "is_public": true
+            },
+            {
+              "name": "Lookup",
+              "type": "*LookupConfig",
+              "tag": "`yaml:\"lookup,omitempty\"`",
+              "is_public": true
+            }
+          ],
+          "is_public": true,
+          "line_start": 63,
+          "line_end": 69
+        },
+        {
+          "name": "LookupConfig",
+          "kind": "struct",
+          "description": "LookupConfig defines a lookup from another database source\nUsed when cross-database JOINs are not possible (different DB instances)",
+          "fields": [
+            {
+              "name": "Source",
+              "type": "string",
+              "tag": "`yaml:\"source\"`",
+              "is_public": true
+            },
+            {
+              "name": "Table",
+              "type": "string",
+              "tag": "`yaml:\"table\"`",
+              "is_public": true
+            },
+            {
+              "name": "Column",
+              "type": "string",
+              "tag": "`yaml:\"column\"`",
+              "is_public": true
+            },
+            {
+              "name": "MatchColumn",
+              "type": "string",
+              "tag": "`yaml:\"match_column\"`",
+              "is_public": true
+            },
+            {
+              "name": "TrueValue",
+              "type": "string",
+              "tag": "`yaml:\"true_value\"`",
+              "is_public": true
+            },
+            {
+              "name": "FalseValue",
+              "type": "string",
+              "tag": "`yaml:\"false_value\"`",
+              "is_public": true
+            }
+          ],
+          "is_public": true,
+          "line_start": 73,
+          "line_end": 80
+        },
+        {
+          "name": "MigrationFilters",
+          "kind": "struct",
+          "description": "MigrationFilters holds runtime filters for migration",
+          "fields": [
+            {
+              "name": "OrgID",
+              "type": "int",
+              "is_public": true
+            },
+            {
+              "name": "StartDate",
+              "type": "string",
+              "is_public": true
+            },
+            {
+              "name": "EndTime",
+              "type": "string",
+              "is_public": true
+            }
+          ],
+          "is_public": true,
+          "line_start": 83,
+          "line_end": 87
+        }
+      ],
+      "functions": [
+        {
+          "name": "DSN",
+          "signature": "(*DatabaseConfig) DSN() string",
+          "description": "DSN returns the MySQL DSN string for a database config",
+          "returns": [
+            "string"
+          ],
+          "receiver": "*DatabaseConfig",
+          "is_public": true,
+          "line_start": 90,
+          "line_end": 97,
+          "complexity": 2
+        },
+        {
+          "name": "Load",
+          "signature": "Load(path string) (*Config, error)",
+          "description": "Load reads and parses the YAML configuration file",
+          "parameters": [
+            {
+              "name": "path",
+              "type": "string"
+            }
+          ],
+          "returns": [
+            "*Config",
+            "error"
+          ],
+          "is_public": true,
+          "line_start": 100,
+          "line_end": 136,
+          "complexity": 9
+        },
+        {
+          "name": "GetSource",
+          "signature": "(*Config) GetSource(key string) (*DatabaseConfig, error)",
+          "description": "GetSource returns a source database config by key",
+          "parameters": [
+            {
+              "name": "key",
+              "type": "string"
+            }
+          ],
+          "returns": [
+            "*DatabaseConfig",
+            "error"
+          ],
+          "receiver": "*Config",
+          "is_public": true,
+          "line_start": 139,
+          "line_end": 144,
+          "complexity": 2
+        },
+        {
+          "name": "GetTablesForSource",
+          "signature": "(*Config) GetTablesForSource(sourceKey string) []TableConfig",
+          "description": "GetTablesForSource returns tables configured for a specific source",
+          "parameters": [
+            {
+              "name": "sourceKey",
+              "type": "string"
+            }
+          ],
+          "returns": [
+            "[]TableConfig"
+          ],
+          "receiver": "*Config",
+          "is_public": true,
+          "line_start": 147,
+          "line_end": 155,
+          "complexity": 3
+        },
+        {
+          "name": "GetAvailableSources",
+          "signature": "(*Config) GetAvailableSources() []string",
+          "description": "GetAvailableSources returns a list of available source keys",
+          "returns": [
+            "[]string"
+          ],
+          "receiver": "*Config",
+          "is_public": true,
+          "line_start": 158,
+          "line_end": 164,
+          "complexity": 2
+        },
+        {
+          "name": "ValidateSource",
+          "signature": "(*Config) ValidateSource(sourceKey string) error",
+          "description": "ValidateSource checks if a source key exists",
+          "parameters": [
+            {
+              "name": "sourceKey",
+              "type": "string"
+            }
+          ],
+          "returns": [
+            "error"
+          ],
+          "receiver": "*Config",
+          "is_public": true,
+          "line_start": 167,
+          "line_end": 172,
+          "complexity": 2
+        }
+      ],
+      "constants": null,
+      "concepts": [
+        "columnmapping",
+        "tables",
+        "sources",
+        "config",
+        "migrationconfig",
+        "source",
+        "for",
+        "available",
+        "migrationfilters",
+        "get",
+        "lookupconfig",
+        "load",
+        "validate",
+        "databaseconfig",
+        "tableconfig"
+      ],
+      "analyzed_at": "2026-01-29T14:57:17.764813971Z"
+    },
+    "internal/db/connection.go": {
+      "path": "internal/db/connection.go",
+      "hash": "9c39c6aa1d692b9e",
+      "language": "go",
+      "size": 5158,
+      "line_count": 203,
+      "purpose": "Package db",
+      "imports": [
+        {
+          "path": "database/sql"
+        },
+        {
+          "path": "fmt"
+        },
+        {
+          "path": "time"
+        },
+        {
+          "path": "github.com/go-sql-driver/mysql",
+          "alias": "_"
+        }
+      ],
+      "exports": [
+        {
+          "name": "Connection",
+          "kind": "type",
+          "signature": "struct",
+          "description": "Connection wraps a database connection with metadata",
+          "line_start": 12,
+          "line_end": 15
+        },
+        {
+          "name": "NewConnection",
+          "kind": "function",
+          "signature": "NewConnection(name string, dsn string) (*Connection, error)",
+          "description": "NewConnection creates a new database connection",
+          "line_start": 18,
+          "line_end": 40
+        },
+        {
+          "name": "Close",
+          "kind": "function",
+          "signature": "(*Connection) Close() error",
+          "description": "Close closes the database connection",
+          "line_start": 43,
+          "line_end": 48
+        },
+        {
+          "name": "FetchRows",
+          "kind": "function",
+          "signature": "(*Connection) FetchRows(query string, offset int, limit int) (*sql.Rows, error)",
+          "description": "FetchRows fetches rows from the source table with pagination",
+          "line_start": 51,
+          "line_end": 54
+        },
+        {
+          "name": "GetRowCount",
+          "kind": "function",
+          "signature": "(*Connection) GetRowCount(table string, whereClause string) (int64, error)",
+          "description": "GetRowCount returns the total number of rows matching the query",
+          "line_start": 57,
+          "line_end": 69
+        },
+        {
+          "name": "InsertBatch",
+          "kind": "function",
+          "signature": "(*Connection) InsertBatch(query string, rows [][]interface{}) (int64, error)",
+          "description": "InsertBatch inserts a batch of rows into the destination table",
+          "line_start": 72,
+          "line_end": 104
+        },
+        {
+          "name": "BuildSelectQuery",
+          "kind": "function",
+          "signature": "BuildSelectQuery(sourceDB string, sourceTable string, columns []string, whereClause string, orderBy string, joinClause string) string",
+          "description": "BuildSelectQuery builds a SELECT query from column mappings",
+          "line_start": 107,
+          "line_end": 119
+        },
+        {
+          "name": "BuildInsertQuery",
+          "kind": "function",
+          "signature": "BuildInsertQuery(destTable string, columns []string) string",
+          "description": "BuildInsertQuery builds an INSERT IGNORE query for the destination table\nUses INSERT IGNORE to skip duplicate rows during migration",
+          "line_start": 123,
+          "line_end": 130
+        },
+        {
+          "name": "ChecksumResult",
+          "kind": "type",
+          "signature": "struct",
+          "description": "ChecksumResult holds the checksum validation results",
+          "line_start": 144,
+          "line_end": 147
+        },
+        {
+          "name": "GetChecksum",
+          "kind": "function",
+          "signature": "(*Connection) GetChecksum(table string, keyColumn string, whereClause string) (*ChecksumResult, error)",
+          "description": "GetChecksum computes a checksum for validation\nUses COUNT(*) and CRC32 of concatenated key columns",
+          "line_start": 151,
+          "line_end": 178
+        },
+        {
+          "name": "FetchIDs",
+          "kind": "function",
+          "signature": "(*Connection) FetchIDs(table string, idColumn string, whereClause string) (map[string]bool, error)",
+          "description": "FetchIDs fetches all IDs from a table",
+          "line_start": 181,
+          "line_end": 202
+        }
+      ],
+      "types": [
+        {
+          "name": "Connection",
+          "kind": "struct",
+          "description": "Connection wraps a database connection with metadata",
+          "fields": [
+            {
+              "name": "DB",
+              "type": "*sql.DB",
+              "is_public": true
+            },
+            {
+              "name": "Name",
+              "type": "string",
+              "is_public": true
+            }
+          ],
+          "is_public": true,
+          "line_start": 12,
+          "line_end": 15
+        },
+        {
+          "name": "ChecksumResult",
+          "kind": "struct",
+          "description": "ChecksumResult holds the checksum validation results",
+          "fields": [
+            {
+              "name": "RowCount",
+              "type": "int64",
+              "is_public": true
+            },
+            {
+              "name": "Checksum",
+              "type": "string",
+              "is_public": true
+            }
+          ],
+          "is_public": true,
+          "line_start": 144,
+          "line_end": 147
+        }
+      ],
+      "functions": [
+        {
+          "name": "NewConnection",
+          "signature": "NewConnection(name string, dsn string) (*Connection, error)",
+          "description": "NewConnection creates a new database connection",
+          "parameters": [
+            {
+              "name": "name",
+              "type": "string"
+            },
+            {
+              "name": "dsn",
+              "type": "string"
+            }
+          ],
+          "returns": [
+            "*Connection",
+            "error"
+          ],
+          "is_public": true,
+          "line_start": 18,
+          "line_end": 40,
+          "complexity": 3
+        },
+        {
+          "name": "Close",
+          "signature": "(*Connection) Close() error",
+          "description": "Close closes the database connection",
+          "returns": [
+            "error"
+          ],
+          "receiver": "*Connection",
+          "is_public": true,
+          "line_start": 43,
+          "line_end": 48,
+          "complexity": 2
+        },
+        {
+          "name": "FetchRows",
+          "signature": "(*Connection) FetchRows(query string, offset int, limit int) (*sql.Rows, error)",
+          "description": "FetchRows fetches rows from the source table with pagination",
+          "parameters": [
+            {
+              "name": "query",
+              "type": "string"
+            },
+            {
+              "name": "offset",
+              "type": "int"
+            },
+            {
+              "name": "limit",
+              "type": "int"
+            }
+          ],
+          "returns": [
+            "*sql.Rows",
+            "error"
+          ],
+          "receiver": "*Connection",
+          "is_public": true,
+          "line_start": 51,
+          "line_end": 54,
+          "complexity": 1
+        },
+        {
+          "name": "GetRowCount",
+          "signature": "(*Connection) GetRowCount(table string, whereClause string) (int64, error)",
+          "description": "GetRowCount returns the total number of rows matching the query",
+          "parameters": [
+            {
+              "name": "table",
+              "type": "string"
+            },
+            {
+              "name": "whereClause",
+              "type": "string"
+            }
+          ],
+          "returns": [
+            "int64",
+            "error"
+          ],
+          "receiver": "*Connection",
+          "is_public": true,
+          "line_start": 57,
+          "line_end": 69,
+          "complexity": 3
+        },
+        {
+          "name": "InsertBatch",
+          "signature": "(*Connection) InsertBatch(query string, rows [][]interface{}) (int64, error)",
+          "description": "InsertBatch inserts a batch of rows into the destination table",
+          "parameters": [
+            {
+              "name": "query",
+              "type": "string"
+            },
+            {
+              "name": "rows",
+              "type": "[][]interface{}"
+            }
+          ],
+          "returns": [
+            "int64",
+            "error"
+          ],
+          "receiver": "*Connection",
+          "is_public": true,
+          "line_start": 72,
+          "line_end": 104,
+          "complexity": 7
+        },
+        {
+          "name": "BuildSelectQuery",
+          "signature": "BuildSelectQuery(sourceDB string, sourceTable string, columns []string, whereClause string, orderBy string, joinClause string) string",
+          "description": "BuildSelectQuery builds a SELECT query from column mappings",
+          "parameters": [
+            {
+              "name": "sourceDB",
+              "type": "string"
+            },
+            {
+              "name": "sourceTable",
+              "type": "string"
+            },
+            {
+              "name": "columns",
+              "type": "[]string"
+            },
+            {
+              "name": "whereClause",
+              "type": "string"
+            },
+            {
+              "name": "orderBy",
+              "type": "string"
+            },
+            {
+              "name": "joinClause",
+              "type": "string"
+            }
+          ],
+          "returns": [
+            "string"
+          ],
+          "is_public": true,
+          "line_start": 107,
+          "line_end": 119,
+          "complexity": 4
+        },
+        {
+          "name": "BuildInsertQuery",
+          "signature": "BuildInsertQuery(destTable string, columns []string) string",
+          "description": "BuildInsertQuery builds an INSERT IGNORE query for the destination table\nUses INSERT IGNORE to skip duplicate rows during migration",
+          "parameters": [
+            {
+              "name": "destTable",
+              "type": "string"
+            },
+            {
+              "name": "columns",
+              "type": "[]string"
+            }
+          ],
+          "returns": [
+            "string"
+          ],
+          "is_public": true,
+          "line_start": 123,
+          "line_end": 130,
+          "complexity": 2
+        },
+        {
+          "name": "joinColumns",
+          "signature": "joinColumns(cols []string) string",
+          "parameters": [
+            {
+              "name": "cols",
+              "type": "[]string"
+            }
+          ],
+          "returns": [
+            "string"
+          ],
+          "is_public": false,
+          "line_start": 132,
+          "line_end": 141,
+          "complexity": 3
+        },
+        {
+          "name": "GetChecksum",
+          "signature": "(*Connection) GetChecksum(table string, keyColumn string, whereClause string) (*ChecksumResult, error)",
+          "description": "GetChecksum computes a checksum for validation\nUses COUNT(*) and CRC32 of concatenated key columns",
+          "parameters": [
+            {
+              "name": "table",
+              "type": "string"
+            },
+            {
+              "name": "keyColumn",
+              "type": "string"
+            },
+            {
+              "name": "whereClause",
+              "type": "string"
+            }
+          ],
+          "returns": [
+            "*ChecksumResult",
+            "error"
+          ],
+          "receiver": "*Connection",
+          "is_public": true,
+          "line_start": 151,
+          "line_end": 178,
+          "complexity": 5
+        },
+        {
+          "name": "FetchIDs",
+          "signature": "(*Connection) FetchIDs(table string, idColumn string, whereClause string) (map[string]bool, error)",
+          "description": "FetchIDs fetches all IDs from a table",
+          "parameters": [
+            {
+              "name": "table",
+              "type": "string"
+            },
+            {
+              "name": "idColumn",
+              "type": "string"
+            },
+            {
+              "name": "whereClause",
+              "type": "string"
+            }
+          ],
+          "returns": [
+            "map[string]bool",
+            "error"
+          ],
+          "receiver": "*Connection",
+          "is_public": true,
+          "line_start": 181,
+          "line_end": 202,
+          "complexity": 5
+        }
+      ],
+      "constants": null,
+      "concepts": [
+        "close",
+        "rows",
+        "count",
+        "insert",
+        "build",
+        "select",
+        "query",
+        "checksumresult",
+        "fetch",
+        "get",
+        "checksum",
+        "new",
+        "batch",
+        "row",
+        "join",
+        "columns",
+        "connection"
+      ],
+      "analyzed_at": "2026-01-29T14:57:17.766847179Z"
+    },
+    "internal/migrator/migrator.go": {
+      "path": "internal/migrator/migrator.go",
+      "hash": "e38e001cf08bb649",
+      "language": "go",
+      "size": 14944,
+      "line_count": 501,
+      "purpose": "Package migrator",
+      "imports": [
+        {
+          "path": "database/sql"
+        },
+        {
+          "path": "fmt"
+        },
+        {
+          "path": "log"
+        },
+        {
+          "path": "strings"
+        },
+        {
+          "path": "time"
+        },
+        {
+          "path": "github.com/LambdatestIncPrivate/tms-migrator/internal/config"
+        },
+        {
+          "path": "github.com/LambdatestIncPrivate/tms-migrator/internal/db"
+        },
+        {
+          "path": "github.com/LambdatestIncPrivate/tms-migrator/internal/schema"
+        }
+      ],
+      "exports": [
+        {
+          "name": "Migrator",
+          "kind": "type",
+          "signature": "struct",
+          "description": "Migrator handles the database migration process",
+          "line_start": 16,
+          "line_end": 25
+        },
+        {
+          "name": "New",
+          "kind": "function",
+          "signature": "New(cfg *config.Config) (*Migrator, error)",
+          "description": "New creates a new Migrator instance",
+          "line_start": 28,
+          "line_end": 33
+        },
+        {
+          "name": "SetFilters",
+          "kind": "function",
+          "signature": "(*Migrator) SetFilters(filters *config.MigrationFilters)",
+          "description": "SetFilters sets the migration filters for org_id and start_date",
+          "line_start": 36,
+          "line_end": 38
+        },
+        {
+          "name": "ConnectForSource",
+          "kind": "function",
+          "signature": "(*Migrator) ConnectForSource(sourceKey string) error",
+          "description": "ConnectForSource establishes connection to a specific source and destination databases",
+          "line_start": 41,
+          "line_end": 85
+        },
+        {
+          "name": "ConnectDestinationOnly",
+          "kind": "function",
+          "signature": "(*Migrator) ConnectDestinationOnly() error",
+          "description": "ConnectDestinationOnly establishes connection to destination database only (for schema operations)",
+          "line_start": 88,
+          "line_end": 108
+        },
+        {
+          "name": "Close",
+          "kind": "function",
+          "signature": "(*Migrator) Close()",
+          "description": "Close closes all database connections",
+          "line_start": 111,
+          "line_end": 121
+        },
+        {
+          "name": "RunForSource",
+          "kind": "function",
+          "signature": "(*Migrator) RunForSource(sourceKey string) error",
+          "description": "RunForSource executes migration for tables from a specific source",
+          "line_start": 205,
+          "line_end": 296
+        },
+        {
+          "name": "MigrateTable",
+          "kind": "function",
+          "signature": "(*Migrator) MigrateTable(tableName string) error",
+          "description": "MigrateTable migrates a single table",
+          "line_start": 299,
+          "line_end": 342
+        },
+        {
+          "name": "ValidateConfigForSource",
+          "kind": "function",
+          "signature": "(*Migrator) ValidateConfigForSource(sourceKey string) error",
+          "description": "ValidateConfigForSource validates the migration configuration for a specific source",
+          "line_start": 345,
+          "line_end": 364
+        },
+        {
+          "name": "DryRunForSource",
+          "kind": "function",
+          "signature": "(*Migrator) DryRunForSource(sourceKey string) error",
+          "description": "DryRunForSource performs a dry run for a specific source",
+          "line_start": 367,
+          "line_end": 418
+        },
+        {
+          "name": "ListSources",
+          "kind": "function",
+          "signature": "(*Migrator) ListSources()",
+          "description": "ListSources lists all available sources and their table counts",
+          "line_start": 476,
+          "line_end": 484
+        },
+        {
+          "name": "CreateTables",
+          "kind": "function",
+          "signature": "(*Migrator) CreateTables() error",
+          "description": "CreateTables creates all tables in the unified TMS schema",
+          "line_start": 487,
+          "line_end": 492
+        },
+        {
+          "name": "DropTables",
+          "kind": "function",
+          "signature": "(*Migrator) DropTables() error",
+          "description": "DropTables drops all tables in the unified TMS schema (use with caution!)",
+          "line_start": 495,
+          "line_end": 500
+        }
+      ],
+      "types": [
+        {
+          "name": "Migrator",
+          "kind": "struct",
+          "description": "Migrator handles the database migration process",
+          "fields": [
+            {
+              "name": "config",
+              "type": "*config.Config",
+              "is_public": false
+            },
+            {
+              "name": "sourceConn",
+              "type": "*db.Connection",
+              "is_public": false
+            },
+            {
+              "name": "destConn",
+              "type": "*db.Connection",
+              "is_public": false
+            },
+            {
+              "name": "workerPool",
+              "type": "*WorkerPool",
+              "is_public": false
+            },
+            {
+              "name": "schemaManager",
+              "type": "*schema.SchemaManager",
+              "is_public": false
+            },
+            {
+              "name": "sourceKey",
+              "type": "string",
+              "is_public": false
+            },
+            {
+              "name": "filters",
+              "type": "*config.MigrationFilters",
+              "is_public": false
+            },
+            {
+              "name": "lookupConns",
+              "type": "map[string]*db.Connection",
+              "is_public": false
+            }
+          ],
+          "is_public": true,
+          "line_start": 16,
+          "line_end": 25
+        }
+      ],
+      "functions": [
+        {
+          "name": "New",
+          "signature": "New(cfg *config.Config) (*Migrator, error)",
+          "description": "New creates a new Migrator instance",
+          "parameters": [
+            {
+              "name": "cfg",
+              "type": "*config.Config"
+            }
+          ],
+          "returns": [
+            "*Migrator",
+            "error"
+          ],
+          "is_public": true,
+          "line_start": 28,
+          "line_end": 33,
+          "complexity": 1
+        },
+        {
+          "name": "SetFilters",
+          "signature": "(*Migrator) SetFilters(filters *config.MigrationFilters)",
+          "description": "SetFilters sets the migration filters for org_id and start_date",
+          "parameters": [
+            {
+              "name": "filters",
+              "type": "*config.MigrationFilters"
+            }
+          ],
+          "receiver": "*Migrator",
+          "is_public": true,
+          "line_start": 36,
+          "line_end": 38,
+          "complexity": 1
+        },
+        {
+          "name": "ConnectForSource",
+          "signature": "(*Migrator) ConnectForSource(sourceKey string) error",
+          "description": "ConnectForSource establishes connection to a specific source and destination databases",
+          "parameters": [
+            {
+              "name": "sourceKey",
+              "type": "string"
+            }
+          ],
+          "returns": [
+            "error"
+          ],
+          "receiver": "*Migrator",
+          "is_public": true,
+          "line_start": 41,
+          "line_end": 85,
+          "complexity": 4
+        },
+        {
+          "name": "ConnectDestinationOnly",
+          "signature": "(*Migrator) ConnectDestinationOnly() error",
+          "description": "ConnectDestinationOnly establishes connection to destination database only (for schema operations)",
+          "returns": [
+            "error"
+          ],
+          "receiver": "*Migrator",
+          "is_public": true,
+          "line_start": 88,
+          "line_end": 108,
+          "complexity": 2
+        },
+        {
+          "name": "Close",
+          "signature": "(*Migrator) Close()",
+          "description": "Close closes all database connections",
+          "receiver": "*Migrator",
+          "is_public": true,
+          "line_start": 111,
+          "line_end": 121,
+          "complexity": 4
+        },
+        {
+          "name": "loadLookupData",
+          "signature": "(*Migrator) loadLookupData(tables []config.TableConfig) error",
+          "description": "loadLookupData scans tables for columns with Lookup config and pre-loads data from other sources",
+          "parameters": [
+            {
+              "name": "tables",
+              "type": "[]config.TableConfig"
+            }
+          ],
+          "returns": [
+            "error"
+          ],
+          "receiver": "*Migrator",
+          "is_public": false,
+          "line_start": 124,
+          "line_end": 202,
+          "complexity": 15
+        },
+        {
+          "name": "RunForSource",
+          "signature": "(*Migrator) RunForSource(sourceKey string) error",
+          "description": "RunForSource executes migration for tables from a specific source",
+          "parameters": [
+            {
+              "name": "sourceKey",
+              "type": "string"
+            }
+          ],
+          "returns": [
+            "error"
+          ],
+          "receiver": "*Migrator",
+          "is_public": true,
+          "line_start": 205,
+          "line_end": 296,
+          "complexity": 13
+        },
+        {
+          "name": "MigrateTable",
+          "signature": "(*Migrator) MigrateTable(tableName string) error",
+          "description": "MigrateTable migrates a single table",
+          "parameters": [
+            {
+              "name": "tableName",
+              "type": "string"
+            }
+          ],
+          "returns": [
+            "error"
+          ],
+          "receiver": "*Migrator",
+          "is_public": true,
+          "line_start": 299,
+          "line_end": 342,
+          "complexity": 6
+        },
+        {
+          "name": "ValidateConfigForSource",
+          "signature": "(*Migrator) ValidateConfigForSource(sourceKey string) error",
+          "description": "ValidateConfigForSource validates the migration configuration for a specific source",
+          "parameters": [
+            {
+              "name": "sourceKey",
+              "type": "string"
+            }
+          ],
+          "returns": [
+            "error"
+          ],
+          "receiver": "*Migrator",
+          "is_public": true,
+          "line_start": 345,
+          "line_end": 364,
+          "complexity": 6
+        },
+        {
+          "name": "DryRunForSource",
+          "signature": "(*Migrator) DryRunForSource(sourceKey string) error",
+          "description": "DryRunForSource performs a dry run for a specific source",
+          "parameters": [
+            {
+              "name": "sourceKey",
+              "type": "string"
+            }
+          ],
+          "returns": [
+            "error"
+          ],
+          "receiver": "*Migrator",
+          "is_public": true,
+          "line_start": 367,
+          "line_end": 418,
+          "complexity": 10
+        },
+        {
+          "name": "buildEffectiveWhereClause",
+          "signature": "buildEffectiveWhereClause(tableConfig config.TableConfig, filters *config.MigrationFilters) string",
+          "description": "buildEffectiveWhereClause combines the configured where clause with runtime filters\nUses table-specific filter columns if configured, otherwise uses defaults",
+          "parameters": [
+            {
+              "name": "tableConfig",
+              "type": "config.TableConfig"
+            },
+            {
+              "name": "filters",
+              "type": "*config.MigrationFilters"
+            }
+          ],
+          "returns": [
+            "string"
+          ],
+          "is_public": false,
+          "line_start": 422,
+          "line_end": 473,
+          "complexity": 16
+        },
+        {
+          "name": "ListSources",
+          "signature": "(*Migrator) ListSources()",
+          "description": "ListSources lists all available sources and their table counts",
+          "receiver": "*Migrator",
+          "is_public": true,
+          "line_start": 476,
+          "line_end": 484,
+          "complexity": 2
+        },
+        {
+          "name": "CreateTables",
+          "signature": "(*Migrator) CreateTables() error",
+          "description": "CreateTables creates all tables in the unified TMS schema",
+          "returns": [
+            "error"
+          ],
+          "receiver": "*Migrator",
+          "is_public": true,
+          "line_start": 487,
+          "line_end": 492,
+          "complexity": 2
+        },
+        {
+          "name": "DropTables",
+          "signature": "(*Migrator) DropTables() error",
+          "description": "DropTables drops all tables in the unified TMS schema (use with caution!)",
+          "returns": [
+            "error"
+          ],
+          "receiver": "*Migrator",
+          "is_public": true,
+          "line_start": 495,
+          "line_end": 500,
+          "complexity": 2
+        }
+      ],
+      "constants": null,
+      "concepts": [
+        "new",
+        "source",
+        "close",
+        "load",
+        "migrate",
+        "dry",
+        "migrator",
+        "filters",
+        "data",
+        "run",
+        "sources",
+        "tables",
+        "for",
+        "config",
+        "build",
+        "create",
+        "lookup",
+        "table",
+        "clause",
+        "set",
+        "connect",
+        "list",
+        "effective",
+        "where",
+        "drop",
+        "destination",
+        "only",
+        "validate"
+      ],
+      "analyzed_at": "2026-01-29T14:57:17.767345929Z"
+    },
+    "internal/migrator/worker.go": {
+      "path": "internal/migrator/worker.go",
+      "hash": "5d42785a2809aa9b",
+      "language": "go",
+      "size": 20052,
+      "line_count": 685,
+      "purpose": "Package migrator",
+      "imports": [
+        {
+          "path": "context"
+        },
+        {
+          "path": "database/sql"
+        },
+        {
+          "path": "fmt"
+        },
+        {
+          "path": "log"
+        },
+        {
+          "path": "strings"
+        },
+        {
+          "path": "sync"
+        },
+        {
+          "path": "sync/atomic"
+        },
+        {
+          "path": "time"
+        },
+        {
+          "path": "github.com/LambdatestIncPrivate/tms-migrator/internal/config"
+        },
+        {
+          "path": "github.com/LambdatestIncPrivate/tms-migrator/internal/db"
+        }
+      ],
+      "exports": [
+        {
+          "name": "WorkerPool",
+          "kind": "type",
+          "signature": "struct",
+          "description": "WorkerPool manages a pool of migration workers",
+          "line_start": 18,
+          "line_end": 33
+        },
+        {
+          "name": "Job",
+          "kind": "type",
+          "signature": "struct",
+          "description": "Job represents a migration job for a batch of rows",
+          "line_start": 36,
+          "line_end": 43
+        },
+        {
+          "name": "Result",
+          "kind": "type",
+          "signature": "struct",
+          "description": "Result represents the result of a migration job",
+          "line_start": 46,
+          "line_end": 52
+        },
+        {
+          "name": "Stats",
+          "kind": "type",
+          "signature": "struct",
+          "description": "Stats tracks migration statistics",
+          "line_start": 55,
+          "line_end": 62
+        },
+        {
+          "name": "ChecksumValidation",
+          "kind": "type",
+          "signature": "struct",
+          "description": "ChecksumValidation holds checksum validation result for a table",
+          "line_start": 65,
+          "line_end": 74
+        },
+        {
+          "name": "NewWorkerPool",
+          "kind": "function",
+          "signature": "NewWorkerPool(sourceConn *db.Connection, destConn *db.Connection, numWorkers int, batchSize int, maxRows int, filters *config.MigrationFilters) *WorkerPool",
+          "description": "NewWorkerPool creates a new worker pool",
+          "line_start": 77,
+          "line_end": 95
+        },
+        {
+          "name": "Start",
+          "kind": "function",
+          "signature": "(*WorkerPool) Start()",
+          "description": "Start starts the worker pool",
+          "line_start": 98,
+          "line_end": 107
+        },
+        {
+          "name": "Stop",
+          "kind": "function",
+          "signature": "(*WorkerPool) Stop()",
+          "description": "Stop stops the worker pool and waits for completion",
+          "line_start": 110,
+          "line_end": 115
+        },
+        {
+          "name": "SetLookupData",
+          "kind": "function",
+          "signature": "(*WorkerPool) SetLookupData(source string, table string, column string, data map[string]bool)",
+          "description": "SetLookupData sets pre-loaded lookup data for a source/table/column combination\nThe data is a set of values that exist in the lookup table",
+          "line_start": 119,
+          "line_end": 125
+        },
+        {
+          "name": "Submit",
+          "kind": "function",
+          "signature": "(*WorkerPool) Submit(job Job)",
+          "description": "Submit submits a job to the worker pool",
+          "line_start": 139,
+          "line_end": 145
+        },
+        {
+          "name": "GetStats",
+          "kind": "function",
+          "signature": "(*WorkerPool) GetStats() Stats",
+          "description": "GetStats returns the current migration statistics",
+          "line_start": 148,
+          "line_end": 163
+        },
+        {
+          "name": "MigrateTable",
+          "kind": "function",
+          "signature": "(*WorkerPool) MigrateTable(tableConfig config.TableConfig) error",
+          "description": "MigrateTable migrates a single table using the worker pool",
+          "line_start": 394,
+          "line_end": 461
+        },
+        {
+          "name": "GetColumnNames",
+          "kind": "function",
+          "signature": "GetColumnNames(rows *sql.Rows) ([]string, error)",
+          "description": "GetColumnNames extracts column names from sql.Rows",
+          "line_start": 464,
+          "line_end": 466
+        },
+        {
+          "name": "ValidateChecksum",
+          "kind": "function",
+          "signature": "(*WorkerPool) ValidateChecksum(tableConfig config.TableConfig) (*ChecksumValidation, error)",
+          "description": "ValidateChecksum validates data integrity between source and destination",
+          "line_start": 469,
+          "line_end": 622
+        },
+        {
+          "name": "AddChecksumResult",
+          "kind": "function",
+          "signature": "(*WorkerPool) AddChecksumResult(result ChecksumValidation)",
+          "description": "AddChecksumResult adds a checksum validation result to stats",
+          "line_start": 625,
+          "line_end": 629
+        }
+      ],
+      "types": [
+        {
+          "name": "WorkerPool",
+          "kind": "struct",
+          "description": "WorkerPool manages a pool of migration workers",
+          "fields": [
+            {
+              "name": "sourceConn",
+              "type": "*db.Connection",
+              "is_public": false
+            },
+            {
+              "name": "destConn",
+              "type": "*db.Connection",
+              "is_public": false
+            },
+            {
+              "name": "numWorkers",
+              "type": "int",
+              "is_public": false
+            },
+            {
+              "name": "batchSize",
+              "type": "int",
+              "is_public": false
+            },
+            {
+              "name": "maxRows",
+              "type": "int",
+              "is_public": false
+            },
+            {
+              "name": "filters",
+              "type": "*config.MigrationFilters",
+              "is_public": false
+            },
+            {
+              "name": "wg",
+              "type": "sync.WaitGroup",
+              "is_public": false
+            },
+            {
+              "name": "jobs",
+              "type": "chan Job",
+              "is_public": false
+            },
+            {
+              "name": "results",
+              "type": "chan Result",
+              "is_public": false
+            },
+            {
+              "name": "ctx",
+              "type": "context.Context",
+              "is_public": false
+            },
+            {
+              "name": "cancel",
+              "type": "context.CancelFunc",
+              "is_public": false
+            },
+            {
+              "name": "stats",
+              "type": "*Stats",
+              "is_public": false
+            },
+            {
+              "name": "lookupData",
+              "type": "map[string]map[string]bool",
+              "is_public": false
+            },
+            {
+              "name": "lookupMu",
+              "type": "sync.RWMutex",
+              "is_public": false
+            }
+          ],
+          "is_public": true,
+          "line_start": 18,
+          "line_end": 33
+        },
+        {
+          "name": "Job",
+          "kind": "struct",
+          "description": "Job represents a migration job for a batch of rows",
+          "fields": [
+            {
+              "name": "TableConfig",
+              "type": "config.TableConfig",
+              "is_public": true
+            },
+            {
+              "name": "Offset",
+              "type": "int",
+              "is_public": true
+            },
+            {
+              "name": "Limit",
+              "type": "int",
+              "is_public": true
+            },
+            {
+              "name": "SelectQuery",
+              "type": "string",
+              "is_public": true
+            },
+            {
+              "name": "InsertQuery",
+              "type": "string",
+              "is_public": true
+            },
+            {
+              "name": "DestColumns",
+              "type": "[]string",
+              "is_public": true
+            }
+          ],
+          "is_public": true,
+          "line_start": 36,
+          "line_end": 43
+        },
+        {
+          "name": "Result",
+          "kind": "struct",
+          "description": "Result represents the result of a migration job",
+          "fields": [
+            {
+              "name": "TableName",
+              "type": "string",
+              "is_public": true
+            },
+            {
+              "name": "RowsMigrated",
+              "type": "int64",
+              "is_public": true
+            },
+            {
+              "name": "Offset",
+              "type": "int",
+              "is_public": true
+            },
+            {
+              "name": "Duration",
+              "type": "time.Duration",
+              "is_public": true
+            },
+            {
+              "name": "Error",
+              "type": "error",
+              "is_public": true
+            }
+          ],
+          "is_public": true,
+          "line_start": 46,
+          "line_end": 52
+        },
+        {
+          "name": "Stats",
+          "kind": "struct",
+          "description": "Stats tracks migration statistics",
+          "fields": [
+            {
+              "name": "TotalRows",
+              "type": "int64",
+              "is_public": true
+            },
+            {
+              "name": "MigratedRows",
+              "type": "int64",
+              "is_public": true
+            },
+            {
+              "name": "FailedRows",
+              "type": "int64",
+              "is_public": true
+            },
+            {
+              "name": "StartTime",
+              "type": "time.Time",
+              "is_public": true
+            },
+            {
+              "name": "ChecksumResults",
+              "type": "[]ChecksumValidation",
+              "is_public": true
+            },
+            {
+              "name": "mu",
+              "type": "sync.Mutex",
+              "is_public": false
+            }
+          ],
+          "is_public": true,
+          "line_start": 55,
+          "line_end": 62
+        },
+        {
+          "name": "ChecksumValidation",
+          "kind": "struct",
+          "description": "ChecksumValidation holds checksum validation result for a table",
+          "fields": [
+            {
+              "name": "TableName",
+              "type": "string",
+              "is_public": true
+            },
+            {
+              "name": "SourceCount",
+              "type": "int64",
+              "is_public": true
+            },
+            {
+              "name": "DestCount",
+              "type": "int64",
+              "is_public": true
+            },
+            {
+              "name": "SourceChecksum",
+              "type": "string",
+              "is_public": true
+            },
+            {
+              "name": "DestChecksum",
+              "type": "string",
+              "is_public": true
+            },
+            {
+              "name": "CountMatch",
+              "type": "bool",
+              "is_public": true
+            },
+            {
+              "name": "ChecksumMatch",
+              "type": "bool",
+              "is_public": true
+            },
+            {
+              "name": "MissingIDs",
+              "type": "[]string",
+              "is_public": true
+            }
+          ],
+          "is_public": true,
+          "line_start": 65,
+          "line_end": 74
+        }
+      ],
+      "functions": [
+        {
+          "name": "NewWorkerPool",
+          "signature": "NewWorkerPool(sourceConn *db.Connection, destConn *db.Connection, numWorkers int, batchSize int, maxRows int, filters *config.MigrationFilters) *WorkerPool",
+          "description": "NewWorkerPool creates a new worker pool",
+          "parameters": [
+            {
+              "name": "sourceConn",
+              "type": "*db.Connection"
+            },
+            {
+              "name": "destConn",
+              "type": "*db.Connection"
+            },
+            {
+              "name": "numWorkers",
+              "type": "int"
+            },
+            {
+              "name": "batchSize",
+              "type": "int"
+            },
+            {
+              "name": "maxRows",
+              "type": "int"
+            },
+            {
+              "name": "filters",
+              "type": "*config.MigrationFilters"
+            }
+          ],
+          "returns": [
+            "*WorkerPool"
+          ],
+          "is_public": true,
+          "line_start": 77,
+          "line_end": 95,
+          "complexity": 1
+        },
+        {
+          "name": "Start",
+          "signature": "(*WorkerPool) Start()",
+          "description": "Start starts the worker pool",
+          "receiver": "*WorkerPool",
+          "is_public": true,
+          "line_start": 98,
+          "line_end": 107,
+          "complexity": 2
+        },
+        {
+          "name": "Stop",
+          "signature": "(*WorkerPool) Stop()",
+          "description": "Stop stops the worker pool and waits for completion",
+          "receiver": "*WorkerPool",
+          "is_public": true,
+          "line_start": 110,
+          "line_end": 115,
+          "complexity": 1
+        },
+        {
+          "name": "SetLookupData",
+          "signature": "(*WorkerPool) SetLookupData(source string, table string, column string, data map[string]bool)",
+          "description": "SetLookupData sets pre-loaded lookup data for a source/table/column combination\nThe data is a set of values that exist in the lookup table",
+          "parameters": [
+            {
+              "name": "source",
+              "type": "string"
+            },
+            {
+              "name": "table",
+              "type": "string"
+            },
+            {
+              "name": "column",
+              "type": "string"
+            },
+            {
+              "name": "data",
+              "type": "map[string]bool"
+            }
+          ],
+          "receiver": "*WorkerPool",
+          "is_public": true,
+          "line_start": 119,
+          "line_end": 125,
+          "complexity": 1
+        },
+        {
+          "name": "checkLookup",
+          "signature": "(*WorkerPool) checkLookup(source string, table string, column string, value string) bool",
+          "description": "checkLookup checks if a value exists in the lookup data for a given source/table/column",
+          "parameters": [
+            {
+              "name": "source",
+              "type": "string"
+            },
+            {
+              "name": "table",
+              "type": "string"
+            },
+            {
+              "name": "column",
+              "type": "string"
+            },
+            {
+              "name": "value",
+              "type": "string"
+            }
+          ],
+          "returns": [
+            "bool"
+          ],
+          "receiver": "*WorkerPool",
+          "is_public": false,
+          "line_start": 128,
+          "line_end": 136,
+          "complexity": 2
+        },
+        {
+          "name": "Submit",
+          "signature": "(*WorkerPool) Submit(job Job)",
+          "description": "Submit submits a job to the worker pool",
+          "parameters": [
+            {
+              "name": "job",
+              "type": "Job"
+            }
+          ],
+          "receiver": "*WorkerPool",
+          "is_public": true,
+          "line_start": 139,
+          "line_end": 145,
+          "complexity": 4
+        },
+        {
+          "name": "GetStats",
+          "signature": "(*WorkerPool) GetStats() Stats",
+          "description": "GetStats returns the current migration statistics",
+          "returns": [
+            "Stats"
+          ],
+          "receiver": "*WorkerPool",
+          "is_public": true,
+          "line_start": 148,
+          "line_end": 163,
+          "complexity": 1
+        },
+        {
+          "name": "worker",
+          "signature": "(*WorkerPool) worker(id int)",
+          "description": "worker processes jobs from the job channel",
+          "parameters": [
+            {
+              "name": "id",
+              "type": "int"
+            }
+          ],
+          "receiver": "*WorkerPool",
+          "is_public": false,
+          "line_start": 166,
+          "line_end": 179,
+          "complexity": 5
+        },
+        {
+          "name": "processJob",
+          "signature": "(*WorkerPool) processJob(job Job) Result",
+          "description": "processJob processes a single migration job",
+          "parameters": [
+            {
+              "name": "job",
+              "type": "Job"
+            }
+          ],
+          "returns": [
+            "Result"
+          ],
+          "receiver": "*WorkerPool",
+          "is_public": false,
+          "line_start": 182,
+          "line_end": 246,
+          "complexity": 9
+        },
+        {
+          "name": "transformRow",
+          "signature": "(*WorkerPool) transformRow(values []interface{}, columns []config.ColumnMapping) []interface{}",
+          "description": "transformRow applies transformations to row values\nNote: values array may be shorter than columns if some columns are lookup-only (empty source)",
+          "parameters": [
+            {
+              "name": "values",
+              "type": "[]interface{}"
+            },
+            {
+              "name": "columns",
+              "type": "[]config.ColumnMapping"
+            }
+          ],
+          "returns": [
+            "[]interface{}"
+          ],
+          "receiver": "*WorkerPool",
+          "is_public": false,
+          "line_start": 250,
+          "line_end": 374,
+          "complexity": 36
+        },
+        {
+          "name": "collectResults",
+          "signature": "(*WorkerPool) collectResults()",
+          "description": "collectResults collects results from workers and updates stats",
+          "receiver": "*WorkerPool",
+          "is_public": false,
+          "line_start": 377,
+          "line_end": 391,
+          "complexity": 3
+        },
+        {
+          "name": "MigrateTable",
+          "signature": "(*WorkerPool) MigrateTable(tableConfig config.TableConfig) error",
+          "description": "MigrateTable migrates a single table using the worker pool",
+          "parameters": [
+            {
+              "name": "tableConfig",
+              "type": "config.TableConfig"
+            }
+          ],
+          "returns": [
+            "error"
+          ],
+          "receiver": "*WorkerPool",
+          "is_public": true,
+          "line_start": 394,
+          "line_end": 461,
+          "complexity": 10
+        },
+        {
+          "name": "GetColumnNames",
+          "signature": "GetColumnNames(rows *sql.Rows) ([]string, error)",
+          "description": "GetColumnNames extracts column names from sql.Rows",
+          "parameters": [
+            {
+              "name": "rows",
+              "type": "*sql.Rows"
+            }
+          ],
+          "returns": [
+            "[]string",
+            "error"
+          ],
+          "is_public": true,
+          "line_start": 464,
+          "line_end": 466,
+          "complexity": 1
+        },
+        {
+          "name": "ValidateChecksum",
+          "signature": "(*WorkerPool) ValidateChecksum(tableConfig config.TableConfig) (*ChecksumValidation, error)",
+          "description": "ValidateChecksum validates data integrity between source and destination",
+          "parameters": [
+            {
+              "name": "tableConfig",
+              "type": "config.TableConfig"
+            }
+          ],
+          "returns": [
+            "*ChecksumValidation",
+            "error"
+          ],
+          "receiver": "*WorkerPool",
+          "is_public": true,
+          "line_start": 469,
+          "line_end": 622,
+          "complexity": 34
+        },
+        {
+          "name": "AddChecksumResult",
+          "signature": "(*WorkerPool) AddChecksumResult(result ChecksumValidation)",
+          "description": "AddChecksumResult adds a checksum validation result to stats",
+          "parameters": [
+            {
+              "name": "result",
+              "type": "ChecksumValidation"
+            }
+          ],
+          "receiver": "*WorkerPool",
+          "is_public": true,
+          "line_start": 625,
+          "line_end": 629,
+          "complexity": 1
+        },
+        {
+          "name": "buildEffectiveWhereClause",
+          "signature": "(*WorkerPool) buildEffectiveWhereClause(tableConfig config.TableConfig) string",
+          "description": "buildEffectiveWhereClause combines the configured where clause with runtime filters\nUses table-specific filter columns if configured, otherwise uses defaults",
+          "parameters": [
+            {
+              "name": "tableConfig",
+              "type": "config.TableConfig"
+            }
+          ],
+          "returns": [
+            "string"
+          ],
+          "receiver": "*WorkerPool",
+          "is_public": false,
+          "line_start": 633,
+          "line_end": 684,
+          "complexity": 16
+        }
+      ],
+      "constants": null,
+      "concepts": [
+        "stats",
+        "lookup",
+        "add",
+        "clause",
+        "start",
+        "check",
+        "job",
+        "stop",
+        "process",
+        "collect",
+        "set",
+        "data",
+        "names",
+        "checksum",
+        "build",
+        "effective",
+        "checksumvalidation",
+        "new",
+        "get",
+        "worker",
+        "transform",
+        "row",
+        "validate",
+        "workerpool",
+        "result",
+        "pool",
+        "submit",
+        "where",
+        "results",
+        "migrate",
+        "table",
+        "column"
+      ],
+      "analyzed_at": "2026-01-29T14:57:17.767910054Z"
+    },
+    "internal/schema/schema.go": {
+      "path": "internal/schema/schema.go",
+      "hash": "92053ba75eca25d0",
+      "language": "go",
+      "size": 10033,
+      "line_count": 362,
+      "purpose": "Package schema",
+      "imports": [
+        {
+          "path": "database/sql"
+        },
+        {
+          "path": "fmt"
+        },
+        {
+          "path": "log"
+        },
+        {
+          "path": "strings"
+        },
+        {
+          "path": "time"
+        }
+      ],
+      "exports": [
+        {
+          "name": "SchemaManager",
+          "kind": "type",
+          "signature": "struct",
+          "description": "SchemaManager handles database schema operations",
+          "line_start": 12,
+          "line_end": 17
+        },
+        {
+          "name": "NewSchemaManager",
+          "kind": "function",
+          "signature": "NewSchemaManager(db *sql.DB, partitionStartYear int) *SchemaManager",
+          "description": "NewSchemaManager creates a new SchemaManager",
+          "line_start": 20,
+          "line_end": 27
+        },
+        {
+          "name": "CreateAllTables",
+          "kind": "function",
+          "signature": "(*SchemaManager) CreateAllTables() error",
+          "description": "CreateAllTables creates all tables in the unified TMS schema",
+          "line_start": 30,
+          "line_end": 55
+        },
+        {
+          "name": "DropAllTables",
+          "kind": "function",
+          "signature": "(*SchemaManager) DropAllTables() error",
+          "description": "DropAllTables drops all tables (use with caution!)",
+          "line_start": 269,
+          "line_end": 285
+        },
+        {
+          "name": "TableExists",
+          "kind": "function",
+          "signature": "(*SchemaManager) TableExists(tableName string) (bool, error)",
+          "description": "TableExists checks if a table exists",
+          "line_start": 334,
+          "line_end": 346
+        },
+        {
+          "name": "GetPartitionCount",
+          "kind": "function",
+          "signature": "(*SchemaManager) GetPartitionCount(tableName string) (int, error)",
+          "description": "GetPartitionCount returns the number of partitions for a table",
+          "line_start": 349,
+          "line_end": 361
+        }
+      ],
+      "types": [
+        {
+          "name": "SchemaManager",
+          "kind": "struct",
+          "description": "SchemaManager handles database schema operations",
+          "fields": [
+            {
+              "name": "db",
+              "type": "*sql.DB",
+              "is_public": false
+            },
+            {
+              "name": "retentionPeriods",
+              "type": "[]int",
+              "is_public": false
+            },
+            {
+              "name": "partitionYears",
+              "type": "int",
+              "is_public": false
+            },
+            {
+              "name": "partitionStartYear",
+              "type": "int",
+              "is_public": false
+            }
+          ],
+          "is_public": true,
+          "line_start": 12,
+          "line_end": 17
+        }
+      ],
+      "functions": [
+        {
+          "name": "NewSchemaManager",
+          "signature": "NewSchemaManager(db *sql.DB, partitionStartYear int) *SchemaManager",
+          "description": "NewSchemaManager creates a new SchemaManager",
+          "parameters": [
+            {
+              "name": "db",
+              "type": "*sql.DB"
+            },
+            {
+              "name": "partitionStartYear",
+              "type": "int"
+            }
+          ],
+          "returns": [
+            "*SchemaManager"
+          ],
+          "is_public": true,
+          "line_start": 20,
+          "line_end": 27,
+          "complexity": 1
+        },
+        {
+          "name": "CreateAllTables",
+          "signature": "(*SchemaManager) CreateAllTables() error",
+          "description": "CreateAllTables creates all tables in the unified TMS schema",
+          "returns": [
+            "error"
+          ],
+          "receiver": "*SchemaManager",
+          "is_public": true,
+          "line_start": 30,
+          "line_end": 55,
+          "complexity": 5
+        },
+        {
+          "name": "createLookupTables",
+          "signature": "(*SchemaManager) createLookupTables() error",
+          "description": "createLookupTables creates non-partitioned lookup tables",
+          "returns": [
+            "error"
+          ],
+          "receiver": "*SchemaManager",
+          "is_public": false,
+          "line_start": 58,
+          "line_end": 79,
+          "complexity": 3
+        },
+        {
+          "name": "createReferenceTables",
+          "signature": "(*SchemaManager) createReferenceTables() error",
+          "description": "createReferenceTables creates non-partitioned reference tables",
+          "returns": [
+            "error"
+          ],
+          "receiver": "*SchemaManager",
+          "is_public": false,
+          "line_start": 82,
+          "line_end": 100,
+          "complexity": 3
+        },
+        {
+          "name": "createDesktopTables",
+          "signature": "(*SchemaManager) createDesktopTables() error",
+          "description": "createDesktopTables creates non-partitioned desktop configuration tables",
+          "returns": [
+            "error"
+          ],
+          "receiver": "*SchemaManager",
+          "is_public": false,
+          "line_start": 103,
+          "line_end": 128,
+          "complexity": 3
+        },
+        {
+          "name": "createPartitionedTables",
+          "signature": "(*SchemaManager) createPartitionedTables() error",
+          "description": "createPartitionedTables creates partitioned tables for each retention period",
+          "returns": [
+            "error"
+          ],
+          "receiver": "*SchemaManager",
+          "is_public": false,
+          "line_start": 131,
+          "line_end": 188,
+          "complexity": 6
+        },
+        {
+          "name": "generateDatePartitions",
+          "signature": "(*SchemaManager) generateDatePartitions() string",
+          "description": "generateDatePartitions generates RANGE partition definitions for DATE columns",
+          "returns": [
+            "string"
+          ],
+          "receiver": "*SchemaManager",
+          "is_public": false,
+          "line_start": 191,
+          "line_end": 218,
+          "complexity": 3
+        },
+        {
+          "name": "generateTimestampPartitions",
+          "signature": "(*SchemaManager) generateTimestampPartitions() string",
+          "description": "generateTimestampPartitions generates RANGE partition definitions for TIMESTAMP columns",
+          "returns": [
+            "string"
+          ],
+          "receiver": "*SchemaManager",
+          "is_public": false,
+          "line_start": 221,
+          "line_end": 248,
+          "complexity": 3
+        },
+        {
+          "name": "executeCreateTable",
+          "signature": "(*SchemaManager) executeCreateTable(tableName string, ddl string) error",
+          "description": "executeCreateTable executes a CREATE TABLE statement",
+          "parameters": [
+            {
+              "name": "tableName",
+              "type": "string"
+            },
+            {
+              "name": "ddl",
+              "type": "string"
+            }
+          ],
+          "returns": [
+            "error"
+          ],
+          "receiver": "*SchemaManager",
+          "is_public": false,
+          "line_start": 251,
+          "line_end": 266,
+          "complexity": 3
+        },
+        {
+          "name": "DropAllTables",
+          "signature": "(*SchemaManager) DropAllTables() error",
+          "description": "DropAllTables drops all tables (use with caution!)",
+          "returns": [
+            "error"
+          ],
+          "receiver": "*SchemaManager",
+          "is_public": true,
+          "line_start": 269,
+          "line_end": 285,
+          "complexity": 3
+        },
+        {
+          "name": "getAllTableNames",
+          "signature": "(*SchemaManager) getAllTableNames() []string",
+          "description": "getAllTableNames returns all table names that would be created",
+          "returns": [
+            "[]string"
+          ],
+          "receiver": "*SchemaManager",
+          "is_public": false,
+          "line_start": 288,
+          "line_end": 331,
+          "complexity": 3
+        },
+        {
+          "name": "TableExists",
+          "signature": "(*SchemaManager) TableExists(tableName string) (bool, error)",
+          "description": "TableExists checks if a table exists",
+          "parameters": [
+            {
+              "name": "tableName",
+              "type": "string"
+            }
+          ],
+          "returns": [
+            "bool",
+            "error"
+          ],
+          "receiver": "*SchemaManager",
+          "is_public": true,
+          "line_start": 334,
+          "line_end": 346,
+          "complexity": 2
+        },
+        {
+          "name": "GetPartitionCount",
+          "signature": "(*SchemaManager) GetPartitionCount(tableName string) (int, error)",
+          "description": "GetPartitionCount returns the number of partitions for a table",
+          "parameters": [
+            {
+              "name": "tableName",
+              "type": "string"
+            }
+          ],
+          "returns": [
+            "int",
+            "error"
+          ],
+          "receiver": "*SchemaManager",
+          "is_public": true,
+          "line_start": 349,
+          "line_end": 361,
+          "complexity": 2
+        }
+      ],
+      "constants": null,
+      "concepts": [
+        "date",
+        "get",
+        "count",
+        "new",
+        "all",
+        "generate",
+        "drop",
+        "names",
+        "exists",
+        "schemamanager",
+        "tables",
+        "lookup",
+        "timestamp",
+        "execute",
+        "table",
+        "partition",
+        "schema",
+        "create",
+        "desktop",
+        "partitions",
+        "manager",
+        "reference",
+        "partitioned"
+      ],
+      "analyzed_at": "2026-01-29T14:57:17.768631679Z"
+    },
+    "internal/schema/tables.go": {
+      "path": "internal/schema/tables.go",
+      "hash": "76cb43bdd6fbb064",
+      "language": "go",
+      "size": 24619,
+      "line_count": 622,
+      "purpose": "Package schema",
+      "imports": null,
+      "exports": [
+        {
+          "name": "BuildLookupTableDDL",
+          "kind": "const",
+          "line_start": 8,
+          "line_end": 0
+        },
+        {
+          "name": "TestLookupTableDDL",
+          "kind": "const",
+          "line_start": 20,
+          "line_end": 0
+        },
+        {
+          "name": "ClassLookupTableDDL",
+          "kind": "const",
+          "line_start": 34,
+          "line_end": 0
+        },
+        {
+          "name": "ManualTestLookupTableDDL",
+          "kind": "const",
+          "line_start": 46,
+          "line_end": 0
+        },
+        {
+          "name": "ShardLookupTableDDL",
+          "kind": "const",
+          "line_start": 60,
+          "line_end": 0
+        },
+        {
+          "name": "TagTableDDL",
+          "kind": "const",
+          "line_start": 78,
+          "line_end": 0
+        },
+        {
+          "name": "GeoLocationsTableDDL",
+          "kind": "const",
+          "line_start": 95,
+          "line_end": 0
+        },
+        {
+          "name": "OsAliasTableDDL",
+          "kind": "const",
+          "line_start": 118,
+          "line_end": 0
+        },
+        {
+          "name": "BrowserVersionTableDDL",
+          "kind": "const",
+          "line_start": 130,
+          "line_end": 0
+        },
+        {
+          "name": "BrowserTableDDL",
+          "kind": "const",
+          "line_start": 154,
+          "line_end": 0
+        },
+        {
+          "name": "OsVersionTableDDL",
+          "kind": "const",
+          "line_start": 169,
+          "line_end": 0
+        },
+        {
+          "name": "PwBrowserCompatibilityTableDDL",
+          "kind": "const",
+          "line_start": 186,
+          "line_end": 0
+        },
+        {
+          "name": "CdpConfigTableDDL",
+          "kind": "const",
+          "line_start": 210,
+          "line_end": 0
+        },
+        {
+          "name": "CypressConfigTableDDL",
+          "kind": "const",
+          "line_start": 226,
+          "line_end": 0
+        },
+        {
+          "name": "SeleniumConfigW3cTableDDL",
+          "kind": "const",
+          "line_start": 242,
+          "line_end": 0
+        },
+        {
+          "name": "GlobalSeleniumConfigTableDDL",
+          "kind": "const",
+          "line_start": 262,
+          "line_end": 0
+        },
+        {
+          "name": "BuildTableBaseDDL",
+          "kind": "const",
+          "line_start": 283,
+          "line_end": 0
+        },
+        {
+          "name": "BuildTeamTableBaseDDL",
+          "kind": "const",
+          "line_start": 321,
+          "line_end": 0
+        },
+        {
+          "name": "BuildTagTableBaseDDL",
+          "kind": "const",
+          "line_start": 338,
+          "line_end": 0
+        },
+        {
+          "name": "BuildCapabilityTableBaseDDL",
+          "kind": "const",
+          "line_start": 355,
+          "line_end": 0
+        },
+        {
+          "name": "ManualTestTableBaseDDL",
+          "kind": "const",
+          "line_start": 371,
+          "line_end": 0
+        },
+        {
+          "name": "FrameworkTestTableBaseDDL",
+          "kind": "const",
+          "line_start": 403,
+          "line_end": 0
+        },
+        {
+          "name": "TestTableBaseDDL",
+          "kind": "const",
+          "line_start": 424,
+          "line_end": 0
+        },
+        {
+          "name": "TestConfigTableBaseDDL",
+          "kind": "const",
+          "line_start": 465,
+          "line_end": 0
+        },
+        {
+          "name": "ManualTestConfigTableBaseDDL",
+          "kind": "const",
+          "line_start": 495,
+          "line_end": 0
+        },
+        {
+          "name": "TestCapabilityTableBaseDDL",
+          "kind": "const",
+          "line_start": 521,
+          "line_end": 0
+        },
+        {
+          "name": "TestTagTableBaseDDL",
+          "kind": "const",
+          "line_start": 539,
+          "line_end": 0
+        },
+        {
+          "name": "GalleryTableBaseDDL",
+          "kind": "const",
+          "line_start": 558,
+          "line_end": 0
+        },
+        {
+          "name": "ClassTableBaseDDL",
+          "kind": "const",
+          "line_start": 580,
+          "line_end": 0
+        },
+        {
+          "name": "ShardTableBaseDDL",
+          "kind": "const",
+          "line_start": 604,
+          "line_end": 0
+        }
+      ],
+      "types": null,
+      "functions": null,
+      "constants": [
+        {
+          "name": "BuildLookupTableDDL",
+          "value": "`\nCREATE TABLE IF NOT EXISTS build_lookup_table (\n    build_id bigint NOT NULL,\n    retention int NOT NULL DEFAULT 0,\n    create_timestamp timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,\n    PRIMARY KEY (build_id),\n    KEY idx_retention (retention),\n    KEY idx_create_timestamp (create_timestamp)\n) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci\n`",
+          "is_public": true,
+          "line_start": 8
+        },
+        {
+          "name": "TestLookupTableDDL",
+          "value": "`\nCREATE TABLE IF NOT EXISTS test_lookup_table (\n    id bigint NOT NULL AUTO_INCREMENT,\n    test_id varchar(50) NOT NULL,\n    retention int NOT NULL DEFAULT 0,\n    create_timestamp timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,\n    PRIMARY KEY (id),\n    UNIQUE KEY uk_test_id (test_id),\n    KEY idx_retention (retention),\n    KEY idx_create_timestamp (create_timestamp)\n) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci\n`",
+          "is_public": true,
+          "line_start": 20
+        },
+        {
+          "name": "ClassLookupTableDDL",
+          "value": "`\nCREATE TABLE IF NOT EXISTS class_lookup_table (\n    class_id bigint NOT NULL,\n    retention int NOT NULL DEFAULT 0,\n    create_timestamp timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,\n    PRIMARY KEY (class_id),\n    KEY idx_retention (retention),\n    KEY idx_create_timestamp (create_timestamp)\n) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci\n`",
+          "is_public": true,
+          "line_start": 34
+        },
+        {
+          "name": "ManualTestLookupTableDDL",
+          "value": "`\nCREATE TABLE IF NOT EXISTS manual_test_lookup_table (\n    id bigint NOT NULL AUTO_INCREMENT,\n    test_id varchar(50) NOT NULL,\n    retention int NOT NULL DEFAULT 0,\n    create_timestamp timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,\n    PRIMARY KEY (id),\n    UNIQUE KEY uk_test_id (test_id),\n    KEY idx_retention (retention),\n    KEY idx_create_timestamp (create_timestamp)\n) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci\n`",
+          "is_public": true,
+          "line_start": 46
+        },
+        {
+          "name": "ShardLookupTableDDL",
+          "value": "`\nCREATE TABLE IF NOT EXISTS shard_lookup_table (\n    id bigint NOT NULL AUTO_INCREMENT,\n    shard_id varchar(50) NOT NULL,\n    retention int NOT NULL DEFAULT 0,\n    create_timestamp timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,\n    PRIMARY KEY (id),\n    UNIQUE KEY uk_shard_id (shard_id),\n    KEY idx_retention (retention),\n    KEY idx_create_timestamp (create_timestamp)\n) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci\n`",
+          "is_public": true,
+          "line_start": 60
+        },
+        {
+          "name": "TagTableDDL",
+          "value": "`\nCREATE TABLE IF NOT EXISTS tag (\n    id bigint NOT NULL AUTO_INCREMENT,\n    name varchar(50) NOT NULL,\n    org_id int unsigned NOT NULL,\n    user_id int unsigned NOT NULL,\n    last_used_at timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,\n    create_timestamp timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,\n    update_timestamp timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,\n    PRIMARY KEY (id),\n    KEY idx_org_id (org_id),\n    KEY idx_user_id (user_id),\n    KEY idx_name (name)\n) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci\n`",
+          "is_public": true,
+          "line_start": 78
+        },
+        {
+          "name": "GeoLocationsTableDDL",
+          "value": "`\nCREATE TABLE IF NOT EXISTS geo_locations (\n    id bigint NOT NULL AUTO_INCREMENT,\n    location_code varchar(8) CHARACTER SET latin1 COLLATE latin1_swedish_ci DEFAULT NULL,\n    location_name varchar(100) NOT NULL,\n    geo_vendor varchar(20) DEFAULT 'GeoEdge',\n    create_timestamp timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,\n    update_timestamp timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,\n    status tinyint NOT NULL DEFAULT 1,\n    remark text,\n    location_type varchar(30) NOT NULL DEFAULT 'country',\n    geo_vendor_location_codes varchar(25) DEFAULT NULL,\n    PRIMARY KEY (id),\n    KEY idx_location_code (location_code),\n    KEY idx_location_type (location_type)\n) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci\n`",
+          "is_public": true,
+          "line_start": 95
+        },
+        {
+          "name": "OsAliasTableDDL",
+          "value": "`\nCREATE TABLE IF NOT EXISTS os_alias (\n    id bigint NOT NULL AUTO_INCREMENT,\n    os_version_id varchar(50) NOT NULL,\n    alias varchar(50) NOT NULL,\n    PRIMARY KEY (id),\n    KEY idx_os_version_id (os_version_id),\n    KEY idx_alias (alias)\n) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci\n`",
+          "is_public": true,
+          "line_start": 118
+        },
+        {
+          "name": "BrowserVersionTableDDL",
+          "value": "`\nCREATE TABLE IF NOT EXISTS browser_version (\n    browser_version_id varchar(50) NOT NULL DEFAULT '',\n    browser_id varchar(50) NOT NULL DEFAULT '',\n    version varchar(20) NOT NULL DEFAULT '',\n    status enum('active','inactive') NOT NULL DEFAULT 'active',\n    display_order int NOT NULL DEFAULT 1,\n    published tinyint(1) DEFAULT 1,\n    hyperexecute_published tinyint(1) NOT NULL DEFAULT 0,\n    force_update tinyint(1) DEFAULT 0,\n    channel_type enum('stable','beta','dev','canary') NOT NULL DEFAULT 'stable',\n    automation_enabled tinyint(1) NOT NULL DEFAULT 0,\n    manual_supported tinyint(1) NOT NULL DEFAULT 0,\n    full_version varchar(50) NOT NULL DEFAULT '',\n    created_at timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,\n    updated_at timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,\n    PRIMARY KEY (browser_version_id),\n    KEY idx_browser_id (browser_id),\n    KEY idx_status (status),\n    KEY idx_channel_type (channel_type)\n) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci\n`",
+          "is_public": true,
+          "line_start": 130
+        },
+        {
+          "name": "BrowserTableDDL",
+          "value": "`\nCREATE TABLE IF NOT EXISTS browser (\n    browser_id varchar(50) NOT NULL DEFAULT '',\n    name varchar(100) NOT NULL DEFAULT '',\n    display_order int NOT NULL DEFAULT 1,\n    status enum('active','inactive') NOT NULL DEFAULT 'active',\n    automation_supported tinyint(1) NOT NULL DEFAULT 0,\n    manual_supported tinyint(1) NOT NULL DEFAULT 0,\n    PRIMARY KEY (browser_id),\n    KEY idx_name (name),\n    KEY idx_status (status)\n) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci\n`",
+          "is_public": true,
+          "line_start": 154
+        },
+        {
+          "name": "OsVersionTableDDL",
+          "value": "`\nCREATE TABLE IF NOT EXISTS os_version (\n    os_version_id varchar(50) NOT NULL DEFAULT '',\n    name varchar(100) NOT NULL DEFAULT '',\n    version varchar(50) NOT NULL DEFAULT '',\n    category enum('windows','mac','linux') NOT NULL DEFAULT 'windows',\n    display_order int NOT NULL DEFAULT 1,\n    status_ind enum('active','inactive') NOT NULL DEFAULT 'active',\n    resolution varchar(500) DEFAULT NULL,\n    PRIMARY KEY (os_version_id),\n    KEY idx_name (name),\n    KEY idx_category (category),\n    KEY idx_status_ind (status_ind)\n) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci\n`",
+          "is_public": true,
+          "line_start": 169
+        },
+        {
+          "name": "PwBrowserCompatibilityTableDDL",
+          "value": "`\nCREATE TABLE IF NOT EXISTS pw_browser_compatibility (\n    id bigint NOT NULL AUTO_INCREMENT,\n    playwright_client_version varchar(50) DEFAULT NULL,\n    browser_id varchar(50) DEFAULT NULL,\n    os_version_id varchar(50) DEFAULT NULL,\n    min_browser_version varchar(50) DEFAULT NULL,\n    max_browser_version varchar(50) DEFAULT NULL,\n    status enum('active','inactive') NOT NULL DEFAULT 'active',\n    automation_supported tinyint(1) NOT NULL DEFAULT 0,\n    hye_supported tinyint(1) NOT NULL DEFAULT 0,\n    playwright_supported tinyint(1) NOT NULL DEFAULT 0,\n    puppeteer_supported tinyint(1) NOT NULL DEFAULT 0,\n    k6_supported tinyint(1) NOT NULL DEFAULT 0,\n    taiko_supported tinyint(1) NOT NULL DEFAULT 0,\n    playwright_version varchar(50) DEFAULT NULL,\n    PRIMARY KEY (id),\n    KEY idx_browser_id (browser_id),\n    KEY idx_os_version_id (os_version_id),\n    KEY idx_status (status)\n) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci\n`",
+          "is_public": true,
+          "line_start": 186
+        },
+        {
+          "name": "CdpConfigTableDDL",
+          "value": "`\nCREATE TABLE IF NOT EXISTS cdp_config (\n    cdp_config_id bigint NOT NULL AUTO_INCREMENT,\n    os_version_id varchar(50) DEFAULT NULL,\n    browser_version_id varchar(50) DEFAULT NULL,\n    status enum('active','inactive') NOT NULL DEFAULT 'active',\n    automation_supported tinyint(1) NOT NULL DEFAULT 0,\n    hye_supported tinyint(1) NOT NULL DEFAULT 0,\n    PRIMARY KEY (cdp_config_id),\n    KEY idx_os_version_id (os_version_id),\n    KEY idx_browser_version_id (browser_version_id),\n    KEY idx_status (status)\n) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci\n`",
+          "is_public": true,
+          "line_start": 210
+        },
+        {
+          "name": "CypressConfigTableDDL",
+          "value": "`\nCREATE TABLE IF NOT EXISTS cypress_config (\n    id bigint NOT NULL AUTO_INCREMENT,\n    browser_version_id varchar(50) DEFAULT NULL,\n    os_version_id varchar(50) DEFAULT NULL,\n    status enum('active','inactive') NOT NULL DEFAULT 'active',\n    automation_supported tinyint(1) NOT NULL DEFAULT 0,\n    hye_supported tinyint(1) NOT NULL DEFAULT 0,\n    PRIMARY KEY (id),\n    KEY idx_browser_version_id (browser_version_id),\n    KEY idx_os_version_id (os_version_id),\n    KEY idx_status (status)\n) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci\n`",
+          "is_public": true,
+          "line_start": 226
+        },
+        {
+          "name": "SeleniumConfigW3cTableDDL",
+          "value": "`\nCREATE TABLE IF NOT EXISTS selenium_config_w3c (\n    selenium_config_id bigint NOT NULL AUTO_INCREMENT,\n    os_version_id varchar(50) DEFAULT NULL,\n    browser_version_id varchar(50) DEFAULT NULL,\n    selenium_version varchar(50) DEFAULT NULL,\n    driver_version varchar(50) DEFAULT NULL,\n    is_default tinyint(1) NOT NULL DEFAULT 0,\n    status enum('active','inactive') NOT NULL DEFAULT 'active',\n    is_w3c tinyint(1) NOT NULL DEFAULT 0,\n    automation_supported tinyint(1) NOT NULL DEFAULT 0,\n    hye_supported tinyint(1) NOT NULL DEFAULT 0,\n    PRIMARY KEY (selenium_config_id),\n    KEY idx_os_version_id (os_version_id),\n    KEY idx_browser_version_id (browser_version_id),\n    KEY idx_status (status)\n) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci\n`",
+          "is_public": true,
+          "line_start": 242
+        },
+        {
+          "name": "GlobalSeleniumConfigTableDDL",
+          "value": "`\nCREATE TABLE IF NOT EXISTS global_selenium_config (\n    id bigint NOT NULL AUTO_INCREMENT,\n    selenium_version varchar(50) DEFAULT NULL,\n    status enum('active','inactive') NOT NULL DEFAULT 'active',\n    published tinyint(1) NOT NULL DEFAULT 0,\n    create_timestamp timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,\n    update_timestamp timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,\n    se_telemetry_enabled tinyint(1) NOT NULL DEFAULT 0,\n    PRIMARY KEY (id),\n    KEY idx_selenium_version (selenium_version),\n    KEY idx_status (status)\n) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci\n`",
+          "is_public": true,
+          "line_start": 262
+        },
+        {
+          "name": "BuildTableBaseDDL",
+          "value": "`\nCREATE TABLE IF NOT EXISTS %s (\n    id bigint NOT NULL AUTO_INCREMENT,\n    user_id int unsigned NOT NULL,\n    org_id int unsigned NOT NULL,\n    username varchar(100) DEFAULT NULL,\n    name varchar(255) DEFAULT NULL,\n    create_timestamp timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,\n    end_timestamp timestamp NULL DEFAULT NULL,\n    status_ind varchar(30) NOT NULL DEFAULT 'active',\n    created_date DATE NOT NULL DEFAULT (CURDATE()),\n    update_timestamp timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,\n    updated_by bigint DEFAULT NULL,\n    framework_type varchar(50) DEFAULT NULL,\n    group_id bigint DEFAULT NULL,\n    metadata json DEFAULT NULL,\n    tms_project_id varchar(50) DEFAULT NULL,\n    expiry_timestamp timestamp DEFAULT NULL,\n    build_result varchar(30) DEFAULT NULL,\n    remark varchar(100) DEFAULT NULL,\n    job_id varchar(50) DEFAULT NULL,\n    used_features int unsigned DEFAULT NULL,\n    mode varchar(20) NOT NULL DEFAULT 'cloud',\n    build_counter int NOT NULL DEFAULT 0,\n    product_type varchar(30) DEFAULT NULL,\n    PRIMARY KEY (id, created_date),\n    KEY idx_org_id (org_id),\n    KEY idx_user_id (user_id),\n    KEY idx_create_timestamp (create_timestamp),\n    KEY idx_status_ind (status_ind),\n    KEY idx_tms_project_id (tms_project_id)\n) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci\nPARTITION BY RANGE (TO_DAYS(created_date)) (\n    %s\n)\n`",
+          "is_public": true,
+          "line_start": 283
+        },
+        {
+          "name": "BuildTeamTableBaseDDL",
+          "value": "`\nCREATE TABLE IF NOT EXISTS %s (\n    id bigint NOT NULL AUTO_INCREMENT,\n    build_id bigint NOT NULL,\n    team_id bigint NOT NULL,\n    create_timestamp timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,\n    update_timestamp timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,\n    PRIMARY KEY (id, create_timestamp),\n    KEY idx_build_id (build_id),\n    KEY idx_team_id (team_id)\n) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci\nPARTITION BY RANGE (UNIX_TIMESTAMP(create_timestamp)) (\n    %s\n)\n`",
+          "is_public": true,
+          "line_start": 321
+        },
+        {
+          "name": "BuildTagTableBaseDDL",
+          "value": "`\nCREATE TABLE IF NOT EXISTS %s (\n    id bigint NOT NULL AUTO_INCREMENT,\n    tag_id bigint NOT NULL,\n    build_id bigint NOT NULL,\n    create_timestamp timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,\n    update_timestamp timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,\n    PRIMARY KEY (id, create_timestamp),\n    KEY idx_tag_id (tag_id),\n    KEY idx_build_id (build_id)\n) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci\nPARTITION BY RANGE (UNIX_TIMESTAMP(create_timestamp)) (\n    %s\n)\n`",
+          "is_public": true,
+          "line_start": 338
+        },
+        {
+          "name": "BuildCapabilityTableBaseDDL",
+          "value": "`\nCREATE TABLE IF NOT EXISTS %s (\n    id bigint NOT NULL AUTO_INCREMENT,\n    build_id bigint NOT NULL,\n    capability mediumtext,\n    create_timestamp timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,\n    update_timestamp timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,\n    PRIMARY KEY (id, create_timestamp),\n    KEY idx_build_id (build_id)\n) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci\nPARTITION BY RANGE (UNIX_TIMESTAMP(create_timestamp)) (\n    %s\n)\n`",
+          "is_public": true,
+          "line_start": 355
+        },
+        {
+          "name": "ManualTestTableBaseDDL",
+          "value": "`\nCREATE TABLE IF NOT EXISTS %s (\n    id varchar(50) NOT NULL,\n    name varchar(255) DEFAULT NULL,\n    org_id int unsigned NOT NULL,\n    user_id int unsigned NOT NULL,\n    username varchar(100) DEFAULT NULL,\n    tms_project_id varchar(50) DEFAULT NULL,\n    app_id varchar(255) DEFAULT NULL,\n    tunnel_identifier varchar(255) DEFAULT NULL,\n    create_timestamp timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,\n    start_timestamp timestamp NULL DEFAULT NULL,\n    end_timestamp timestamp NULL DEFAULT NULL,\n    status_ind varchar(30) NOT NULL DEFAULT 'initiated',\n    remark text,\n    update_timestamp timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,\n    is_favourite tinyint(1) NOT NULL DEFAULT 0,\n    parent_test_id varchar(50) DEFAULT NULL,\n    test_type_id varchar(50) DEFAULT NULL,\n    start_url varchar(1000) DEFAULT NULL,\n    PRIMARY KEY (id, create_timestamp),\n    KEY idx_org_id (org_id),\n    KEY idx_user_id (user_id),\n    KEY idx_status_ind (status_ind),\n    KEY idx_tms_project_id (tms_project_id)\n) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci\nPARTITION BY RANGE (UNIX_TIMESTAMP(create_timestamp)) (\n    %s\n)\n`",
+          "is_public": true,
+          "line_start": 371
+        },
+        {
+          "name": "FrameworkTestTableBaseDDL",
+          "value": "`\nCREATE TABLE IF NOT EXISTS %s (\n    id bigint NOT NULL AUTO_INCREMENT,\n    test_id varchar(50) NOT NULL,\n    class_id bigint DEFAULT NULL,\n    shard_id varchar(50) DEFAULT NULL,\n    retry_count int DEFAULT 0,\n    create_timestamp timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,\n    update_timestamp timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,\n    test_number varchar(5) DEFAULT NULL,\n    PRIMARY KEY (id, create_timestamp),\n    KEY idx_test_id (test_id),\n    KEY idx_class_id (class_id),\n    KEY idx_shard_id (shard_id)\n) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci\nPARTITION BY RANGE (UNIX_TIMESTAMP(create_timestamp)) (\n    %s\n)\n`",
+          "is_public": true,
+          "line_start": 403
+        },
+        {
+          "name": "TestTableBaseDDL",
+          "value": "`\nCREATE TABLE IF NOT EXISTS %s (\n    id varchar(50) NOT NULL,\n    name varchar(255) DEFAULT NULL,\n    org_id int unsigned DEFAULT NULL,\n    user_id int unsigned DEFAULT NULL,\n    username varchar(100) NOT NULL,\n    session_id varchar(50) DEFAULT NULL,\n    build_id bigint NOT NULL,\n    app_id varchar(255) DEFAULT NULL,\n    tunnel_identifier varchar(255) DEFAULT NULL,\n    create_timestamp timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,\n    start_timestamp timestamp NULL DEFAULT NULL,\n    end_timestamp timestamp NULL DEFAULT NULL,\n    status_ind varchar(30) DEFAULT NULL,\n    reason text,\n    visibility varchar(30) NOT NULL DEFAULT 'public',\n    job_id varchar(50) DEFAULT NULL,\n    plugin varchar(255) DEFAULT NULL,\n    update_timestamp timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,\n    updated_by bigint DEFAULT NULL,\n    is_deleted tinyint(1) NOT NULL DEFAULT 0 COMMENT 'To mark test deleted',\n    test_result varchar(30) DEFAULT NULL,\n    group_id bigint DEFAULT NULL,\n    remark text,\n    used_features int DEFAULT NULL,\n    test_type varchar(50) DEFAULT NULL,\n    test_expiry_date timestamp DEFAULT NULL,\n    PRIMARY KEY (id, create_timestamp),\n    KEY idx_org_id (org_id),\n    KEY idx_user_id (user_id),\n    KEY idx_build_id (build_id),\n    KEY idx_session_id (session_id),\n    KEY idx_status_ind (status_ind)\n) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci\nPARTITION BY RANGE (UNIX_TIMESTAMP(create_timestamp)) (\n    %s\n)\n`",
+          "is_public": true,
+          "line_start": 424
+        },
+        {
+          "name": "TestConfigTableBaseDDL",
+          "value": "`\nCREATE TABLE IF NOT EXISTS %s (\n    id bigint NOT NULL AUTO_INCREMENT,\n    test_id varchar(50) DEFAULT NULL,\n    device varchar(100) DEFAULT NULL,\n    os varchar(50) DEFAULT NULL,\n    os_version varchar(20) DEFAULT NULL,\n    timezone varchar(20) DEFAULT NULL,\n    browser varchar(20) DEFAULT NULL,\n    client_ip varchar(50) DEFAULT NULL COMMENT 'Client IPv4 address',\n    hub_proxy_ip varchar(50) DEFAULT NULL COMMENT 'Nginx Hub Proxy IPv4 address',\n    hub_proxy_region varchar(20) DEFAULT NULL,\n    hub_proxy_region_initial varchar(20) DEFAULT NULL,\n    device_type varchar(30) DEFAULT NULL,\n    create_timestamp timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,\n    update_timestamp timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,\n    metadata json DEFAULT NULL COMMENT 'Contains command_count, live_interaction_clicked, live_interaction_clicked_timestamp, etc.',\n    feature_flag json DEFAULT NULL COMMENT 'From lambda_ltms.test_additional_param.feature_flag',\n    appium_version varchar(50) NOT NULL DEFAULT 'latest',\n    PRIMARY KEY (id, create_timestamp),\n    KEY idx_test_id (test_id),\n    KEY idx_device (device),\n    KEY idx_os (os)\n) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci\nPARTITION BY RANGE (UNIX_TIMESTAMP(create_timestamp)) (\n    %s\n)\n`",
+          "is_public": true,
+          "line_start": 465
+        },
+        {
+          "name": "ManualTestConfigTableBaseDDL",
+          "value": "`\nCREATE TABLE IF NOT EXISTS %s (\n    id bigint NOT NULL AUTO_INCREMENT,\n    test_id varchar(50) DEFAULT NULL,\n    device varchar(100) DEFAULT NULL,\n    os varchar(50) DEFAULT NULL,\n    version varchar(20) DEFAULT NULL,\n    app_package varchar(100) DEFAULT NULL,\n    browser varchar(20) DEFAULT NULL,\n    mode varchar(30) NOT NULL DEFAULT 'cloud',\n    group_id int DEFAULT NULL,\n    device_type varchar(30) DEFAULT NULL,\n    create_timestamp timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,\n    update_timestamp timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,\n    metadata json DEFAULT NULL,\n    PRIMARY KEY (id, create_timestamp),\n    KEY idx_test_id (test_id),\n    KEY idx_device (device),\n    KEY idx_os (os)\n) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci\nPARTITION BY RANGE (UNIX_TIMESTAMP(create_timestamp)) (\n    %s\n)\n`",
+          "is_public": true,
+          "line_start": 495
+        },
+        {
+          "name": "TestCapabilityTableBaseDDL",
+          "value": "`\nCREATE TABLE IF NOT EXISTS %s (\n    id bigint NOT NULL AUTO_INCREMENT,\n    test_id varchar(50) DEFAULT NULL,\n    capability mediumtext NOT NULL,\n    customdata_capability mediumtext,\n    session_data mediumtext,\n    create_timestamp timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,\n    update_timestamp timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,\n    PRIMARY KEY (id, create_timestamp),\n    KEY idx_test_id (test_id)\n) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci\nPARTITION BY RANGE (UNIX_TIMESTAMP(create_timestamp)) (\n    %s\n)\n`",
+          "is_public": true,
+          "line_start": 521
+        },
+        {
+          "name": "TestTagTableBaseDDL",
+          "value": "`\nCREATE TABLE IF NOT EXISTS %s (\n    id bigint NOT NULL AUTO_INCREMENT,\n    tag_id bigint NOT NULL,\n    test_id varchar(50) DEFAULT NULL,\n    build_id bigint NOT NULL,\n    create_timestamp timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,\n    update_timestamp timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,\n    PRIMARY KEY (id, create_timestamp),\n    KEY idx_tag_id (tag_id),\n    KEY idx_test_id (test_id),\n    KEY idx_build_id (build_id)\n) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci\nPARTITION BY RANGE (UNIX_TIMESTAMP(create_timestamp)) (\n    %s\n)\n`",
+          "is_public": true,
+          "line_start": 539
+        },
+        {
+          "name": "GalleryTableBaseDDL",
+          "value": "`\nCREATE TABLE IF NOT EXISTS %s (\n    id bigint NOT NULL AUTO_INCREMENT,\n    test_id varchar(50) DEFAULT NULL,\n    media_url varchar(255) DEFAULT NULL,\n    type varchar(30) DEFAULT NULL,\n    is_deleted tinyint(1) NOT NULL DEFAULT 0,\n    play_duration bigint DEFAULT NULL,\n    thumb_url varchar(255) DEFAULT NULL,\n    create_timestamp timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,\n    update_timestamp timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,\n    remark varchar(500) DEFAULT NULL,\n    PRIMARY KEY (id, create_timestamp),\n    KEY idx_test_id (test_id),\n    KEY idx_type (type)\n) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci\nPARTITION BY RANGE (UNIX_TIMESTAMP(create_timestamp)) (\n    %s\n)\n`",
+          "is_public": true,
+          "line_start": 558
+        },
+        {
+          "name": "ClassTableBaseDDL",
+          "value": "`\nCREATE TABLE IF NOT EXISTS %s (\n    id bigint NOT NULL AUTO_INCREMENT,\n    name varchar(255) NOT NULL DEFAULT 'Untitled',\n    build_id bigint NOT NULL,\n    status_ind varchar(255) NOT NULL DEFAULT 'active',\n    updated_by int DEFAULT NULL,\n    is_deleted tinyint(1) NOT NULL DEFAULT 0,\n    start_timestamp timestamp NULL DEFAULT NULL,\n    end_timestamp timestamp NULL DEFAULT NULL,\n    shard_id varchar(50) DEFAULT NULL,\n    create_timestamp timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,\n    update_timestamp timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,\n    PRIMARY KEY (id, create_timestamp),\n    KEY idx_build_id (build_id),\n    KEY idx_shard_id (shard_id),\n    KEY idx_status_ind (status_ind)\n) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci\nPARTITION BY RANGE (UNIX_TIMESTAMP(create_timestamp)) (\n    %s\n)\n`",
+          "is_public": true,
+          "line_start": 580
+        },
+        {
+          "name": "ShardTableBaseDDL",
+          "value": "`\nCREATE TABLE IF NOT EXISTS %s (\n    id varchar(50) NOT NULL,\n    name varchar(255) DEFAULT NULL,\n    build_id bigint NOT NULL,\n    status_ind varchar(30) DEFAULT NULL,\n    device_id varchar(50) DEFAULT NULL,\n    remark text,\n    create_timestamp timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,\n    update_timestamp timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,\n    PRIMARY KEY (id, create_timestamp),\n    KEY idx_build_id (build_id),\n    KEY idx_status_ind (status_ind)\n) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci\nPARTITION BY RANGE (UNIX_TIMESTAMP(create_timestamp)) (\n    %s\n)\n`",
+          "is_public": true,
+          "line_start": 604
+        }
+      ],
+      "concepts": [],
+      "analyzed_at": "2026-01-29T14:57:17.768888596Z"
+    }
+  },
+  "architecture": {
+    "overview": "Repository with 11 files across 7 modules. 88 public exports, 16 types, 60 functions.",
+    "modules": [
+      {
+        "path": "internal/db",
+        "name": "db",
+        "files": [
+          "internal/db/connection.go"
+        ],
+        "is_internal": true
+      },
+      {
+        "path": "internal/schema",
+        "name": "schema",
+        "files": [
+          "internal/schema/schema.go",
+          "internal/schema/tables.go"
+        ],
+        "is_internal": true
+      },
+      {
+        "path": "configs",
+        "name": "configs",
+        "files": [
+          "configs/migration.yaml"
+        ],
+        "is_internal": false
+      },
+      {
+        "path": "internal/config",
+        "name": "config",
+        "files": [
+          "internal/config/config.go"
+        ],
+        "is_internal": true
+      },
+      {
+        "path": "internal/migrator",
+        "name": "migrator",
+        "files": [
+          "internal/migrator/migrator.go",
+          "internal/migrator/worker.go"
+        ],
+        "is_internal": true
+      },
+      {
+        "path": "root",
+        "name": "root",
+        "files": [
+          "README.md",
+          "go.mod",
+          "Makefile"
+        ],
+        "is_internal": false
+      },
+      {
+        "path": "cmd/migrator",
+        "name": "migrator",
+        "files": [
+          "cmd/migrator/main.go"
+        ],
+        "is_internal": false
+      }
+    ],
+    "entry_points": [
+      {
+        "path": "cmd/migrator/main.go",
+        "type": "main",
+        "purpose": "Application entry point"
+      }
+    ],
+    "dependencies": null,
+    "build_system": "go modules",
+    "main_packages": [
+      "cmd/migrator"
+    ]
+  },
+  "statistics": {
+    "total_files": 11,
+    "total_lines": 5079,
+    "languages": {
+      "go": 7,
+      "go-mod": 1,
+      "makefile": 1,
+      "markdown": 1,
+      "yaml": 1
+    },
+    "function_count": 60,
+    "type_count": 16,
+    "export_count": 88
+  },
+  "version": 1,
+  "ai_summary": {
+    "overview": "TMS-Migrator is a database migration tool designed to transfer data between different database systems with parallel processing capabilities. It provides configurable batch processing, data validation through checksums, and filtering mechanisms for selective migration.",
+    "purpose": "To facilitate reliable and efficient database migrations with support for parallel processing, data integrity validation, and customizable migration rules",
+    "key_features": [
+      "Parallel data migration using worker pools",
+      "Configurable batch processing with customizable batch sizes",
+      "Data integrity validation through checksum verification",
+      "Schema management and table configuration",
+      "Migration filtering and selective data transfer",
+      "Progress tracking and migration statistics",
+      "Lookup data management for reference integrity"
+    ],
+    "technology_stack": [
+      "Go",
+      "SQL databases",
+      "YAML configuration",
+      "Makefile build system"
+    ],
+    "architecture_style": "Modular monolith with worker pool pattern",
+    "main_components": [
+      "Worker Pool Manager (parallel processing engine)",
+      "Schema Manager (database schema handling)",
+      "Configuration Manager (migration settings)",
+      "Database Connection Handler",
+      "Checksum Validator (data integrity verification)",
+      "Migration Filters (selective data processing)"
+    ],
+    "suggestions": [
+      "Add comprehensive logging and monitoring capabilities",
+      "Implement resume functionality for interrupted migrations",
+      "Add support for more database types and connection pooling",
+      "Include migration rollback mechanisms",
+      "Add performance profiling and optimization tools"
+    ],
+    "generated_at": "2026-01-29T14:57:38.2606158Z",
+    "tokens_used": 1067,
+    "provider": "anthropic"
+  }
+}
