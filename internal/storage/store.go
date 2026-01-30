@@ -34,3 +34,36 @@ type ContextStore interface {
 	// ListContexts returns metadata for all stored contexts.
 	ListContexts(ctx context.Context) ([]ctxpkg.ContextMetadata, error)
 }
+
+// SearchableStore extends ContextStore with search capabilities.
+// SQLiteStore implements this interface; FilesystemStore does not.
+type SearchableStore interface {
+	ContextStore
+
+	// SearchFunctions searches for functions using full-text search.
+	SearchFunctions(ctx context.Context, repoID, query string) ([]ctxpkg.FunctionRef, error)
+
+	// SearchBySideEffect finds functions with specific side effects.
+	SearchBySideEffect(ctx context.Context, repoID, effect string) ([]ctxpkg.FunctionRef, error)
+
+	// SearchByConcept finds functions related to a concept.
+	SearchByConcept(ctx context.Context, repoID, concept string) ([]ctxpkg.FunctionRef, error)
+
+	// SearchFiles searches for files.
+	SearchFiles(ctx context.Context, repoID, query string) ([]FileSearchResult, error)
+
+	// SearchTypes searches for types.
+	SearchTypes(ctx context.Context, repoID, query string) ([]TypeSearchResult, error)
+
+	// GetFunctionCallers finds all functions that call the given function.
+	GetFunctionCallers(ctx context.Context, repoID, funcName string) ([]ctxpkg.FunctionRef, error)
+
+	// HybridSearch performs combined keyword + concept search.
+	HybridSearch(ctx context.Context, repoID, query string) ([]ctxpkg.FunctionRef, error)
+
+	// GetRepoStats returns statistics for a repository.
+	GetRepoStats(ctx context.Context, repoID string) (*RepoStats, error)
+
+	// Close closes the store (needed for SQLite).
+	Close() error
+}
