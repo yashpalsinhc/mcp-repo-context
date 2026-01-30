@@ -13,6 +13,7 @@ import (
 
 	ctxpkg "github.com/yashpalc/mcp-repo-context/internal/context"
 	"github.com/yashpalc/mcp-repo-context/internal/repo"
+	"github.com/yashpalc/mcp-repo-context/internal/storage"
 )
 
 // RefreshFileOptions configures single file refresh.
@@ -120,6 +121,13 @@ func (m *manager) RefreshFile(ctx context.Context, projectID, filePath string, o
 		return nil, fmt.Errorf("failed to save context: %w", err)
 	}
 
+	// Update file hash tracker if supported
+	if fileTracker, ok := m.store.(storage.FileTracker); ok {
+		if err := fileTracker.UpdateFileHash(ctx, projectID, filePath, newHash, info.Size()); err != nil {
+			log.Printf("warning: failed to update file hash tracker: %v", err)
+		}
+	}
+
 	result.Updated = true
 	result.FunctionCount = len(fileCtx.Functions)
 	result.TypeCount = len(fileCtx.Types)
@@ -131,6 +139,7 @@ func (m *manager) RefreshFile(ctx context.Context, projectID, filePath string, o
 
 // RefreshChangedFiles checks all files and refreshes only those that changed.
 // Returns list of files that were updated.
+// Uses the file_hashes table for efficient O(1) change detection per file.
 func (m *manager) RefreshChangedFiles(ctx context.Context, projectID string) ([]RefreshFileResult, error) {
 	repoCtx, err := m.store.GetRepoContext(ctx, projectID)
 	if err != nil {
@@ -143,26 +152,14 @@ func (m *manager) RefreshChangedFiles(ctx context.Context, projectID string) ([]
 
 	basePath := strings.TrimPrefix(projectID, "local:")
 	var results []RefreshFileResult
-	var filesToRefresh []string
 
-	// Check which files changed
-	for filePath, fileCtx := range repoCtx.Files {
-		absPath := filepath.Join(basePath, filePath)
+	// Try to use file tracker if store supports it
+	fileTracker, hasTracker := m.store.(storage.FileTracker)
 
-		content, err := os.ReadFile(absPath)
-		if err != nil {
-			// File might have been deleted
-			log.Printf("file no longer exists: %s", filePath)
-			continue
-		}
+	// Build map of current file hashes by walking the filesystem
+	currentFiles := make(map[string]string)
+	var existingPaths []string
 
-		newHash := computeHash(content)
-		if newHash != fileCtx.Hash {
-			filesToRefresh = append(filesToRefresh, filePath)
-		}
-	}
-
-	// Also check for new files
 	err = filepath.Walk(basePath, func(path string, info os.FileInfo, err error) error {
 		if err != nil {
 			return nil
@@ -181,9 +178,14 @@ func (m *manager) RefreshChangedFiles(ctx context.Context, projectID string) ([]
 		}
 
 		relPath, _ := filepath.Rel(basePath, path)
-		if _, exists := repoCtx.Files[relPath]; !exists {
-			filesToRefresh = append(filesToRefresh, relPath)
+		existingPaths = append(existingPaths, relPath)
+
+		// Read file and compute hash
+		content, err := os.ReadFile(path)
+		if err != nil {
+			return nil
 		}
+		currentFiles[relPath] = computeHash(content)
 
 		return nil
 	})
@@ -191,7 +193,39 @@ func (m *manager) RefreshChangedFiles(ctx context.Context, projectID string) ([]
 		return nil, fmt.Errorf("failed to walk directory: %w", err)
 	}
 
+	var filesToRefresh []string
+
+	if hasTracker {
+		// Use efficient file tracker to detect changes
+		log.Printf("using file tracker for incremental indexing")
+
+		changedFiles, err := fileTracker.GetChangedFiles(ctx, projectID, currentFiles)
+		if err != nil {
+			log.Printf("file tracker error, falling back to context comparison: %v", err)
+			// Fall back to context comparison
+			filesToRefresh = m.compareWithContext(repoCtx, currentFiles)
+		} else {
+			filesToRefresh = changedFiles
+
+			// Also check for files in the context but not on disk anymore (deleted)
+			// and clean them up from the tracker
+			deleted, err := fileTracker.CleanupDeletedFiles(ctx, projectID, existingPaths)
+			if err != nil {
+				log.Printf("failed to cleanup deleted files: %v", err)
+			} else if deleted > 0 {
+				log.Printf("cleaned up %d deleted file hashes", deleted)
+			}
+		}
+	} else {
+		// Fall back to comparing with context
+		log.Printf("file tracker not available, using context comparison")
+		filesToRefresh = m.compareWithContext(repoCtx, currentFiles)
+	}
+
+	log.Printf("found %d files to refresh", len(filesToRefresh))
+
 	// Refresh changed files
+	var updatedHashes []storage.FileHashInfo
 	for _, filePath := range filesToRefresh {
 		result, err := m.RefreshFile(ctx, projectID, filePath, RefreshFileOptions{})
 		if err != nil {
@@ -199,9 +233,51 @@ func (m *manager) RefreshChangedFiles(ctx context.Context, projectID string) ([]
 			continue
 		}
 		results = append(results, *result)
+
+		// Track hash for batch update
+		if result.Updated && hasTracker {
+			absPath := filepath.Join(basePath, filePath)
+			info, _ := os.Stat(absPath)
+			var fileSize int64
+			if info != nil {
+				fileSize = info.Size()
+			}
+			updatedHashes = append(updatedHashes, storage.FileHashInfo{
+				FilePath:     filePath,
+				Hash:         result.NewHash,
+				FileSize:     fileSize,
+				LastAnalyzed: time.Now(),
+			})
+		}
+	}
+
+	// Batch update file hashes if tracker is available
+	if hasTracker && len(updatedHashes) > 0 {
+		if err := fileTracker.UpdateFileHashes(ctx, projectID, updatedHashes); err != nil {
+			log.Printf("failed to batch update file hashes: %v", err)
+		}
 	}
 
 	return results, nil
+}
+
+// compareWithContext compares current files with stored context (fallback method).
+func (m *manager) compareWithContext(repoCtx *ctxpkg.RepoContext, currentFiles map[string]string) []string {
+	var filesToRefresh []string
+
+	// Check existing files for changes
+	for filePath, currentHash := range currentFiles {
+		if fileCtx, exists := repoCtx.Files[filePath]; exists {
+			if fileCtx.Hash != currentHash {
+				filesToRefresh = append(filesToRefresh, filePath)
+			}
+		} else {
+			// New file
+			filesToRefresh = append(filesToRefresh, filePath)
+		}
+	}
+
+	return filesToRefresh
 }
 
 // CheckFileStale checks if a file's context is stale without refreshing.

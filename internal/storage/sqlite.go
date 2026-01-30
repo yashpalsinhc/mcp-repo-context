@@ -61,8 +61,18 @@ func NewSQLiteStore(path string) (*SQLiteStore, error) {
 
 // migrate applies database migrations.
 func (s *SQLiteStore) migrate() error {
+	// Run initial schema migration
 	_, err := s.db.Exec(initialSchema)
-	return err
+	if err != nil {
+		return fmt.Errorf("failed to apply initial schema: %w", err)
+	}
+
+	// Run file hashes migration (for incremental indexing support)
+	if err := s.migrateFileHashes(); err != nil {
+		return fmt.Errorf("failed to apply file hashes migration: %w", err)
+	}
+
+	return nil
 }
 
 // Close closes the database connection.
