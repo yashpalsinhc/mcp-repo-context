@@ -19,6 +19,18 @@ type Manager interface {
 	// GetFileContext retrieves context for a specific file.
 	GetFileContext(ctx context.Context, repoID, filePath string) (*ctxpkg.FileContext, error)
 
+	// GetFunctionContext retrieves comprehensive context for a specific function.
+	GetFunctionContext(ctx context.Context, repoID, filePath, funcName string) (*FunctionContextResult, error)
+
+	// SearchFunctions searches for functions by query.
+	SearchFunctions(ctx context.Context, repoID, query string) ([]ctxpkg.FunctionRef, error)
+
+	// SearchByConcept searches for functions related to a concept.
+	SearchByConcept(ctx context.Context, repoID, concept string) ([]ctxpkg.FunctionRef, error)
+
+	// SearchBySideEffect searches for functions with specific side effects.
+	SearchBySideEffect(ctx context.Context, repoID, effect string) ([]ctxpkg.FunctionRef, error)
+
 	// ListRepos returns all analyzed repositories.
 	ListRepos(ctx context.Context) ([]ctxpkg.ContextMetadata, error)
 
@@ -43,6 +55,27 @@ type Manager interface {
 
 	// CheckPRContext checks if context exists for the PR's repository.
 	CheckPRContext(ctx context.Context, prURL string) (*prreview.ContextStatus, error)
+
+	// AnalyzeLocal analyzes a local directory and stores the context.
+	AnalyzeLocal(ctx context.Context, dirPath string, opts AnalyzeLocalOptions) (*AnalyzeLocalResult, error)
+
+	// GetOrAnalyzeLocal gets existing context or analyzes if not present.
+	GetOrAnalyzeLocal(ctx context.Context, dirPath string) (*ctxpkg.RepoContext, error)
+
+	// SmartQuery routes queries to appropriate tools without AI.
+	SmartQuery(ctx context.Context, query string, projectID string) (*SmartQueryResult, error)
+
+	// RefreshFile re-analyzes a single file (fast incremental update).
+	RefreshFile(ctx context.Context, projectID, filePath string, opts RefreshFileOptions) (*RefreshFileResult, error)
+
+	// RefreshChangedFiles checks all files and refreshes only changed ones.
+	RefreshChangedFiles(ctx context.Context, projectID string) ([]RefreshFileResult, error)
+
+	// CheckFileStale checks if a file's context is stale without refreshing.
+	CheckFileStale(ctx context.Context, projectID, filePath string) (bool, error)
+
+	// GetPRContext extracts rich context for PR changes (no AI required).
+	GetPRContext(ctx context.Context, repoID string, changedFiles []ChangedFile) (*PRContextResult, error)
 }
 
 // RefreshResult contains results of refreshing AI context.

@@ -587,6 +587,194 @@ func (s *server) handleListTools(req *jsonRPCRequest) *jsonRPCResponse {
 				"required": []string{"name"},
 			},
 		},
+		// NEW: Deep context tools (no AI required)
+		{
+			Name:        "get_function_context",
+			Description: "Get comprehensive context for a specific function including behavior summary, what it calls, what calls it, side effects, and error handling. Does NOT require AI - uses pre-analyzed context.",
+			InputSchema: map[string]interface{}{
+				"type": "object",
+				"properties": map[string]interface{}{
+					"repo_id": map[string]interface{}{
+						"type":        "string",
+						"description": "Repository ID",
+					},
+					"file_path": map[string]interface{}{
+						"type":        "string",
+						"description": "Path to the file containing the function",
+					},
+					"function_name": map[string]interface{}{
+						"type":        "string",
+						"description": "Name of the function to get context for",
+					},
+				},
+				"required": []string{"repo_id", "file_path", "function_name"},
+			},
+		},
+		{
+			Name:        "search_by_concept",
+			Description: "Search for functions related to a concept (e.g., 'authentication', 'validation', 'database', 'http'). Does NOT require AI - uses pre-built search index.",
+			InputSchema: map[string]interface{}{
+				"type": "object",
+				"properties": map[string]interface{}{
+					"repo_id": map[string]interface{}{
+						"type":        "string",
+						"description": "Repository ID to search in",
+					},
+					"concept": map[string]interface{}{
+						"type":        "string",
+						"description": "Concept to search for (e.g., 'authentication', 'validation', 'http_call', 'database', 'crud', 'handler')",
+					},
+				},
+				"required": []string{"repo_id", "concept"},
+			},
+		},
+		{
+			Name:        "search_by_side_effect",
+			Description: "Find functions that have specific side effects (e.g., 'http_call', 'db_query', 'file_io'). Does NOT require AI - uses pre-analyzed context.",
+			InputSchema: map[string]interface{}{
+				"type": "object",
+				"properties": map[string]interface{}{
+					"repo_id": map[string]interface{}{
+						"type":        "string",
+						"description": "Repository ID to search in",
+					},
+					"effect": map[string]interface{}{
+						"type":        "string",
+						"description": "Side effect to search for: http_call, db_query, db_transaction, file_io, redis_call, kafka_call, grpc_call, logging, panic",
+					},
+				},
+				"required": []string{"repo_id", "effect"},
+			},
+		},
+		{
+			Name:        "get_callers",
+			Description: "Find all functions that call a specific function. Does NOT require AI - uses pre-built call graph.",
+			InputSchema: map[string]interface{}{
+				"type": "object",
+				"properties": map[string]interface{}{
+					"repo_id": map[string]interface{}{
+						"type":        "string",
+						"description": "Repository ID",
+					},
+					"function_name": map[string]interface{}{
+						"type":        "string",
+						"description": "Name of the function to find callers for",
+					},
+				},
+				"required": []string{"repo_id", "function_name"},
+			},
+		},
+		// NEW: Local directory analysis (no GitHub required)
+		{
+			Name:        "analyze_local",
+			Description: "Analyze a local directory and store the context. Use this for any codebase on disk, not just GitHub repos. Does NOT require network access.",
+			InputSchema: map[string]interface{}{
+				"type": "object",
+				"properties": map[string]interface{}{
+					"path": map[string]interface{}{
+						"type":        "string",
+						"description": "Absolute path to the local directory to analyze",
+					},
+					"force": map[string]interface{}{
+						"type":        "boolean",
+						"description": "Force re-analysis even if cached context exists (default: false)",
+					},
+					"include_all": map[string]interface{}{
+						"type":        "boolean",
+						"description": "Include all files, not just code files (default: false)",
+					},
+				},
+				"required": []string{"path"},
+			},
+		},
+		{
+			Name:        "smart_query",
+			Description: "Ask a question about a project and get an intelligent answer without AI. Automatically parses your query and routes to appropriate tools. Use for: 'what does X do?', 'who calls Y?', 'find DB functions', 'show auth code', etc.",
+			InputSchema: map[string]interface{}{
+				"type": "object",
+				"properties": map[string]interface{}{
+					"query": map[string]interface{}{
+						"type":        "string",
+						"description": "Your question about the code in natural language",
+					},
+					"project_id": map[string]interface{}{
+						"type":        "string",
+						"description": "Project ID (repo ID or local:path for local projects)",
+					},
+				},
+				"required": []string{"query", "project_id"},
+			},
+		},
+		// Incremental update tools for refactoring workflows
+		{
+			Name:        "refresh_file",
+			Description: "Re-analyze a single file after editing it. Much faster than full re-analysis (~10ms vs seconds). Use this during refactoring to keep context up-to-date.",
+			InputSchema: map[string]interface{}{
+				"type": "object",
+				"properties": map[string]interface{}{
+					"project_id": map[string]interface{}{
+						"type":        "string",
+						"description": "Project ID (local:path for local projects)",
+					},
+					"file_path": map[string]interface{}{
+						"type":        "string",
+						"description": "Relative path to the file within the project",
+					},
+					"force": map[string]interface{}{
+						"type":        "boolean",
+						"description": "Force refresh even if file hash hasn't changed (default: false)",
+					},
+				},
+				"required": []string{"project_id", "file_path"},
+			},
+		},
+		{
+			Name:        "refresh_changed",
+			Description: "Check all files in a project and refresh only those that have changed. Use after a refactoring session to update context for all modified files.",
+			InputSchema: map[string]interface{}{
+				"type": "object",
+				"properties": map[string]interface{}{
+					"project_id": map[string]interface{}{
+						"type":        "string",
+						"description": "Project ID (local:path for local projects)",
+					},
+				},
+				"required": []string{"project_id"},
+			},
+		},
+		{
+			Name:        "get_pr_context",
+			Description: "Get rich context for PR changes WITHOUT AI. Shows for each changed function: what it does, who calls it, what it calls, DB queries, HTTP calls, and impact analysis. Use this to understand PR changes deeply.",
+			InputSchema: map[string]interface{}{
+				"type": "object",
+				"properties": map[string]interface{}{
+					"repo_id": map[string]interface{}{
+						"type":        "string",
+						"description": "Repository ID (e.g., github.com/org/repo)",
+					},
+					"changed_files": map[string]interface{}{
+						"type": "array",
+						"items": map[string]interface{}{
+							"type": "object",
+							"properties": map[string]interface{}{
+								"path": map[string]interface{}{
+									"type":        "string",
+									"description": "File path relative to repo root",
+								},
+								"change_type": map[string]interface{}{
+									"type":        "string",
+									"enum":        []string{"added", "modified", "deleted"},
+									"description": "Type of change",
+								},
+							},
+							"required": []string{"path", "change_type"},
+						},
+						"description": "List of changed files in the PR",
+					},
+				},
+				"required": []string{"repo_id", "changed_files"},
+			},
+		},
 	}
 
 	return &jsonRPCResponse{
@@ -654,6 +842,26 @@ func (s *server) handleCallToolWithID(ctx context.Context, req *jsonRPCRequest, 
 		result = s.toolListSkills(ctx, params.Arguments)
 	case "get_skill":
 		result = s.toolGetSkill(ctx, params.Arguments)
+	// NEW: Deep context tools (no AI required)
+	case "get_function_context":
+		result = s.toolGetFunctionContext(ctx, params.Arguments)
+	case "search_by_concept":
+		result = s.toolSearchByConcept(ctx, params.Arguments)
+	case "search_by_side_effect":
+		result = s.toolSearchBySideEffect(ctx, params.Arguments)
+	case "get_callers":
+		result = s.toolGetCallers(ctx, params.Arguments)
+	// NEW: Local directory analysis
+	case "analyze_local":
+		result = s.toolAnalyzeLocal(ctx, params.Arguments)
+	case "smart_query":
+		result = s.toolSmartQuery(ctx, params.Arguments)
+	case "refresh_file":
+		result = s.toolRefreshFile(ctx, params.Arguments)
+	case "refresh_changed":
+		result = s.toolRefreshChanged(ctx, params.Arguments)
+	case "get_pr_context":
+		result = s.toolGetPRContext(ctx, params.Arguments)
 	default:
 		logger.Warn("unknown tool requested")
 		return &jsonRPCResponse{

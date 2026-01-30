@@ -50,6 +50,7 @@ func (a *goAnalyzer) AnalyzeFile(ctx context.Context, file repo.FileInfo, conten
 		Path:       file.Path,
 		Hash:       file.Hash,
 		Language:   "go",
+		Package:    f.Name.Name, // Extract package name from AST
 		Size:       file.Size,
 		LineCount:  countLines(content),
 		AnalyzedAt: time.Now(),
@@ -275,6 +276,32 @@ func (a *goAnalyzer) extractFuncDecl(fset *token.FileSet, decl *ast.FuncDecl, fi
 	// Calculate simple complexity (count of branches)
 	funcDef.Complexity = a.calculateComplexity(decl.Body)
 
+	// === DEEP CONTEXT EXTRACTION ===
+
+	// Extract function behavior (what the function does)
+	behaviorExtractor := NewBehaviorExtractor(fset)
+	funcDef.Behavior = behaviorExtractor.Extract(decl, fileCtx.Imports)
+
+	// Extract function calls
+	callGraphBuilder := NewCallGraphBuilder()
+	funcDef.Calls = callGraphBuilder.ExtractFunctionCalls(fset, decl, fileCtx.Path, fileCtx.Imports)
+
+	// Extract error handling patterns
+	errorExtractor := NewErrorHandlingExtractor(fset)
+	funcDef.ErrorHandling = errorExtractor.Extract(decl)
+
+	// Extract side effects
+	funcDef.SideEffects = ExtractSideEffects(decl, fileCtx.Imports)
+
+	// Extract used imports
+	funcDef.UsesImports = a.extractUsedImports(decl, fileCtx.Imports)
+
+	// Extract API flow (requests, responses, DB queries, external calls)
+	apiFlowExtractor := NewAPIFlowExtractor(fset)
+	funcDef.APIFlow = apiFlowExtractor.ExtractAPIFlow(decl, fileCtx.Imports)
+
+	// === END DEEP CONTEXT ===
+
 	fileCtx.Functions = append(fileCtx.Functions, funcDef)
 
 	if funcDef.IsPublic {
@@ -287,6 +314,43 @@ func (a *goAnalyzer) extractFuncDecl(fset *token.FileSet, decl *ast.FuncDecl, fi
 			LineEnd:     funcDef.LineEnd,
 		})
 	}
+}
+
+// extractUsedImports finds which imports are actually used in a function.
+func (a *goAnalyzer) extractUsedImports(fn *ast.FuncDecl, imports []ctxpkg.Import) []string {
+	if fn.Body == nil {
+		return nil
+	}
+
+	// Build import map
+	importMap := make(map[string]string) // alias -> path
+	for _, imp := range imports {
+		alias := imp.Alias
+		if alias == "" {
+			parts := strings.Split(imp.Path, "/")
+			alias = parts[len(parts)-1]
+		}
+		importMap[alias] = imp.Path
+	}
+
+	usedImports := make(map[string]bool)
+
+	ast.Inspect(fn.Body, func(n ast.Node) bool {
+		if sel, ok := n.(*ast.SelectorExpr); ok {
+			if ident, ok := sel.X.(*ast.Ident); ok {
+				if path, ok := importMap[ident.Name]; ok {
+					usedImports[path] = true
+				}
+			}
+		}
+		return true
+	})
+
+	result := make([]string, 0, len(usedImports))
+	for imp := range usedImports {
+		result = append(result, imp)
+	}
+	return result
 }
 
 func (a *goAnalyzer) calculateComplexity(body *ast.BlockStmt) int {

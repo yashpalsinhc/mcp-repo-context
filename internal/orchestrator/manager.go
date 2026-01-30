@@ -153,6 +153,37 @@ func (m *manager) AnalyzeRepo(ctx context.Context, repoURL string, opts AnalyzeO
 	// Generate architecture context
 	repoCtx.Architecture = m.generateArchitecture(repoCtx)
 
+	// Build call graph and populate CalledBy relationships
+	callGraphBuilder := analyzer.NewCallGraphBuilder()
+	repoCtx.CallGraph = callGraphBuilder.BuildFromFiles(repoCtx.Files)
+	analyzer.PopulateCalledBy(repoCtx.Files)
+
+	// Build search index
+	searchIndexBuilder := analyzer.NewSearchIndexBuilder()
+	repoCtx.SearchIndex = searchIndexBuilder.BuildFromFiles(repoCtx.Files)
+
+	// Update statistics with deep analysis info
+	if repoCtx.CallGraph != nil {
+		repoCtx.Statistics.CallGraphNodes = len(repoCtx.CallGraph.Nodes)
+		repoCtx.Statistics.CallGraphEdges = len(repoCtx.CallGraph.Edges)
+	}
+	if repoCtx.SearchIndex != nil {
+		repoCtx.Statistics.IndexedConcepts = len(repoCtx.SearchIndex.Concepts)
+	}
+
+	// Calculate average complexity
+	totalComplexity := 0
+	funcCount := 0
+	for _, fileCtx := range repoCtx.Files {
+		for _, fn := range fileCtx.Functions {
+			totalComplexity += fn.Complexity
+			funcCount++
+		}
+	}
+	if funcCount > 0 {
+		repoCtx.Statistics.AvgComplexity = float64(totalComplexity) / float64(funcCount)
+	}
+
 	// Store context
 	if err := m.store.StoreRepoContext(ctx, repoID, repoCtx); err != nil {
 		return nil, fmt.Errorf("failed to store context: %w", err)
@@ -170,6 +201,193 @@ func (m *manager) GetContext(ctx context.Context, repoID string) (*ctxpkg.RepoCo
 // GetFileContext retrieves context for a specific file.
 func (m *manager) GetFileContext(ctx context.Context, repoID, filePath string) (*ctxpkg.FileContext, error) {
 	return m.store.GetFileContext(ctx, repoID, filePath)
+}
+
+// GetFunctionContext retrieves comprehensive context for a specific function.
+func (m *manager) GetFunctionContext(ctx context.Context, repoID, filePath, funcName string) (*FunctionContextResult, error) {
+	repoCtx, err := m.store.GetRepoContext(ctx, repoID)
+	if err != nil {
+		return nil, err
+	}
+
+	fileCtx, ok := repoCtx.Files[filePath]
+	if !ok {
+		return nil, fmt.Errorf("file not found: %s", filePath)
+	}
+
+	// Find the function
+	var targetFunc *ctxpkg.FunctionDef
+	for i := range fileCtx.Functions {
+		if fileCtx.Functions[i].Name == funcName {
+			targetFunc = &fileCtx.Functions[i]
+			break
+		}
+	}
+	if targetFunc == nil {
+		return nil, fmt.Errorf("function not found: %s", funcName)
+	}
+
+	result := &FunctionContextResult{
+		Function: *targetFunc,
+		FilePath: filePath,
+		RepoID:   repoID,
+		File: FileInfo{
+			Path:     filePath,
+			Language: fileCtx.Language,
+			Purpose:  fileCtx.Purpose,
+		},
+	}
+
+	// Get callers (functions that call this one)
+	result.Callers = m.findCallers(repoCtx, funcName)
+
+	// Get related types (types used in params/returns)
+	result.RelatedTypes = m.findRelatedTypes(fileCtx, targetFunc)
+
+	return result, nil
+}
+
+// FunctionContextResult contains comprehensive function context.
+type FunctionContextResult struct {
+	Function     ctxpkg.FunctionDef `json:"function"`
+	FilePath     string             `json:"file_path"`
+	RepoID       string             `json:"repo_id"`
+	File         FileInfo           `json:"file"`
+	Callers      []ctxpkg.CallRef   `json:"callers"`
+	RelatedTypes []TypeInfo         `json:"related_types"`
+}
+
+// FileInfo provides brief file information.
+type FileInfo struct {
+	Path     string `json:"path"`
+	Language string `json:"language"`
+	Purpose  string `json:"purpose"`
+}
+
+// TypeInfo provides brief type information.
+type TypeInfo struct {
+	Name   string `json:"name"`
+	Kind   string `json:"kind"`
+	File   string `json:"file"`
+}
+
+func (m *manager) findCallers(repoCtx *ctxpkg.RepoContext, funcName string) []ctxpkg.CallRef {
+	var callers []ctxpkg.CallRef
+	for path, fileCtx := range repoCtx.Files {
+		for _, fn := range fileCtx.Functions {
+			for _, call := range fn.Calls {
+				if call.Function == funcName {
+					callers = append(callers, ctxpkg.CallRef{
+						Function: fn.Name,
+						File:     path,
+						Line:     call.Line,
+						Type:     "internal",
+					})
+				}
+			}
+		}
+	}
+	return callers
+}
+
+func (m *manager) findRelatedTypes(fileCtx *ctxpkg.FileContext, fn *ctxpkg.FunctionDef) []TypeInfo {
+	var types []TypeInfo
+	typeNames := make(map[string]bool)
+
+	// Collect type names from parameters
+	for _, param := range fn.Parameters {
+		typeName := cleanTypeName(param.Type)
+		if typeName != "" && !isBuiltinType(typeName) {
+			typeNames[typeName] = true
+		}
+	}
+
+	// Collect type names from returns
+	for _, ret := range fn.Returns {
+		typeName := cleanTypeName(ret)
+		if typeName != "" && !isBuiltinType(typeName) {
+			typeNames[typeName] = true
+		}
+	}
+
+	// Find type definitions
+	for _, t := range fileCtx.Types {
+		if typeNames[t.Name] {
+			types = append(types, TypeInfo{
+				Name: t.Name,
+				Kind: t.Kind,
+				File: fileCtx.Path,
+			})
+		}
+	}
+
+	return types
+}
+
+func cleanTypeName(typeName string) string {
+	typeName = strings.TrimPrefix(typeName, "*")
+	typeName = strings.TrimPrefix(typeName, "[]")
+	typeName = strings.TrimPrefix(typeName, "map[")
+	if idx := strings.Index(typeName, "]"); idx >= 0 {
+		typeName = typeName[idx+1:]
+	}
+	if idx := strings.Index(typeName, "."); idx >= 0 {
+		typeName = typeName[idx+1:]
+	}
+	return typeName
+}
+
+func isBuiltinType(typeName string) bool {
+	builtins := map[string]bool{
+		"string": true, "int": true, "int8": true, "int16": true, "int32": true, "int64": true,
+		"uint": true, "uint8": true, "uint16": true, "uint32": true, "uint64": true,
+		"float32": true, "float64": true, "complex64": true, "complex128": true,
+		"bool": true, "byte": true, "rune": true, "error": true, "any": true,
+		"interface{}": true, "interface": true,
+	}
+	return builtins[typeName]
+}
+
+// SearchFunctions searches for functions by query.
+func (m *manager) SearchFunctions(ctx context.Context, repoID, query string) ([]ctxpkg.FunctionRef, error) {
+	repoCtx, err := m.store.GetRepoContext(ctx, repoID)
+	if err != nil {
+		return nil, err
+	}
+
+	if repoCtx.SearchIndex == nil {
+		return nil, fmt.Errorf("search index not available for repository")
+	}
+
+	return analyzer.SearchFunctions(repoCtx.SearchIndex, query), nil
+}
+
+// SearchByConcept searches for functions related to a concept.
+func (m *manager) SearchByConcept(ctx context.Context, repoID, concept string) ([]ctxpkg.FunctionRef, error) {
+	repoCtx, err := m.store.GetRepoContext(ctx, repoID)
+	if err != nil {
+		return nil, err
+	}
+
+	if repoCtx.SearchIndex == nil {
+		return nil, fmt.Errorf("search index not available for repository")
+	}
+
+	return analyzer.SearchByConcept(repoCtx.SearchIndex, concept), nil
+}
+
+// SearchBySideEffect searches for functions with specific side effects.
+func (m *manager) SearchBySideEffect(ctx context.Context, repoID, effect string) ([]ctxpkg.FunctionRef, error) {
+	repoCtx, err := m.store.GetRepoContext(ctx, repoID)
+	if err != nil {
+		return nil, err
+	}
+
+	if repoCtx.SearchIndex == nil {
+		return nil, fmt.Errorf("search index not available for repository")
+	}
+
+	return analyzer.SearchBySideEffect(repoCtx.SearchIndex, effect), nil
 }
 
 // ListRepos returns all analyzed repositories.
