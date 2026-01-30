@@ -361,7 +361,7 @@ func (s *server) handleListTools(req *jsonRPCRequest) *jsonRPCResponse {
 		},
 		{
 			Name:        "search_context",
-			Description: "Search for code elements across analyzed repositories by name, type, or concept.",
+			Description: "Search for code elements across analyzed repositories by name, type, or concept. Returns compact results with references for progressive disclosure.",
 			InputSchema: map[string]interface{}{
 				"type": "object",
 				"properties": map[string]interface{}{
@@ -377,6 +377,14 @@ func (s *server) handleListTools(req *jsonRPCRequest) *jsonRPCResponse {
 						"type":        "string",
 						"enum":        []string{"function", "type", "file", "all"},
 						"description": "Type of elements to search (default: all)",
+					},
+					"max_results": map[string]interface{}{
+						"type":        "integer",
+						"description": "Maximum number of results to return (default: 20, max: 100)",
+					},
+					"compact": map[string]interface{}{
+						"type":        "boolean",
+						"description": "Return compact results with detail_ref for drilling down (default: true)",
 					},
 				},
 				"required": []string{"query"},
@@ -631,6 +639,10 @@ func (s *server) handleListTools(req *jsonRPCRequest) *jsonRPCResponse {
 						"type":        "string",
 						"description": "Concept to search for (e.g., 'authentication', 'validation', 'http_call', 'database', 'crud', 'handler')",
 					},
+					"max_results": map[string]interface{}{
+						"type":        "integer",
+						"description": "Maximum number of results to return (default: 20)",
+					},
 				},
 				"required": []string{"repo_id", "concept"},
 			},
@@ -648,6 +660,10 @@ func (s *server) handleListTools(req *jsonRPCRequest) *jsonRPCResponse {
 					"effect": map[string]interface{}{
 						"type":        "string",
 						"description": "Side effect to search for: http_call, db_query, db_transaction, file_io, redis_call, kafka_call, grpc_call, logging, panic",
+					},
+					"max_results": map[string]interface{}{
+						"type":        "integer",
+						"description": "Maximum number of results to return (default: 20)",
 					},
 				},
 				"required": []string{"repo_id", "effect"},

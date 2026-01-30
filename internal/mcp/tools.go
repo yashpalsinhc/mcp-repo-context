@@ -338,6 +338,21 @@ func (s *server) toolSearchContext(ctx context.Context, args map[string]any) cal
 		searchType = "all"
 	}
 
+	// Parse max_results (default 20, max 100)
+	maxResults := 20
+	if mr, ok := args["max_results"].(float64); ok && mr > 0 {
+		maxResults = int(mr)
+		if maxResults > 100 {
+			maxResults = 100
+		}
+	}
+
+	// Parse compact mode (default true)
+	compact := true
+	if c, ok := args["compact"].(bool); ok {
+		compact = c
+	}
+
 	// Split query into keywords for multi-word matching
 	keywords := extractSearchKeywords(query)
 
@@ -346,6 +361,8 @@ func (s *server) toolSearchContext(ctx context.Context, args map[string]any) cal
 		"keywords":    keywords,
 		"repo_id":     repoID,
 		"search_type": searchType,
+		"max_results": maxResults,
+		"compact":     compact,
 	})
 
 	var results []searchResult
@@ -436,8 +453,8 @@ func (s *server) toolSearchContext(ctx context.Context, args map[string]any) cal
 		}
 	}
 
-	// Limit results to prevent huge responses
-	maxResults := 50
+	// Limit results based on max_results parameter
+	totalCount := len(results)
 	truncated := false
 	if len(results) > maxResults {
 		results = results[:maxResults]
@@ -448,7 +465,7 @@ func (s *server) toolSearchContext(ctx context.Context, args map[string]any) cal
 	fmt.Fprintf(&sb, "# Search Results for \"%s\"\n\n", query)
 	fmt.Fprintf(&sb, "Found %d results", len(results))
 	if truncated {
-		sb.WriteString(" (showing first 50)")
+		fmt.Fprintf(&sb, " (showing %d of %d - use `max_results` to see more)", len(results), totalCount)
 	}
 	sb.WriteString("\n\n")
 
@@ -1741,6 +1758,15 @@ func (s *server) toolSearchByConcept(ctx context.Context, args map[string]any) c
 		return errorResult("concept is required")
 	}
 
+	// Parse max_results (default 20)
+	maxResults := 20
+	if mr, ok := args["max_results"].(float64); ok && mr > 0 {
+		maxResults = int(mr)
+		if maxResults > 100 {
+			maxResults = 100
+		}
+	}
+
 	results, err := s.manager.SearchByConcept(ctx, repoID, concept)
 	if err != nil {
 		return errorResult(fmt.Sprintf("Search failed: %v", err))
@@ -1752,13 +1778,25 @@ func (s *server) toolSearchByConcept(ctx context.Context, args map[string]any) c
 		}
 	}
 
+	totalCount := len(results)
+	truncated := false
+	if len(results) > maxResults {
+		results = results[:maxResults]
+		truncated = true
+	}
+
 	var sb strings.Builder
 	fmt.Fprintf(&sb, "# Functions Related to Concept: `%s`\n\n", concept)
-	fmt.Fprintf(&sb, "Found %d functions:\n\n", len(results))
+	fmt.Fprintf(&sb, "Found %d functions", len(results))
+	if truncated {
+		fmt.Fprintf(&sb, " (showing %d of %d - use `max_results` to see more)", len(results), totalCount)
+	}
+	sb.WriteString("\n\n")
 
 	for _, ref := range results {
 		fmt.Fprintf(&sb, "## `%s`\n\n", ref.Function)
 		fmt.Fprintf(&sb, "- **File:** `%s:%d`\n", ref.File, ref.Line)
+		fmt.Fprintf(&sb, "- **Detail:** `get_function_context repo_id=%s file_path=%s function_name=%s`\n", repoID, ref.File, ref.Function)
 		if ref.Signature != "" {
 			fmt.Fprintf(&sb, "- **Signature:** `%s`\n", ref.Signature)
 		}
@@ -1785,6 +1823,15 @@ func (s *server) toolSearchBySideEffect(ctx context.Context, args map[string]any
 		return errorResult("effect is required")
 	}
 
+	// Parse max_results (default 20)
+	maxResults := 20
+	if mr, ok := args["max_results"].(float64); ok && mr > 0 {
+		maxResults = int(mr)
+		if maxResults > 100 {
+			maxResults = 100
+		}
+	}
+
 	results, err := s.manager.SearchBySideEffect(ctx, repoID, effect)
 	if err != nil {
 		return errorResult(fmt.Sprintf("Search failed: %v", err))
@@ -1796,13 +1843,25 @@ func (s *server) toolSearchBySideEffect(ctx context.Context, args map[string]any
 		}
 	}
 
+	totalCount := len(results)
+	truncated := false
+	if len(results) > maxResults {
+		results = results[:maxResults]
+		truncated = true
+	}
+
 	var sb strings.Builder
 	fmt.Fprintf(&sb, "# Functions with Side Effect: `%s`\n\n", effect)
-	fmt.Fprintf(&sb, "Found %d functions:\n\n", len(results))
+	fmt.Fprintf(&sb, "Found %d functions", len(results))
+	if truncated {
+		fmt.Fprintf(&sb, " (showing %d of %d - use `max_results` to see more)", len(results), totalCount)
+	}
+	sb.WriteString("\n\n")
 
 	for _, ref := range results {
 		fmt.Fprintf(&sb, "## `%s`\n\n", ref.Function)
 		fmt.Fprintf(&sb, "- **File:** `%s:%d`\n", ref.File, ref.Line)
+		fmt.Fprintf(&sb, "- **Detail:** `get_function_context repo_id=%s file_path=%s function_name=%s`\n", repoID, ref.File, ref.Function)
 		if ref.Signature != "" {
 			fmt.Fprintf(&sb, "- **Signature:** `%s`\n", ref.Signature)
 		}
