@@ -13,7 +13,9 @@
 | **Phase 1.3: AI Retry Logic** | DONE | `internal/ai/retry.go`, `anthropic.go` |
 | **Phase 1.4: Metadata Index** | DONE | `internal/storage/metadata_index.go` |
 | **Phase 1.5: Configuration System** | DONE | `internal/config/config.go` |
-| Phase 2: SQLite Migration | NOT STARTED | - |
+| **Phase 2.1: SQLite Storage** | DONE | `internal/storage/sqlite.go`, `sqlite_search.go`, `migrations/` |
+| Phase 2.2: Hybrid Search | DONE | Included in sqlite_search.go |
+| Phase 2.3: Incremental Indexing | NOT STARTED | - |
 | Phase 3: Agent-Friendly Design | NOT STARTED | - |
 | Phase 4: Token Intelligence | NOT STARTED | - |
 | Phase 5: Advanced Features | NOT STARTED | - |
@@ -53,9 +55,9 @@
 | No context cancellation in loops | Wasted resources on cancel | **FIXED** | `manager.go` |
 | No retry logic for AI calls | Single failure = total failure | **FIXED** | `retry.go` |
 | No configuration system | Magic numbers | **FIXED** | `config/config.go` |
-| Entire repo in memory as one blob | OOM on large repos | NOT FIXED | Throughout |
+| Entire repo in memory as one blob | OOM on large repos | PARTIAL | SQLite stores by table now |
 | No actual token counting | Claims are guesses | NOT FIXED | CLAUDE.md |
-| No inverted index | Linear search O(n) | NOT FIXED | Design doc promised SQLite |
+| No inverted index | Linear search O(n) | **FIXED** | `sqlite.go` - indexed lookups |
 
 ### Missing From Design Doc
 
@@ -300,9 +302,18 @@ func LoadFromEnv() *Config {
 
 ---
 
-## Phase 2: Storage & Search Revolution (Week 3-4)
+## Phase 2: Storage & Search Revolution (Week 3-4) - COMPLETED
 
-### 2.1 Implement SQLite Storage
+### 2.1 Implement SQLite Storage - DONE
+
+**Implementation**: See `internal/storage/sqlite.go` and `internal/storage/sqlite_search.go`
+
+- Full SQLite schema with indexed tables for repos, files, functions, types, constants
+- Lookup tables for side effects and concepts (fast O(1) filtering)
+- LIKE-based search (portable, no FTS5 dependency)
+- Hybrid search combining keyword and concept matching
+- Call graph edges stored in `function_calls` table
+- All 13 SQLite tests passing
 
 **Why SQLite?**
 - [SQLite FTS5](https://sqlite.org/fts5.html) provides fast full-text search
