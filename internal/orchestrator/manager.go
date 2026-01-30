@@ -6,7 +6,6 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
-	"sync"
 	"time"
 
 	"github.com/yashpalc/mcp-repo-context/internal/ai"
@@ -28,7 +27,8 @@ type manager struct {
 	registry   analyzer.Registry
 	aiRegistry *ai.Registry
 
-	mu sync.Mutex
+	// Per-repo locking instead of global mutex
+	locks *LockManager
 }
 
 // NewManager creates a new context manager.
@@ -39,6 +39,7 @@ func NewManager(store storage.ContextStore, cloner repo.Source, scanner repo.Fil
 		scanner:    scanner,
 		registry:   analyzer.NewRegistry(),
 		aiRegistry: ai.NewRegistryFromEnv(),
+		locks:      NewLockManager(),
 	}
 }
 
@@ -50,20 +51,24 @@ func NewManagerWithAI(store storage.ContextStore, cloner repo.Source, scanner re
 		scanner:    scanner,
 		registry:   analyzer.NewRegistry(),
 		aiRegistry: aiReg,
+		locks:      NewLockManager(),
 	}
 }
 
 // AnalyzeRepo analyzes a repository and stores the context.
 func (m *manager) AnalyzeRepo(ctx context.Context, repoURL string, opts AnalyzeOptions) (*AnalyzeResult, error) {
-	m.mu.Lock()
-	defer m.mu.Unlock()
-
 	startTime := time.Now()
 	result := &AnalyzeResult{}
 
 	// Generate repo ID
 	repoID := repo.RepoIDFromURL(repoURL)
 	result.RepoID = repoID
+
+	// Acquire per-repo lock (allows concurrent analysis of different repos)
+	if err := m.locks.Lock(ctx, repoID); err != nil {
+		return nil, fmt.Errorf("failed to acquire lock for %s: %w", repoID, err)
+	}
+	defer m.locks.Unlock(repoID)
 
 	// Check if context exists and is fresh
 	if !opts.Force {
@@ -116,6 +121,11 @@ func (m *manager) AnalyzeRepo(ctx context.Context, repoURL string, opts AnalyzeO
 
 	// Scan and analyze files
 	err = m.scanner.Scan(ctx, localPath, func(file repo.FileInfo) error {
+		// Check for context cancellation before processing each file
+		if err := ctx.Err(); err != nil {
+			return fmt.Errorf("analysis cancelled: %w", err)
+		}
+
 		// Read file content
 		content, err := os.ReadFile(file.AbsPath)
 		if err != nil {

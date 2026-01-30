@@ -24,6 +24,7 @@ type AnthropicProvider struct {
 	maxTokens   int
 	temperature float64
 	client      *http.Client
+	retryer     *Retryer
 }
 
 // NewAnthropicProvider creates a new Anthropic provider.
@@ -51,6 +52,7 @@ func NewAnthropicProvider(config Config) *AnthropicProvider {
 		client: &http.Client{
 			Timeout: 60 * time.Second,
 		},
+		retryer: NewRetryer(DefaultRetryConfig()),
 	}
 }
 
@@ -138,7 +140,7 @@ func (p *AnthropicProvider) CompleteRaw(ctx context.Context, prompt string, maxT
 	return p.complete(ctx, prompt, maxTokens)
 }
 
-// complete sends a completion request to the Anthropic API.
+// complete sends a completion request to the Anthropic API with retry logic.
 func (p *AnthropicProvider) complete(ctx context.Context, prompt string, maxTokens int) (string, int, error) {
 	reqBody := anthropicRequest{
 		Model:     p.model,
@@ -156,41 +158,55 @@ func (p *AnthropicProvider) complete(ctx context.Context, prompt string, maxToke
 		return "", 0, fmt.Errorf("failed to marshal request: %w", err)
 	}
 
-	req, err := http.NewRequestWithContext(ctx, http.MethodPost, anthropicAPIURL, bytes.NewReader(jsonBody))
+	var result string
+	var tokensUsed int
+
+	// Use retry logic for API calls
+	err = p.retryer.Do(ctx, func() error {
+		req, err := http.NewRequestWithContext(ctx, http.MethodPost, anthropicAPIURL, bytes.NewReader(jsonBody))
+		if err != nil {
+			return fmt.Errorf("failed to create request: %w", err)
+		}
+
+		req.Header.Set("Content-Type", "application/json")
+		req.Header.Set("x-api-key", p.apiKey)
+		req.Header.Set("anthropic-version", anthropicAPIVersion)
+
+		resp, err := p.client.Do(req)
+		if err != nil {
+			return fmt.Errorf("request failed: %w", err)
+		}
+		defer resp.Body.Close()
+
+		body, err := io.ReadAll(resp.Body)
+		if err != nil {
+			return fmt.Errorf("failed to read response: %w", err)
+		}
+
+		if resp.StatusCode != http.StatusOK {
+			// Return APIError for proper retry handling
+			return NewAPIError("anthropic", resp.StatusCode, string(body))
+		}
+
+		var apiResp anthropicResponse
+		if err := json.Unmarshal(body, &apiResp); err != nil {
+			return fmt.Errorf("failed to parse response: %w", err)
+		}
+
+		if len(apiResp.Content) == 0 {
+			return fmt.Errorf("empty response from API")
+		}
+
+		result = apiResp.Content[0].Text
+		tokensUsed = apiResp.Usage.InputTokens + apiResp.Usage.OutputTokens
+		return nil
+	})
+
 	if err != nil {
-		return "", 0, fmt.Errorf("failed to create request: %w", err)
+		return "", 0, err
 	}
 
-	req.Header.Set("Content-Type", "application/json")
-	req.Header.Set("x-api-key", p.apiKey)
-	req.Header.Set("anthropic-version", anthropicAPIVersion)
-
-	resp, err := p.client.Do(req)
-	if err != nil {
-		return "", 0, fmt.Errorf("request failed: %w", err)
-	}
-	defer resp.Body.Close()
-
-	body, err := io.ReadAll(resp.Body)
-	if err != nil {
-		return "", 0, fmt.Errorf("failed to read response: %w", err)
-	}
-
-	if resp.StatusCode != http.StatusOK {
-		return "", 0, fmt.Errorf("API error (status %d): %s", resp.StatusCode, string(body))
-	}
-
-	var apiResp anthropicResponse
-	if err := json.Unmarshal(body, &apiResp); err != nil {
-		return "", 0, fmt.Errorf("failed to parse response: %w", err)
-	}
-
-	if len(apiResp.Content) == 0 {
-		return "", 0, fmt.Errorf("empty response from API")
-	}
-
-	tokensUsed := apiResp.Usage.InputTokens + apiResp.Usage.OutputTokens
-	return apiResp.Content[0].Text, tokensUsed, nil
+	return result, tokensUsed, nil
 }
 
 // Anthropic API types
