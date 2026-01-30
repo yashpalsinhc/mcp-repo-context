@@ -365,50 +365,58 @@ func (s *SQLiteStore) getFunctionsForFile(ctx context.Context, fileID int64) ([]
 	if err != nil {
 		return nil, err
 	}
-	defer rows.Close()
 
-	var functions []ctxpkg.FunctionDef
+	// Collect function data first, then close rows before making nested queries
+	type funcData struct {
+		fn     ctxpkg.FunctionDef
+		funcID int64
+	}
+	var funcList []funcData
+
 	for rows.Next() {
-		var fn ctxpkg.FunctionDef
-		var funcID int64
+		var fd funcData
 		var paramsJSON, returnsJSON, behaviorJSON, errorJSON, apiFlowJSON, usesImportsJSON sql.NullString
 
-		err := rows.Scan(&funcID, &fn.Name, &fn.Signature, &fn.Description, &fn.Receiver,
-			&fn.IsPublic, &fn.LineStart, &fn.LineEnd, &fn.Complexity,
+		err := rows.Scan(&fd.funcID, &fd.fn.Name, &fd.fn.Signature, &fd.fn.Description, &fd.fn.Receiver,
+			&fd.fn.IsPublic, &fd.fn.LineStart, &fd.fn.LineEnd, &fd.fn.Complexity,
 			&paramsJSON, &returnsJSON, &behaviorJSON, &errorJSON, &apiFlowJSON, &usesImportsJSON)
 		if err != nil {
+			rows.Close()
 			return nil, err
 		}
 
 		if paramsJSON.Valid {
-			json.Unmarshal([]byte(paramsJSON.String), &fn.Parameters)
+			json.Unmarshal([]byte(paramsJSON.String), &fd.fn.Parameters)
 		}
 		if returnsJSON.Valid {
-			json.Unmarshal([]byte(returnsJSON.String), &fn.Returns)
+			json.Unmarshal([]byte(returnsJSON.String), &fd.fn.Returns)
 		}
 		if behaviorJSON.Valid && behaviorJSON.String != "null" {
-			fn.Behavior = &ctxpkg.FunctionBehavior{}
-			json.Unmarshal([]byte(behaviorJSON.String), fn.Behavior)
+			fd.fn.Behavior = &ctxpkg.FunctionBehavior{}
+			json.Unmarshal([]byte(behaviorJSON.String), fd.fn.Behavior)
 		}
 		if errorJSON.Valid && errorJSON.String != "null" {
-			fn.ErrorHandling = &ctxpkg.ErrorHandling{}
-			json.Unmarshal([]byte(errorJSON.String), fn.ErrorHandling)
+			fd.fn.ErrorHandling = &ctxpkg.ErrorHandling{}
+			json.Unmarshal([]byte(errorJSON.String), fd.fn.ErrorHandling)
 		}
 		if apiFlowJSON.Valid && apiFlowJSON.String != "null" {
-			fn.APIFlow = &ctxpkg.APIFlow{}
-			json.Unmarshal([]byte(apiFlowJSON.String), fn.APIFlow)
+			fd.fn.APIFlow = &ctxpkg.APIFlow{}
+			json.Unmarshal([]byte(apiFlowJSON.String), fd.fn.APIFlow)
 		}
 		if usesImportsJSON.Valid {
-			json.Unmarshal([]byte(usesImportsJSON.String), &fn.UsesImports)
+			json.Unmarshal([]byte(usesImportsJSON.String), &fd.fn.UsesImports)
 		}
 
-		// Get function calls
-		fn.Calls, _ = s.getFunctionCalls(ctx, funcID)
+		funcList = append(funcList, fd)
+	}
+	rows.Close() // Close rows BEFORE making nested queries
 
-		// Get side effects
-		fn.SideEffects, _ = s.getSideEffects(ctx, funcID)
-
-		functions = append(functions, fn)
+	// Now query nested data with rows closed
+	functions := make([]ctxpkg.FunctionDef, 0, len(funcList))
+	for _, fd := range funcList {
+		fd.fn.Calls, _ = s.getFunctionCalls(ctx, fd.funcID)
+		fd.fn.SideEffects, _ = s.getSideEffects(ctx, fd.funcID)
+		functions = append(functions, fd.fn)
 	}
 
 	return functions, nil

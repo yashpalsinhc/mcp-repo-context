@@ -267,6 +267,12 @@ func (s *server) handleRequestWithID(ctx context.Context, req *jsonRPCRequest, r
 		return s.handleListTools(req)
 	case "tools/call":
 		return s.handleCallToolWithID(ctx, req, reqID)
+	case "resources/list":
+		logger.Debug("listing resources")
+		return s.handleListResources(ctx, req)
+	case "resources/read":
+		logger.Debug("reading resource")
+		return s.handleReadResource(ctx, req)
 	case "ping":
 		logger.Debug("ping received")
 		return &jsonRPCResponse{JSONRPC: "2.0", ID: req.ID, Result: struct{}{}}
@@ -287,7 +293,8 @@ func (s *server) handleInitialize(req *jsonRPCRequest) *jsonRPCResponse {
 		Result: initializeResult{
 			ProtocolVersion: "2024-11-05",
 			Capabilities: serverCapabilities{
-				Tools: &toolsCapability{ListChanged: false},
+				Tools:     &toolsCapability{ListChanged: false},
+				Resources: &resourcesCapability{Subscribe: false, ListChanged: false},
 			},
 			ServerInfo: serverInfo{
 				Name:    s.config.Name,

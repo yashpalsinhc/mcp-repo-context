@@ -16,7 +16,9 @@
 | **Phase 2.1: SQLite Storage** | DONE | `internal/storage/sqlite.go`, `sqlite_search.go`, `migrations/` |
 | Phase 2.2: Hybrid Search | DONE | Included in sqlite_search.go |
 | Phase 2.3: Incremental Indexing | NOT STARTED | - |
-| Phase 3: Agent-Friendly Design | NOT STARTED | - |
+| **Phase 3.1: Tool Hints** | DONE | `internal/mcp/tool_hints.go` |
+| **Phase 3.2: MCP Resources** | DONE | `internal/mcp/resources.go` |
+| Phase 3.3: Composable Patterns | NOT STARTED | - |
 | Phase 4: Token Intelligence | NOT STARTED | - |
 | Phase 5: Advanced Features | NOT STARTED | - |
 
@@ -557,7 +559,7 @@ func (i *IncrementalIndexer) reindexFile(path string) error {
 
 ---
 
-## Phase 3: Agent-Friendly Design (Week 5-6)
+## Phase 3: Agent-Friendly Design (Week 5-6) - IN PROGRESS
 
 ### 3.1 Implement MCP Best Practices
 
@@ -607,7 +609,9 @@ type FunctionSummary struct {
 }
 ```
 
-### 3.2 Add Tool Hints for Agents
+### 3.2 Add Tool Hints for Agents - DONE
+
+**Implementation**: See `internal/mcp/tool_hints.go`
 
 Based on [mcp-agent patterns](https://github.com/lastmile-ai/mcp-agent), add metadata to help agents choose tools:
 
@@ -694,9 +698,11 @@ func NewQueryRouter() *QueryRouter {
 }
 ```
 
-### 3.4 Add Resource Protocol Support
+### 3.4 Add Resource Protocol Support - DONE
 
-Currently only tools are implemented. Add MCP Resources for direct access:
+**Implementation**: See `internal/mcp/resources.go`
+
+MCP Resources protocol now implemented for direct access to repository data:
 
 ```go
 // internal/mcp/resources.go
@@ -1067,9 +1073,9 @@ func (s *HTTPServer) Start(ctx context.Context) error {
 
 ### Phase 3 (Week 5-6)
 - [ ] Split tools into focused single-purpose
-- [ ] Add tool hints for agents
+- [x] Add tool hints for agents
 - [ ] Implement progressive disclosure
-- [ ] Add MCP Resources support
+- [x] Add MCP Resources support
 - [ ] Create composable patterns
 - [ ] Document agent usage patterns
 
