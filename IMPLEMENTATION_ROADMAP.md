@@ -18,7 +18,8 @@
 | Phase 2.3: Incremental Indexing | NOT STARTED | - |
 | **Phase 3.1: Tool Hints** | DONE | `internal/mcp/tool_hints.go` |
 | **Phase 3.2: MCP Resources** | DONE | `internal/mcp/resources.go` |
-| Phase 3.3: Composable Patterns | NOT STARTED | - |
+| **Phase 3.3: Progressive Disclosure** | DONE | `internal/mcp/progressive.go` |
+| **Phase 3.4: Output Budgeting** | DONE | Added `max_results` to search tools |
 | Phase 4: Token Intelligence | NOT STARTED | - |
 | Phase 5: Advanced Features | NOT STARTED | - |
 
@@ -1074,8 +1075,9 @@ func (s *HTTPServer) Start(ctx context.Context) error {
 ### Phase 3 (Week 5-6)
 - [ ] Split tools into focused single-purpose
 - [x] Add tool hints for agents
-- [ ] Implement progressive disclosure
+- [x] Implement progressive disclosure
 - [x] Add MCP Resources support
+- [x] Add output budgeting (max_results)
 - [ ] Create composable patterns
 - [ ] Document agent usage patterns
 
