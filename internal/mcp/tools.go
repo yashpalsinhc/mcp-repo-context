@@ -1514,3 +1514,623 @@ func (s *server) toolGetSkill(ctx context.Context, args map[string]any) callTool
 		Content: []contentItem{{Type: "text", Text: sb.String()}},
 	}
 }
+
+// ============================================================================
+// NEW: Deep Context Tools (No AI Required)
+// ============================================================================
+
+// toolGetFunctionContext retrieves comprehensive context for a specific function.
+func (s *server) toolGetFunctionContext(ctx context.Context, args map[string]any) callToolResult {
+	repoID, ok := args["repo_id"].(string)
+	if !ok || repoID == "" {
+		return errorResult("repo_id is required")
+	}
+
+	filePath, ok := args["file_path"].(string)
+	if !ok || filePath == "" {
+		return errorResult("file_path is required")
+	}
+
+	funcName, ok := args["function_name"].(string)
+	if !ok || funcName == "" {
+		return errorResult("function_name is required")
+	}
+
+	result, err := s.manager.GetFunctionContext(ctx, repoID, filePath, funcName)
+	if err != nil {
+		return errorResult(fmt.Sprintf("Failed to get function context: %v", err))
+	}
+
+	var sb strings.Builder
+
+	// Header
+	fmt.Fprintf(&sb, "# Function: `%s`\n\n", result.Function.Name)
+	fmt.Fprintf(&sb, "**File:** `%s`\n", result.FilePath)
+	fmt.Fprintf(&sb, "**Repository:** `%s`\n", result.RepoID)
+	fmt.Fprintf(&sb, "**Lines:** %d-%d\n", result.Function.LineStart, result.Function.LineEnd)
+	if result.Function.IsPublic {
+		sb.WriteString("**Visibility:** Public\n")
+	} else {
+		sb.WriteString("**Visibility:** Private\n")
+	}
+	sb.WriteString("\n")
+
+	// Signature
+	sb.WriteString("## Signature\n\n")
+	fmt.Fprintf(&sb, "```go\n%s\n```\n\n", result.Function.Signature)
+
+	// Description (from godoc)
+	if result.Function.Description != "" {
+		sb.WriteString("## Description\n\n")
+		sb.WriteString(result.Function.Description + "\n\n")
+	}
+
+	// Behavior (auto-extracted)
+	if result.Function.Behavior != nil {
+		sb.WriteString("## Behavior (Auto-Analyzed)\n\n")
+
+		if result.Function.Behavior.Summary != "" {
+			fmt.Fprintf(&sb, "**Summary:** %s\n\n", result.Function.Behavior.Summary)
+		}
+
+		if len(result.Function.Behavior.Steps) > 0 {
+			sb.WriteString("**Steps:**\n")
+			for _, step := range result.Function.Behavior.Steps {
+				fmt.Fprintf(&sb, "- %s\n", step)
+			}
+			sb.WriteString("\n")
+		}
+
+		if len(result.Function.Behavior.Patterns) > 0 {
+			fmt.Fprintf(&sb, "**Patterns:** %s\n\n", strings.Join(result.Function.Behavior.Patterns, ", "))
+		}
+
+		if result.Function.Behavior.OutputSource != "" {
+			fmt.Fprintf(&sb, "**Output:** %s\n\n", result.Function.Behavior.OutputSource)
+		}
+	}
+
+	// What this function calls
+	if len(result.Function.Calls) > 0 {
+		sb.WriteString("## Calls (What This Function Calls)\n\n")
+		for _, call := range result.Function.Calls {
+			if call.Package != "" {
+				fmt.Fprintf(&sb, "- `%s.%s` (%s)\n", call.Package, call.Function, call.Type)
+			} else {
+				fmt.Fprintf(&sb, "- `%s` (%s)\n", call.Function, call.Type)
+			}
+		}
+		sb.WriteString("\n")
+	}
+
+	// Who calls this function
+	if len(result.Callers) > 0 {
+		sb.WriteString("## Called By (What Calls This Function)\n\n")
+		for _, caller := range result.Callers {
+			fmt.Fprintf(&sb, "- `%s` in `%s`\n", caller.Function, caller.File)
+		}
+		sb.WriteString("\n")
+	}
+
+	// Side effects
+	if len(result.Function.SideEffects) > 0 {
+		sb.WriteString("## Side Effects\n\n")
+		for _, effect := range result.Function.SideEffects {
+			fmt.Fprintf(&sb, "- %s\n", effect)
+		}
+		sb.WriteString("\n")
+	}
+
+	// Error handling
+	if result.Function.ErrorHandling != nil {
+		eh := result.Function.ErrorHandling
+		sb.WriteString("## Error Handling\n\n")
+		fmt.Fprintf(&sb, "- Returns error: %v\n", eh.ReturnsError)
+		fmt.Fprintf(&sb, "- Error checks: %d\n", eh.ErrorChecks)
+		fmt.Fprintf(&sb, "- Wraps errors: %v\n", eh.WrapsErrors)
+		fmt.Fprintf(&sb, "- Logs errors: %v\n", eh.LogsErrors)
+		if eh.PanicsOnError {
+			sb.WriteString("- ⚠️ Can panic on error\n")
+		}
+		if len(eh.ErrorTypes) > 0 {
+			fmt.Fprintf(&sb, "- Error types: %s\n", strings.Join(eh.ErrorTypes, ", "))
+		}
+		sb.WriteString("\n")
+	}
+
+	// Related types
+	if len(result.RelatedTypes) > 0 {
+		sb.WriteString("## Related Types\n\n")
+		for _, t := range result.RelatedTypes {
+			fmt.Fprintf(&sb, "- `%s` (%s) in `%s`\n", t.Name, t.Kind, t.File)
+		}
+		sb.WriteString("\n")
+	}
+
+	// API Flow (comprehensive analysis)
+	if result.Function.APIFlow != nil {
+		flow := result.Function.APIFlow
+
+		if flow.IsHTTPHandler {
+			sb.WriteString("## API Flow (HTTP Handler)\n\n")
+
+			// Request payload
+			if flow.RequestPayload != nil {
+				sb.WriteString("### Request Payload\n")
+				fmt.Fprintf(&sb, "- Type: `%s`\n", flow.RequestPayload.TypeName)
+				if flow.RequestPayload.Source != "" {
+					fmt.Fprintf(&sb, "- Source: %s\n", flow.RequestPayload.Source)
+				}
+				sb.WriteString("\n")
+			}
+
+			// Response payload
+			if flow.ResponsePayload != nil {
+				sb.WriteString("### Response Payload\n")
+				fmt.Fprintf(&sb, "- Type: `%s`\n", flow.ResponsePayload.TypeName)
+				sb.WriteString("\n")
+			}
+		}
+
+		// Execution steps
+		if len(flow.Steps) > 0 {
+			sb.WriteString("### Execution Flow\n\n")
+			for _, step := range flow.Steps {
+				fmt.Fprintf(&sb, "%d. **%s** (line %d)\n", step.StepNumber, step.Action, step.Line)
+				if step.Output != "" {
+					fmt.Fprintf(&sb, "   - Returns: `%s`\n", step.Output)
+				}
+			}
+			sb.WriteString("\n")
+		}
+
+		// Database queries
+		if len(flow.DBQueries) > 0 {
+			sb.WriteString("### Database Queries\n\n")
+			for _, q := range flow.DBQueries {
+				fmt.Fprintf(&sb, "- **%s** on `%s` (line %d)\n", q.Operation, q.Table, q.Line)
+				if q.RawQuery != "" {
+					fmt.Fprintf(&sb, "  ```sql\n  %s\n  ```\n", q.RawQuery)
+				}
+			}
+			sb.WriteString("\n")
+		}
+
+		// External HTTP calls
+		if len(flow.ExternalCalls) > 0 {
+			sb.WriteString("### External HTTP Calls\n\n")
+			for _, call := range flow.ExternalCalls {
+				fmt.Fprintf(&sb, "- **%s** ", call.Method)
+				if call.URL != "" {
+					fmt.Fprintf(&sb, "`%s`", call.URL)
+				}
+				fmt.Fprintf(&sb, " (line %d)\n", call.Line)
+			}
+			sb.WriteString("\n")
+		}
+
+		// Validation steps
+		if len(flow.ValidationSteps) > 0 {
+			sb.WriteString("### Validations\n\n")
+			for _, v := range flow.ValidationSteps {
+				fmt.Fprintf(&sb, "- %s\n", v)
+			}
+			sb.WriteString("\n")
+		}
+	}
+
+	// Complexity
+	if result.Function.Complexity > 0 {
+		fmt.Fprintf(&sb, "**Cyclomatic Complexity:** %d\n", result.Function.Complexity)
+	}
+
+	return callToolResult{
+		Content: []contentItem{{Type: "text", Text: sb.String()}},
+	}
+}
+
+// toolSearchByConcept searches for functions related to a concept.
+func (s *server) toolSearchByConcept(ctx context.Context, args map[string]any) callToolResult {
+	repoID, ok := args["repo_id"].(string)
+	if !ok || repoID == "" {
+		return errorResult("repo_id is required")
+	}
+
+	concept, ok := args["concept"].(string)
+	if !ok || concept == "" {
+		return errorResult("concept is required")
+	}
+
+	results, err := s.manager.SearchByConcept(ctx, repoID, concept)
+	if err != nil {
+		return errorResult(fmt.Sprintf("Search failed: %v", err))
+	}
+
+	if len(results) == 0 {
+		return callToolResult{
+			Content: []contentItem{{Type: "text", Text: fmt.Sprintf("No functions found related to concept: %s\n\nAvailable concepts include: authentication, validation, crud, http, database, handler, error_handling, logging, async, initialization, cleanup", concept)}},
+		}
+	}
+
+	var sb strings.Builder
+	fmt.Fprintf(&sb, "# Functions Related to Concept: `%s`\n\n", concept)
+	fmt.Fprintf(&sb, "Found %d functions:\n\n", len(results))
+
+	for _, ref := range results {
+		fmt.Fprintf(&sb, "## `%s`\n\n", ref.Function)
+		fmt.Fprintf(&sb, "- **File:** `%s:%d`\n", ref.File, ref.Line)
+		if ref.Signature != "" {
+			fmt.Fprintf(&sb, "- **Signature:** `%s`\n", ref.Signature)
+		}
+		if ref.Summary != "" {
+			fmt.Fprintf(&sb, "- **Summary:** %s\n", ref.Summary)
+		}
+		sb.WriteString("\n")
+	}
+
+	return callToolResult{
+		Content: []contentItem{{Type: "text", Text: sb.String()}},
+	}
+}
+
+// toolSearchBySideEffect searches for functions with specific side effects.
+func (s *server) toolSearchBySideEffect(ctx context.Context, args map[string]any) callToolResult {
+	repoID, ok := args["repo_id"].(string)
+	if !ok || repoID == "" {
+		return errorResult("repo_id is required")
+	}
+
+	effect, ok := args["effect"].(string)
+	if !ok || effect == "" {
+		return errorResult("effect is required")
+	}
+
+	results, err := s.manager.SearchBySideEffect(ctx, repoID, effect)
+	if err != nil {
+		return errorResult(fmt.Sprintf("Search failed: %v", err))
+	}
+
+	if len(results) == 0 {
+		return callToolResult{
+			Content: []contentItem{{Type: "text", Text: fmt.Sprintf("No functions found with side effect: %s\n\nAvailable side effects: http_call, db_query, db_transaction, file_io, io_operation, redis_call, kafka_call, grpc_call, logging, context_management, time_delay, panic", effect)}},
+		}
+	}
+
+	var sb strings.Builder
+	fmt.Fprintf(&sb, "# Functions with Side Effect: `%s`\n\n", effect)
+	fmt.Fprintf(&sb, "Found %d functions:\n\n", len(results))
+
+	for _, ref := range results {
+		fmt.Fprintf(&sb, "## `%s`\n\n", ref.Function)
+		fmt.Fprintf(&sb, "- **File:** `%s:%d`\n", ref.File, ref.Line)
+		if ref.Signature != "" {
+			fmt.Fprintf(&sb, "- **Signature:** `%s`\n", ref.Signature)
+		}
+		if ref.Summary != "" {
+			fmt.Fprintf(&sb, "- **Summary:** %s\n", ref.Summary)
+		}
+		sb.WriteString("\n")
+	}
+
+	return callToolResult{
+		Content: []contentItem{{Type: "text", Text: sb.String()}},
+	}
+}
+
+// toolGetCallers finds all functions that call a specific function.
+func (s *server) toolGetCallers(ctx context.Context, args map[string]any) callToolResult {
+	repoID, ok := args["repo_id"].(string)
+	if !ok || repoID == "" {
+		return errorResult("repo_id is required")
+	}
+
+	funcName, ok := args["function_name"].(string)
+	if !ok || funcName == "" {
+		return errorResult("function_name is required")
+	}
+
+	// Get the full repo context to search for callers
+	repoCtx, err := s.manager.GetContext(ctx, repoID)
+	if err != nil {
+		return errorResult(fmt.Sprintf("Failed to get repository context: %v", err))
+	}
+
+	// Find all functions that call this function
+	var callers []struct {
+		File     string
+		Function string
+		Line     int
+		Summary  string
+	}
+
+	for path, fileCtx := range repoCtx.Files {
+		for _, fn := range fileCtx.Functions {
+			for _, call := range fn.Calls {
+				if call.Function == funcName {
+					summary := ""
+					if fn.Behavior != nil {
+						summary = fn.Behavior.Summary
+					}
+					callers = append(callers, struct {
+						File     string
+						Function string
+						Line     int
+						Summary  string
+					}{
+						File:     path,
+						Function: fn.Name,
+						Line:     call.Line,
+						Summary:  summary,
+					})
+					break // Only count once per calling function
+				}
+			}
+		}
+	}
+
+	if len(callers) == 0 {
+		return callToolResult{
+			Content: []contentItem{{Type: "text", Text: fmt.Sprintf("No functions found that call `%s`.\n\nThis could mean:\n- The function is not called within this repository\n- The function is called from external code\n- The function name is incorrect", funcName)}},
+		}
+	}
+
+	var sb strings.Builder
+	fmt.Fprintf(&sb, "# Functions That Call `%s`\n\n", funcName)
+	fmt.Fprintf(&sb, "Found %d callers:\n\n", len(callers))
+
+	for _, caller := range callers {
+		fmt.Fprintf(&sb, "## `%s`\n\n", caller.Function)
+		fmt.Fprintf(&sb, "- **File:** `%s`\n", caller.File)
+		fmt.Fprintf(&sb, "- **Call at line:** %d\n", caller.Line)
+		if caller.Summary != "" {
+			fmt.Fprintf(&sb, "- **Caller behavior:** %s\n", caller.Summary)
+		}
+		sb.WriteString("\n")
+	}
+
+	return callToolResult{
+		Content: []contentItem{{Type: "text", Text: sb.String()}},
+	}
+}
+
+// ============================================================================
+// NEW: Local Directory Analysis Tools
+// ============================================================================
+
+// toolAnalyzeLocal handles the analyze_local tool call.
+func (s *server) toolAnalyzeLocal(ctx context.Context, args map[string]any) callToolResult {
+	path, ok := args["path"].(string)
+	if !ok || path == "" {
+		return errorResult("path is required")
+	}
+
+	force, _ := args["force"].(bool)
+	includeAll, _ := args["include_all"].(bool)
+
+	opts := orchestrator.AnalyzeLocalOptions{
+		Force:      force,
+		IncludeAll: includeAll,
+	}
+
+	result, err := s.manager.AnalyzeLocal(ctx, path, opts)
+	if err != nil {
+		return errorResult(fmt.Sprintf("Analysis failed: %v", err))
+	}
+
+	var sb strings.Builder
+	fmt.Fprintf(&sb, "# Local Directory Analyzed\n\n")
+	fmt.Fprintf(&sb, "**Project ID:** `%s`\n", result.ProjectID)
+	fmt.Fprintf(&sb, "**Project Name:** `%s`\n", result.ProjectName)
+	fmt.Fprintf(&sb, "**Project Path:** `%s`\n", result.ProjectPath)
+	fmt.Fprintf(&sb, "**Files Analyzed:** %d\n", result.FileCount)
+	fmt.Fprintf(&sb, "**Duration:** %s\n", result.Duration.Round(time.Millisecond))
+
+	if result.IsNewAnalysis {
+		sb.WriteString("**Status:** New analysis completed\n")
+	} else {
+		sb.WriteString("**Status:** Using cached analysis\n")
+	}
+
+	if len(result.Warnings) > 0 {
+		sb.WriteString("\n## Warnings\n\n")
+		for _, w := range result.Warnings {
+			fmt.Fprintf(&sb, "- %s\n", w)
+		}
+	}
+
+	sb.WriteString("\n## Usage\n\n")
+	sb.WriteString("You can now use the following tools with this project:\n\n")
+	fmt.Fprintf(&sb, "- `get_context`: repo_id=\"%s\"\n", result.ProjectID)
+	fmt.Fprintf(&sb, "- `search_context`: repo_id=\"%s\" query=\"...\"\n", result.ProjectID)
+	fmt.Fprintf(&sb, "- `smart_query`: project_id=\"%s\" query=\"...\"\n", result.ProjectID)
+	fmt.Fprintf(&sb, "- `search_by_concept`: repo_id=\"%s\" concept=\"...\"\n", result.ProjectID)
+	fmt.Fprintf(&sb, "- `search_by_side_effect`: repo_id=\"%s\" effect=\"...\"\n", result.ProjectID)
+
+	return callToolResult{
+		Content: []contentItem{{Type: "text", Text: sb.String()}},
+	}
+}
+
+// toolSmartQuery handles the smart_query tool call - intelligent query routing without AI.
+func (s *server) toolSmartQuery(ctx context.Context, args map[string]any) callToolResult {
+	query, ok := args["query"].(string)
+	if !ok || query == "" {
+		return errorResult("query is required")
+	}
+
+	projectID, ok := args["project_id"].(string)
+	if !ok || projectID == "" {
+		return errorResult("project_id is required")
+	}
+
+	result, err := s.manager.SmartQuery(ctx, query, projectID)
+	if err != nil {
+		return errorResult(fmt.Sprintf("Query failed: %v", err))
+	}
+
+	var sb strings.Builder
+
+	// Show query type detected
+	fmt.Fprintf(&sb, "*Query type detected: %s (confidence: %.0f%%)*\n\n", result.QueryType, result.Confidence*100)
+
+	// Main answer
+	sb.WriteString(result.Answer)
+
+	// Show sources if available
+	if len(result.Sources) > 0 {
+		sb.WriteString("\n\n---\n**Sources:** ")
+		sb.WriteString(strings.Join(result.Sources, ", "))
+	}
+
+	// If AI is needed for better answer
+	if result.NeedsAI {
+		sb.WriteString("\n\n---\n")
+		sb.WriteString("💡 *For a more detailed answer, you can use the `ask` tool which uses AI.*")
+		if result.SuggestedQuery != "" {
+			fmt.Fprintf(&sb, "\n*Suggestion: %s*", result.SuggestedQuery)
+		}
+	}
+
+	return callToolResult{
+		Content: []contentItem{{Type: "text", Text: sb.String()}},
+	}
+}
+
+// ============================================================================
+// Incremental Update Tools (for refactoring workflows)
+// ============================================================================
+
+// toolRefreshFile handles the refresh_file tool call - fast single file update.
+func (s *server) toolRefreshFile(ctx context.Context, args map[string]any) callToolResult {
+	projectID, ok := args["project_id"].(string)
+	if !ok || projectID == "" {
+		return errorResult("project_id is required")
+	}
+
+	filePath, ok := args["file_path"].(string)
+	if !ok || filePath == "" {
+		return errorResult("file_path is required")
+	}
+
+	force, _ := args["force"].(bool)
+
+	opts := orchestrator.RefreshFileOptions{
+		Force: force,
+	}
+
+	result, err := s.manager.RefreshFile(ctx, projectID, filePath, opts)
+	if err != nil {
+		return errorResult(fmt.Sprintf("Refresh failed: %v", err))
+	}
+
+	var sb strings.Builder
+
+	if result.Updated {
+		fmt.Fprintf(&sb, "✅ **File refreshed:** `%s`\n\n", result.FilePath)
+		fmt.Fprintf(&sb, "- **Functions:** %d\n", result.FunctionCount)
+		fmt.Fprintf(&sb, "- **Types:** %d\n", result.TypeCount)
+		fmt.Fprintf(&sb, "- **Hash:** `%s`\n", result.NewHash[:12])
+		if result.WasStale {
+			sb.WriteString("- **Status:** File had changed, context updated\n")
+		} else {
+			sb.WriteString("- **Status:** Forced refresh (file unchanged)\n")
+		}
+	} else {
+		fmt.Fprintf(&sb, "ℹ️ **File unchanged:** `%s`\n\n", result.FilePath)
+		fmt.Fprintf(&sb, "- **Functions:** %d\n", result.FunctionCount)
+		fmt.Fprintf(&sb, "- **Types:** %d\n", result.TypeCount)
+		sb.WriteString("- **Status:** Hash matches, no update needed\n")
+		sb.WriteString("\nUse `force: true` to refresh anyway.\n")
+	}
+
+	return callToolResult{
+		Content: []contentItem{{Type: "text", Text: sb.String()}},
+	}
+}
+
+// toolRefreshChanged handles the refresh_changed tool call - refresh all modified files.
+func (s *server) toolRefreshChanged(ctx context.Context, args map[string]any) callToolResult {
+	projectID, ok := args["project_id"].(string)
+	if !ok || projectID == "" {
+		return errorResult("project_id is required")
+	}
+
+	results, err := s.manager.RefreshChangedFiles(ctx, projectID)
+	if err != nil {
+		return errorResult(fmt.Sprintf("Refresh failed: %v", err))
+	}
+
+	var sb strings.Builder
+
+	if len(results) == 0 {
+		sb.WriteString("✅ **All files up to date**\n\n")
+		sb.WriteString("No files have changed since last analysis.\n")
+	} else {
+		fmt.Fprintf(&sb, "✅ **Refreshed %d changed files**\n\n", len(results))
+		sb.WriteString("| File | Functions | Types | Status |\n")
+		sb.WriteString("|------|-----------|-------|--------|\n")
+
+		for _, r := range results {
+			status := "updated"
+			if !r.WasStale {
+				status = "new"
+			}
+			fmt.Fprintf(&sb, "| `%s` | %d | %d | %s |\n",
+				r.FilePath, r.FunctionCount, r.TypeCount, status)
+		}
+	}
+
+	sb.WriteString("\n*Tip: Run this after refactoring to keep context in sync.*\n")
+
+	return callToolResult{
+		Content: []contentItem{{Type: "text", Text: sb.String()}},
+	}
+}
+
+// toolGetPRContext handles the get_pr_context tool call - rich context for PR changes.
+func (s *server) toolGetPRContext(ctx context.Context, args map[string]any) callToolResult {
+	repoID, ok := args["repo_id"].(string)
+	if !ok || repoID == "" {
+		return errorResult("repo_id is required")
+	}
+
+	// Parse changed files
+	changedFilesRaw, ok := args["changed_files"].([]interface{})
+	if !ok || len(changedFilesRaw) == 0 {
+		return errorResult("changed_files is required and must be a non-empty array")
+	}
+
+	var changedFiles []orchestrator.ChangedFile
+	for _, cfRaw := range changedFilesRaw {
+		cfMap, ok := cfRaw.(map[string]interface{})
+		if !ok {
+			continue
+		}
+
+		path, _ := cfMap["path"].(string)
+		changeType, _ := cfMap["change_type"].(string)
+
+		if path != "" && changeType != "" {
+			changedFiles = append(changedFiles, orchestrator.ChangedFile{
+				Path:       path,
+				ChangeType: changeType,
+			})
+		}
+	}
+
+	if len(changedFiles) == 0 {
+		return errorResult("No valid changed files provided")
+	}
+
+	result, err := s.manager.GetPRContext(ctx, repoID, changedFiles)
+	if err != nil {
+		return errorResult(fmt.Sprintf("Failed to get PR context: %v", err))
+	}
+
+	// Format the result as markdown
+	output := orchestrator.FormatPRContext(result)
+
+	return callToolResult{
+		Content: []contentItem{{Type: "text", Text: output}},
+	}
+}

@@ -3,7 +3,7 @@
   "url": "https://github.com/LambdatestIncPrivate/lambda-test-management-service",
   "branch": "prod",
   "commit_hash": "fb32e414ed5696686beb6f63236c4c6456848f55",
-  "analyzed_at": "2026-01-28T20:28:48.791588758Z",
+  "analyzed_at": "2026-01-30T16:19:36.993925629Z",
   "files": {
     ".env-sample": {
       "path": ".env-sample",
@@ -18,7 +18,7 @@
       "functions": null,
       "constants": null,
       "concepts": [],
-      "analyzed_at": "2026-01-28T20:28:48.791633217Z"
+      "analyzed_at": "2026-01-30T16:19:36.994082796Z"
     },
     "Dockerfile": {
       "path": "Dockerfile",
@@ -35,7 +35,7 @@
       "concepts": [
         "dockerfile"
       ],
-      "analyzed_at": "2026-01-28T20:28:48.791647342Z"
+      "analyzed_at": "2026-01-30T16:19:36.994111837Z"
     },
     "Dockerfile_multiarch": {
       "path": "Dockerfile_multiarch",
@@ -52,7 +52,7 @@
       "concepts": [
         "dockerfile_multiarch"
       ],
-      "analyzed_at": "2026-01-28T20:28:48.791658842Z"
+      "analyzed_at": "2026-01-30T16:19:36.994137754Z"
     },
     "LICENSE": {
       "path": "LICENSE",
@@ -69,7 +69,7 @@
       "concepts": [
         "license"
       ],
-      "analyzed_at": "2026-01-28T20:28:48.791670383Z"
+      "analyzed_at": "2026-01-30T16:19:36.994159337Z"
     },
     "README.md": {
       "path": "README.md",
@@ -86,7 +86,7 @@
       "concepts": [
         "readme.md"
       ],
-      "analyzed_at": "2026-01-28T20:28:48.791681175Z"
+      "analyzed_at": "2026-01-30T16:19:36.994178879Z"
     },
     "app.js": {
       "path": "app.js",
@@ -101,7 +101,7 @@
       "functions": null,
       "constants": null,
       "concepts": [],
-      "analyzed_at": "2026-01-28T20:28:48.79171005Z"
+      "analyzed_at": "2026-01-30T16:19:36.994222046Z"
     },
     "bin/www": {
       "path": "bin/www",
@@ -116,7 +116,7 @@
       "functions": null,
       "constants": null,
       "concepts": [],
-      "analyzed_at": "2026-01-28T20:28:48.791727467Z"
+      "analyzed_at": "2026-01-30T16:19:36.994257296Z"
     },
     "db/config/app.json": {
       "path": "db/config/app.json",
@@ -131,7 +131,7 @@
       "functions": null,
       "constants": null,
       "concepts": [],
-      "analyzed_at": "2026-01-28T20:28:48.791750133Z"
+      "analyzed_at": "2026-01-30T16:19:36.994296712Z"
     },
     "db/config/components/Ims.json": {
       "path": "db/config/components/Ims.json",
@@ -148,7 +148,7 @@
       "concepts": [
         "ims.json"
       ],
-      "analyzed_at": "2026-01-28T20:28:48.791772175Z"
+      "analyzed_at": "2026-01-30T16:19:36.994339837Z"
     },
     "db/config/components/android-emulator.json": {
       "path": "db/config/components/android-emulator.json",
@@ -163,7 +163,7 @@
       "functions": null,
       "constants": null,
       "concepts": [],
-      "analyzed_at": "2026-01-28T20:28:48.791784633Z"
+      "analyzed_at": "2026-01-30T16:19:36.994368629Z"
     },
     "db/config/components/app-engine-real-devices.json": {
       "path": "db/config/components/app-engine-real-devices.json",
@@ -178,7 +178,7 @@
       "functions": null,
       "constants": null,
       "concepts": [],
-      "analyzed_at": "2026-01-28T20:28:48.791794383Z"
+      "analyzed_at": "2026-01-30T16:19:36.994400837Z"
     },
     "db/config/components/app-engine.json": {
       "path": "db/config/components/app-engine.json",
@@ -193,7 +193,7 @@
       "functions": null,
       "constants": null,
       "concepts": [],
-      "analyzed_at": "2026-01-28T20:28:48.791803675Z"
+      "analyzed_at": "2026-01-30T16:19:36.994423712Z"
     },
     "db/config/components/backend-analytics.json": {
       "path": "db/config/components/backend-analytics.json",
@@ -208,7 +208,7 @@
       "functions": null,
       "constants": null,
       "concepts": [],
-      "analyzed_at": "2026-01-28T20:28:48.791813217Z"
+      "analyzed_at": "2026-01-30T16:19:36.994522879Z"
     },
     "db/config/components/invigilator.json": {
       "path": "db/config/components/invigilator.json",
@@ -223,7 +223,7 @@
       "functions": null,
       "constants": null,
       "concepts": [],
-      "analyzed_at": "2026-01-28T20:28:48.79182255Z"
+      "analyzed_at": "2026-01-30T16:19:36.994546712Z"
     },
     "db/config/components/kafka.json": {
       "path": "db/config/components/kafka.json",
@@ -238,7 +238,7 @@
       "functions": null,
       "constants": null,
       "concepts": [],
-      "analyzed_at": "2026-01-28T20:28:48.791836133Z"
+      "analyzed_at": "2026-01-30T16:19:36.994595254Z"
     },
     "db/config/components/lims.json": {
       "path": "db/config/components/lims.json",
@@ -253,7 +253,7 @@
       "functions": null,
       "constants": null,
       "concepts": [],
-      "analyzed_at": "2026-01-28T20:28:48.791845717Z"
+      "analyzed_at": "2026-01-30T16:19:36.994616379Z"
     },
     "db/config/components/lses.json": {
       "path": "db/config/components/lses.json",
@@ -268,7 +268,7 @@
       "functions": null,
       "constants": null,
       "concepts": [],
-      "analyzed_at": "2026-01-28T20:28:48.791855133Z"
+      "analyzed_at": "2026-01-30T16:19:36.994647504Z"
     },
     "db/config/components/lsss.json": {
       "path": "db/config/components/lsss.json",
@@ -283,7 +283,7 @@
       "functions": null,
       "constants": null,
       "concepts": [],
-      "analyzed_at": "2026-01-28T20:28:48.791864633Z"
+      "analyzed_at": "2026-01-30T16:19:36.994669629Z"
     },
     "db/config/components/ltis.json": {
       "path": "db/config/components/ltis.json",
@@ -298,7 +298,7 @@
       "functions": null,
       "constants": null,
       "concepts": [],
-      "analyzed_at": "2026-01-28T20:28:48.791874133Z"
+      "analyzed_at": "2026-01-30T16:19:36.994691212Z"
     },
     "db/config/components/ltuns.json": {
       "path": "db/config/components/ltuns.json",
@@ -313,7 +313,7 @@
       "functions": null,
       "constants": null,
       "concepts": [],
-      "analyzed_at": "2026-01-28T20:28:48.791883092Z"
+      "analyzed_at": "2026-01-30T16:19:36.994711504Z"
     },
     "db/config/components/lums.json": {
       "path": "db/config/components/lums.json",
@@ -328,7 +328,7 @@
       "functions": null,
       "constants": null,
       "concepts": [],
-      "analyzed_at": "2026-01-28T20:28:48.791892258Z"
+      "analyzed_at": "2026-01-30T16:19:36.994883754Z"
     },
     "db/config/components/lvms.json": {
       "path": "db/config/components/lvms.json",
@@ -343,7 +343,7 @@
       "functions": null,
       "constants": null,
       "concepts": [],
-      "analyzed_at": "2026-01-28T20:28:48.791901675Z"
+      "analyzed_at": "2026-01-30T16:19:36.994915129Z"
     },
     "db/config/components/redis.json": {
       "path": "db/config/components/redis.json",
@@ -358,7 +358,7 @@
       "functions": null,
       "constants": null,
       "concepts": [],
-      "analyzed_at": "2026-01-28T20:28:48.791912092Z"
+      "analyzed_at": "2026-01-30T16:19:36.994937212Z"
     },
     "db/config/components/resolution.json": {
       "path": "db/config/components/resolution.json",
@@ -373,7 +373,7 @@
       "functions": null,
       "constants": null,
       "concepts": [],
-      "analyzed_at": "2026-01-28T20:28:48.791921383Z"
+      "analyzed_at": "2026-01-30T16:19:36.994956421Z"
     },
     "db/config/components/responsive.json": {
       "path": "db/config/components/responsive.json",
@@ -388,7 +388,7 @@
       "functions": null,
       "constants": null,
       "concepts": [],
-      "analyzed_at": "2026-01-28T20:28:48.791932342Z"
+      "analyzed_at": "2026-01-30T16:19:36.994980796Z"
     },
     "db/config/components/sanctum.json": {
       "path": "db/config/components/sanctum.json",
@@ -403,7 +403,7 @@
       "functions": null,
       "constants": null,
       "concepts": [],
-      "analyzed_at": "2026-01-28T20:28:48.791942175Z"
+      "analyzed_at": "2026-01-30T16:19:36.995045087Z"
     },
     "db/config/components/shared-redis.json": {
       "path": "db/config/components/shared-redis.json",
@@ -418,7 +418,7 @@
       "functions": null,
       "constants": null,
       "concepts": [],
-      "analyzed_at": "2026-01-28T20:28:48.791951592Z"
+      "analyzed_at": "2026-01-30T16:19:36.995068004Z"
     },
     "db/config/components/tms.json": {
       "path": "db/config/components/tms.json",
@@ -433,7 +433,7 @@
       "functions": null,
       "constants": null,
       "concepts": [],
-      "analyzed_at": "2026-01-28T20:28:48.79196155Z"
+      "analyzed_at": "2026-01-30T16:19:36.995095796Z"
     },
     "db/config/config.js": {
       "path": "db/config/config.js",
@@ -448,7 +448,7 @@
       "functions": null,
       "constants": null,
       "concepts": [],
-      "analyzed_at": "2026-01-28T20:28:48.791973092Z"
+      "analyzed_at": "2026-01-30T16:19:36.995122087Z"
     },
     "db/migrations/20170531175302-create-test-type.js": {
       "path": "db/migrations/20170531175302-create-test-type.js",
@@ -463,7 +463,7 @@
       "functions": null,
       "constants": null,
       "concepts": [],
-      "analyzed_at": "2026-01-28T20:28:48.791996883Z"
+      "analyzed_at": "2026-01-30T16:19:36.995269171Z"
     },
     "db/migrations/20170531175303-create-resolution.js": {
       "path": "db/migrations/20170531175303-create-resolution.js",
@@ -478,7 +478,7 @@
       "functions": null,
       "constants": null,
       "concepts": [],
-      "analyzed_at": "2026-01-28T20:28:48.792007508Z"
+      "analyzed_at": "2026-01-30T16:19:36.995349087Z"
     },
     "db/migrations/20170531175304-create-browser.js": {
       "path": "db/migrations/20170531175304-create-browser.js",
@@ -493,7 +493,7 @@
       "functions": null,
       "constants": null,
       "concepts": [],
-      "analyzed_at": "2026-01-28T20:28:48.792017633Z"
+      "analyzed_at": "2026-01-30T16:19:36.995419379Z"
     },
     "db/migrations/20170531175306-create-manufacturer.js": {
       "path": "db/migrations/20170531175306-create-manufacturer.js",
@@ -508,7 +508,7 @@
       "functions": null,
       "constants": null,
       "concepts": [],
-      "analyzed_at": "2026-01-28T20:28:48.792027467Z"
+      "analyzed_at": "2026-01-30T16:19:36.995447087Z"
     },
     "db/migrations/20170531175307-create-monitor-size.js": {
       "path": "db/migrations/20170531175307-create-monitor-size.js",
@@ -523,7 +523,7 @@
       "functions": null,
       "constants": null,
       "concepts": [],
-      "analyzed_at": "2026-01-28T20:28:48.792037842Z"
+      "analyzed_at": "2026-01-30T16:19:36.995512629Z"
     },
     "db/migrations/20170531175308-create-os.js": {
       "path": "db/migrations/20170531175308-create-os.js",
@@ -538,7 +538,7 @@
       "functions": null,
       "constants": null,
       "concepts": [],
-      "analyzed_at": "2026-01-28T20:28:48.792048383Z"
+      "analyzed_at": "2026-01-30T16:19:36.995534712Z"
     },
     "db/migrations/20170531175309-create-project.js": {
       "path": "db/migrations/20170531175309-create-project.js",
@@ -553,7 +553,7 @@
       "functions": null,
       "constants": null,
       "concepts": [],
-      "analyzed_at": "2026-01-28T20:28:48.792059925Z"
+      "analyzed_at": "2026-01-30T16:19:36.995556087Z"
     },
     "db/migrations/20170531175310-create-project-version.js": {
       "path": "db/migrations/20170531175310-create-project-version.js",
@@ -568,7 +568,7 @@
       "functions": null,
       "constants": null,
       "concepts": [],
-      "analyzed_at": "2026-01-28T20:28:48.792070633Z"
+      "analyzed_at": "2026-01-30T16:19:36.995583171Z"
     },
     "db/migrations/20170531175311-create-os-version.js": {
       "path": "db/migrations/20170531175311-create-os-version.js",
@@ -583,7 +583,7 @@
       "functions": null,
       "constants": null,
       "concepts": [],
-      "analyzed_at": "2026-01-28T20:28:48.79208105Z"
+      "analyzed_at": "2026-01-30T16:19:36.995608754Z"
     },
     "db/migrations/20170531175312-create-test.js": {
       "path": "db/migrations/20170531175312-create-test.js",
@@ -598,7 +598,7 @@
       "functions": null,
       "constants": null,
       "concepts": [],
-      "analyzed_at": "2026-01-28T20:28:48.7921023Z"
+      "analyzed_at": "2026-01-30T16:19:36.995651379Z"
     },
     "db/migrations/20170531175313-create-activity.js": {
       "path": "db/migrations/20170531175313-create-activity.js",
@@ -613,7 +613,7 @@
       "functions": null,
       "constants": null,
       "concepts": [],
-      "analyzed_at": "2026-01-28T20:28:48.792113092Z"
+      "analyzed_at": "2026-01-30T16:19:36.995692046Z"
     },
     "db/migrations/20170531175314-create-activity-detail.js": {
       "path": "db/migrations/20170531175314-create-activity-detail.js",
@@ -628,7 +628,7 @@
       "functions": null,
       "constants": null,
       "concepts": [],
-      "analyzed_at": "2026-01-28T20:28:48.792123633Z"
+      "analyzed_at": "2026-01-30T16:19:36.995831421Z"
     },
     "db/migrations/20170531175315-create-video.js": {
       "path": "db/migrations/20170531175315-create-video.js",
@@ -643,7 +643,7 @@
       "functions": null,
       "constants": null,
       "concepts": [],
-      "analyzed_at": "2026-01-28T20:28:48.792133967Z"
+      "analyzed_at": "2026-01-30T16:19:36.995936087Z"
     },
     "db/migrations/20170531175316-create-screenshot.js": {
       "path": "db/migrations/20170531175316-create-screenshot.js",
@@ -658,7 +658,7 @@
       "functions": null,
       "constants": null,
       "concepts": [],
-      "analyzed_at": "2026-01-28T20:28:48.7921448Z"
+      "analyzed_at": "2026-01-30T16:19:36.995974504Z"
     },
     "db/migrations/20170531175317-create-device.js": {
       "path": "db/migrations/20170531175317-create-device.js",
@@ -673,7 +673,7 @@
       "functions": null,
       "constants": null,
       "concepts": [],
-      "analyzed_at": "2026-01-28T20:28:48.792155758Z"
+      "analyzed_at": "2026-01-30T16:19:36.995996129Z"
     },
     "db/migrations/20170531175319-create-browser-version.js": {
       "path": "db/migrations/20170531175319-create-browser-version.js",
@@ -688,7 +688,7 @@
       "functions": null,
       "constants": null,
       "concepts": [],
-      "analyzed_at": "2026-01-28T20:28:48.792167175Z"
+      "analyzed_at": "2026-01-30T16:19:36.996058004Z"
     },
     "db/migrations/20170531175329-create-device-browser.js": {
       "path": "db/migrations/20170531175329-create-device-browser.js",
@@ -703,7 +703,7 @@
       "functions": null,
       "constants": null,
       "concepts": [],
-      "analyzed_at": "2026-01-28T20:28:48.792177717Z"
+      "analyzed_at": "2026-01-30T16:19:36.996174629Z"
     },
     "db/migrations/20170531175329-create-os-browser.js": {
       "path": "db/migrations/20170531175329-create-os-browser.js",
@@ -718,7 +718,7 @@
       "functions": null,
       "constants": null,
       "concepts": [],
-      "analyzed_at": "2026-01-28T20:28:48.792188842Z"
+      "analyzed_at": "2026-01-30T16:19:36.996225337Z"
     },
     "db/migrations/20170531175329-create-os-device.js": {
       "path": "db/migrations/20170531175329-create-os-device.js",
@@ -733,7 +733,7 @@
       "functions": null,
       "constants": null,
       "concepts": [],
-      "analyzed_at": "2026-01-28T20:28:48.792199883Z"
+      "analyzed_at": "2026-01-30T16:19:36.996257462Z"
     },
     "db/migrations/20170531175329-create-os-resolution.js": {
       "path": "db/migrations/20170531175329-create-os-resolution.js",
@@ -748,7 +748,7 @@
       "functions": null,
       "constants": null,
       "concepts": [],
-      "analyzed_at": "2026-01-28T20:28:48.79224155Z"
+      "analyzed_at": "2026-01-30T16:19:36.996278962Z"
     },
     "db/migrations/20170531175329-create-test-metadata.js": {
       "path": "db/migrations/20170531175329-create-test-metadata.js",
@@ -763,7 +763,7 @@
       "functions": null,
       "constants": null,
       "concepts": [],
-      "analyzed_at": "2026-01-28T20:28:48.792251842Z"
+      "analyzed_at": "2026-01-30T16:19:36.996299712Z"
     },
     "db/models/create-activity-detail.js": {
       "path": "db/models/create-activity-detail.js",
@@ -778,7 +778,7 @@
       "functions": null,
       "constants": null,
       "concepts": [],
-      "analyzed_at": "2026-01-28T20:28:48.79228105Z"
+      "analyzed_at": "2026-01-30T16:19:36.996373421Z"
     },
     "db/models/create-activity.js": {
       "path": "db/models/create-activity.js",
@@ -793,7 +793,7 @@
       "functions": null,
       "constants": null,
       "concepts": [],
-      "analyzed_at": "2026-01-28T20:28:48.792291633Z"
+      "analyzed_at": "2026-01-30T16:19:36.996425171Z"
     },
     "db/models/create-app-testing.js": {
       "path": "db/models/create-app-testing.js",
@@ -808,7 +808,7 @@
       "functions": null,
       "constants": null,
       "concepts": [],
-      "analyzed_at": "2026-01-28T20:28:48.792303675Z"
+      "analyzed_at": "2026-01-30T16:19:36.996522212Z"
     },
     "db/models/create-browser-version.js": {
       "path": "db/models/create-browser-version.js",
@@ -823,7 +823,7 @@
       "functions": null,
       "constants": null,
       "concepts": [],
-      "analyzed_at": "2026-01-28T20:28:48.792314925Z"
+      "analyzed_at": "2026-01-30T16:19:36.996589212Z"
     },
     "db/models/create-browser.js": {
       "path": "db/models/create-browser.js",
@@ -838,7 +838,7 @@
       "functions": null,
       "constants": null,
       "concepts": [],
-      "analyzed_at": "2026-01-28T20:28:48.792325342Z"
+      "analyzed_at": "2026-01-30T16:19:36.996684421Z"
     },
     "db/models/create-chrome-extension.js": {
       "path": "db/models/create-chrome-extension.js",
@@ -853,7 +853,7 @@
       "functions": null,
       "constants": null,
       "concepts": [],
-      "analyzed_at": "2026-01-28T20:28:48.792336383Z"
+      "analyzed_at": "2026-01-30T16:19:36.996737546Z"
     },
     "db/models/create-config.js": {
       "path": "db/models/create-config.js",
@@ -868,7 +868,7 @@
       "functions": null,
       "constants": null,
       "concepts": [],
-      "analyzed_at": "2026-01-28T20:28:48.792347133Z"
+      "analyzed_at": "2026-01-30T16:19:36.996779004Z"
     },
     "db/models/create-device-agents.js": {
       "path": "db/models/create-device-agents.js",
@@ -883,7 +883,7 @@
       "functions": null,
       "constants": null,
       "concepts": [],
-      "analyzed_at": "2026-01-28T20:28:48.792357467Z"
+      "analyzed_at": "2026-01-30T16:19:36.996882087Z"
     },
     "db/models/create-device-browser.js": {
       "path": "db/models/create-device-browser.js",
@@ -898,7 +898,7 @@
       "functions": null,
       "constants": null,
       "concepts": [],
-      "analyzed_at": "2026-01-28T20:28:48.792367425Z"
+      "analyzed_at": "2026-01-30T16:19:36.996925046Z"
     },
     "db/models/create-device.js": {
       "path": "db/models/create-device.js",
@@ -913,7 +913,7 @@
       "functions": null,
       "constants": null,
       "concepts": [],
-      "analyzed_at": "2026-01-28T20:28:48.792378133Z"
+      "analyzed_at": "2026-01-30T16:19:36.996980462Z"
     },
     "db/models/create-keyboard-layout.js": {
       "path": "db/models/create-keyboard-layout.js",
@@ -928,7 +928,7 @@
       "functions": null,
       "constants": null,
       "concepts": [],
-      "analyzed_at": "2026-01-28T20:28:48.792388633Z"
+      "analyzed_at": "2026-01-30T16:19:36.997092171Z"
     },
     "db/models/create-locations.js": {
       "path": "db/models/create-locations.js",
@@ -943,7 +943,7 @@
       "functions": null,
       "constants": null,
       "concepts": [],
-      "analyzed_at": "2026-01-28T20:28:48.792398508Z"
+      "analyzed_at": "2026-01-30T16:19:36.997151379Z"
     },
     "db/models/create-login-profile.js": {
       "path": "db/models/create-login-profile.js",
@@ -958,7 +958,7 @@
       "functions": null,
       "constants": null,
       "concepts": [],
-      "analyzed_at": "2026-01-28T20:28:48.792409217Z"
+      "analyzed_at": "2026-01-30T16:19:36.997210087Z"
     },
     "db/models/create-manufacturer.js": {
       "path": "db/models/create-manufacturer.js",
@@ -973,7 +973,7 @@
       "functions": null,
       "constants": null,
       "concepts": [],
-      "analyzed_at": "2026-01-28T20:28:48.79241955Z"
+      "analyzed_at": "2026-01-30T16:19:36.997245546Z"
     },
     "db/models/create-monitor-size.js": {
       "path": "db/models/create-monitor-size.js",
@@ -988,7 +988,7 @@
       "functions": null,
       "constants": null,
       "concepts": [],
-      "analyzed_at": "2026-01-28T20:28:48.792429342Z"
+      "analyzed_at": "2026-01-30T16:19:36.997298087Z"
     },
     "db/models/create-organization-plan-attribute.js": {
       "path": "db/models/create-organization-plan-attribute.js",
@@ -1003,7 +1003,7 @@
       "functions": null,
       "constants": null,
       "concepts": [],
-      "analyzed_at": "2026-01-28T20:28:48.792439133Z"
+      "analyzed_at": "2026-01-30T16:19:36.997359587Z"
     },
     "db/models/create-organization-usage-logs.js": {
       "path": "db/models/create-organization-usage-logs.js",
@@ -1018,7 +1018,7 @@
       "functions": null,
       "constants": null,
       "concepts": [],
-      "analyzed_at": "2026-01-28T20:28:48.79244955Z"
+      "analyzed_at": "2026-01-30T16:19:36.997386754Z"
     },
     "db/models/create-organization_preferences.js": {
       "path": "db/models/create-organization_preferences.js",
@@ -1033,7 +1033,7 @@
       "functions": null,
       "constants": null,
       "concepts": [],
-      "analyzed_at": "2026-01-28T20:28:48.792460967Z"
+      "analyzed_at": "2026-01-30T16:19:36.997415171Z"
     },
     "db/models/create-os-browser.js": {
       "path": "db/models/create-os-browser.js",
@@ -1048,7 +1048,7 @@
       "functions": null,
       "constants": null,
       "concepts": [],
-      "analyzed_at": "2026-01-28T20:28:48.792471675Z"
+      "analyzed_at": "2026-01-30T16:19:36.997437379Z"
     },
     "db/models/create-os-device.js": {
       "path": "db/models/create-os-device.js",
@@ -1063,7 +1063,7 @@
       "functions": null,
       "constants": null,
       "concepts": [],
-      "analyzed_at": "2026-01-28T20:28:48.792481633Z"
+      "analyzed_at": "2026-01-30T16:19:36.997457879Z"
     },
     "db/models/create-os-resolution.js": {
       "path": "db/models/create-os-resolution.js",
@@ -1078,7 +1078,7 @@
       "functions": null,
       "constants": null,
       "concepts": [],
-      "analyzed_at": "2026-01-28T20:28:48.792492092Z"
+      "analyzed_at": "2026-01-30T16:19:36.997482712Z"
     },
     "db/models/create-os-version.js": {
       "path": "db/models/create-os-version.js",
@@ -1093,7 +1093,7 @@
       "functions": null,
       "constants": null,
       "concepts": [],
-      "analyzed_at": "2026-01-28T20:28:48.792501925Z"
+      "analyzed_at": "2026-01-30T16:19:36.997504462Z"
     },
     "db/models/create-os.js": {
       "path": "db/models/create-os.js",
@@ -1108,7 +1108,7 @@
       "functions": null,
       "constants": null,
       "concepts": [],
-      "analyzed_at": "2026-01-28T20:28:48.79251155Z"
+      "analyzed_at": "2026-01-30T16:19:36.997525671Z"
     },
     "db/models/create-project-version.js": {
       "path": "db/models/create-project-version.js",
@@ -1123,7 +1123,7 @@
       "functions": null,
       "constants": null,
       "concepts": [],
-      "analyzed_at": "2026-01-28T20:28:48.792523217Z"
+      "analyzed_at": "2026-01-30T16:19:36.997547337Z"
     },
     "db/models/create-project.js": {
       "path": "db/models/create-project.js",
@@ -1138,7 +1138,7 @@
       "functions": null,
       "constants": null,
       "concepts": [],
-      "analyzed_at": "2026-01-28T20:28:48.792532758Z"
+      "analyzed_at": "2026-01-30T16:19:36.997568504Z"
     },
     "db/models/create-resolution.js": {
       "path": "db/models/create-resolution.js",
@@ -1153,7 +1153,7 @@
       "functions": null,
       "constants": null,
       "concepts": [],
-      "analyzed_at": "2026-01-28T20:28:48.792542092Z"
+      "analyzed_at": "2026-01-30T16:19:36.997593337Z"
     },
     "db/models/create-screenshot-history.js": {
       "path": "db/models/create-screenshot-history.js",
@@ -1168,7 +1168,7 @@
       "functions": null,
       "constants": null,
       "concepts": [],
-      "analyzed_at": "2026-01-28T20:28:48.792551675Z"
+      "analyzed_at": "2026-01-30T16:19:36.997616087Z"
     },
     "db/models/create-screenshot-queue.js": {
       "path": "db/models/create-screenshot-queue.js",
@@ -1183,7 +1183,7 @@
       "functions": null,
       "constants": null,
       "concepts": [],
-      "analyzed_at": "2026-01-28T20:28:48.792563217Z"
+      "analyzed_at": "2026-01-30T16:19:36.997650629Z"
     },
     "db/models/create-screenshot.js": {
       "path": "db/models/create-screenshot.js",
@@ -1198,7 +1198,7 @@
       "functions": null,
       "constants": null,
       "concepts": [],
-      "analyzed_at": "2026-01-28T20:28:48.792573967Z"
+      "analyzed_at": "2026-01-30T16:19:36.997671129Z"
     },
     "db/models/create-test-metadata.js": {
       "path": "db/models/create-test-metadata.js",
@@ -1213,7 +1213,7 @@
       "functions": null,
       "constants": null,
       "concepts": [],
-      "analyzed_at": "2026-01-28T20:28:48.792584592Z"
+      "analyzed_at": "2026-01-30T16:19:36.997697337Z"
     },
     "db/models/create-test-profile.js": {
       "path": "db/models/create-test-profile.js",
@@ -1228,7 +1228,7 @@
       "functions": null,
       "constants": null,
       "concepts": [],
-      "analyzed_at": "2026-01-28T20:28:48.792593883Z"
+      "analyzed_at": "2026-01-30T16:19:36.997718046Z"
     },
     "db/models/create-test-type.js": {
       "path": "db/models/create-test-type.js",
@@ -1243,7 +1243,7 @@
       "functions": null,
       "constants": null,
       "concepts": [],
-      "analyzed_at": "2026-01-28T20:28:48.792604217Z"
+      "analyzed_at": "2026-01-30T16:19:36.997739796Z"
     },
     "db/models/create-test.js": {
       "path": "db/models/create-test.js",
@@ -1258,7 +1258,7 @@
       "functions": null,
       "constants": null,
       "concepts": [],
-      "analyzed_at": "2026-01-28T20:28:48.792614258Z"
+      "analyzed_at": "2026-01-30T16:19:36.997761754Z"
     },
     "db/models/create-timezone.js": {
       "path": "db/models/create-timezone.js",
@@ -1273,7 +1273,7 @@
       "functions": null,
       "constants": null,
       "concepts": [],
-      "analyzed_at": "2026-01-28T20:28:48.792624217Z"
+      "analyzed_at": "2026-01-30T16:19:36.997783129Z"
     },
     "db/models/create-user-preference.js": {
       "path": "db/models/create-user-preference.js",
@@ -1288,7 +1288,7 @@
       "functions": null,
       "constants": null,
       "concepts": [],
-      "analyzed_at": "2026-01-28T20:28:48.7926343Z"
+      "analyzed_at": "2026-01-30T16:19:36.997875546Z"
     },
     "db/models/create-video.js": {
       "path": "db/models/create-video.js",
@@ -1303,7 +1303,7 @@
       "functions": null,
       "constants": null,
       "concepts": [],
-      "analyzed_at": "2026-01-28T20:28:48.79264405Z"
+      "analyzed_at": "2026-01-30T16:19:36.997920921Z"
     },
     "db/models/index.js": {
       "path": "db/models/index.js",
@@ -1318,7 +1318,7 @@
       "functions": null,
       "constants": null,
       "concepts": [],
-      "analyzed_at": "2026-01-28T20:28:48.792673008Z"
+      "analyzed_at": "2026-01-30T16:19:36.998045004Z"
     },
     "db/next.sql": {
       "path": "db/next.sql",
@@ -1333,7 +1333,7 @@
       "functions": null,
       "constants": null,
       "concepts": [],
-      "analyzed_at": "2026-01-28T20:28:48.792683758Z"
+      "analyzed_at": "2026-01-30T16:19:36.998100504Z"
     },
     "docker-compose.example.yml": {
       "path": "docker-compose.example.yml",
@@ -1348,7 +1348,7 @@
       "functions": null,
       "constants": null,
       "concepts": [],
-      "analyzed_at": "2026-01-28T20:28:48.792817342Z"
+      "analyzed_at": "2026-01-30T16:19:36.998578046Z"
     },
     "docker/ltms.sql": {
       "path": "docker/ltms.sql",
@@ -1363,7 +1363,7 @@
       "functions": null,
       "constants": null,
       "concepts": [],
-      "analyzed_at": "2026-01-28T20:28:48.792793842Z"
+      "analyzed_at": "2026-01-30T16:19:36.998425504Z"
     },
     "docker/mysqld.cnf": {
       "path": "docker/mysqld.cnf",
@@ -1378,7 +1378,7 @@
       "functions": null,
       "constants": null,
       "concepts": [],
-      "analyzed_at": "2026-01-28T20:28:48.792806467Z"
+      "analyzed_at": "2026-01-30T16:19:36.998540254Z"
     },
     "launch.sh": {
       "path": "launch.sh",
@@ -1393,7 +1393,7 @@
       "functions": null,
       "constants": null,
       "concepts": [],
-      "analyzed_at": "2026-01-28T20:28:48.792826842Z"
+      "analyzed_at": "2026-01-30T16:19:36.998612129Z"
     },
     "local-infra/kafka.yml": {
       "path": "local-infra/kafka.yml",
@@ -1408,7 +1408,7 @@
       "functions": null,
       "constants": null,
       "concepts": [],
-      "analyzed_at": "2026-01-28T20:28:48.792842258Z"
+      "analyzed_at": "2026-01-30T16:19:36.998777921Z"
     },
     "newrelic.js": {
       "path": "newrelic.js",
@@ -1423,7 +1423,7 @@
       "functions": null,
       "constants": null,
       "concepts": [],
-      "analyzed_at": "2026-01-28T20:28:48.792853592Z"
+      "analyzed_at": "2026-01-30T16:19:36.998849254Z"
     },
     "package.json": {
       "path": "package.json",
@@ -1438,7 +1438,7 @@
       "functions": null,
       "constants": null,
       "concepts": [],
-      "analyzed_at": "2026-01-28T20:28:48.792863883Z"
+      "analyzed_at": "2026-01-30T16:19:36.998903004Z"
     },
     "recorder/examples/app-upload-framework/upload-1746480165638-hx91fsg6j.json": {
       "path": "recorder/examples/app-upload-framework/upload-1746480165638-hx91fsg6j.json",
@@ -1453,7 +1453,7 @@
       "functions": null,
       "constants": null,
       "concepts": [],
-      "analyzed_at": "2026-01-28T20:28:48.792914133Z"
+      "analyzed_at": "2026-01-30T16:19:36.999078212Z"
     },
     "recorder/examples/app-upload-realdevice/appFile/upload-1746474363047-assbjgrpp.json": {
       "path": "recorder/examples/app-upload-realdevice/appFile/upload-1746474363047-assbjgrpp.json",
@@ -1470,7 +1470,7 @@
       "concepts": [
         "appfile"
       ],
-      "analyzed_at": "2026-01-28T20:28:48.7929648Z"
+      "analyzed_at": "2026-01-30T16:19:36.999330671Z"
     },
     "recorder/examples/app-upload-realdevice/url-storage-file/upload-1746476539960-h54osoz3v.json": {
       "path": "recorder/examples/app-upload-realdevice/url-storage-file/upload-1746476539960-h54osoz3v.json",
@@ -1485,7 +1485,7 @@
       "functions": null,
       "constants": null,
       "concepts": [],
-      "analyzed_at": "2026-01-28T20:28:48.793034467Z"
+      "analyzed_at": "2026-01-30T16:19:36.999644587Z"
     },
     "recorder/examples/app-upload-realdevice/url/upload-1746479877278-w3lv9cabj.json": {
       "path": "recorder/examples/app-upload-realdevice/url/upload-1746479877278-w3lv9cabj.json",
@@ -1500,7 +1500,7 @@
       "functions": null,
       "constants": null,
       "concepts": [],
-      "analyzed_at": "2026-01-28T20:28:48.792998925Z"
+      "analyzed_at": "2026-01-30T16:19:36.999495837Z"
     },
     "recorder/recorder.js": {
       "path": "recorder/recorder.js",
@@ -1515,7 +1515,7 @@
       "functions": null,
       "constants": null,
       "concepts": [],
-      "analyzed_at": "2026-01-28T20:28:48.793051217Z"
+      "analyzed_at": "2026-01-30T16:19:36.999724171Z"
     },
     "recorder/recorder.test.js": {
       "path": "recorder/recorder.test.js",
@@ -1530,7 +1530,7 @@
       "functions": null,
       "constants": null,
       "concepts": [],
-      "analyzed_at": "2026-01-28T20:28:48.793069842Z"
+      "analyzed_at": "2026-01-30T16:19:36.999760421Z"
     },
     "recorder/setup.js": {
       "path": "recorder/setup.js",
@@ -1545,7 +1545,7 @@
       "functions": null,
       "constants": null,
       "concepts": [],
-      "analyzed_at": "2026-01-28T20:28:48.793157342Z"
+      "analyzed_at": "2026-01-30T16:19:36.999890379Z"
     },
     "recorder/type.js": {
       "path": "recorder/type.js",
@@ -1560,7 +1560,7 @@
       "functions": null,
       "constants": null,
       "concepts": [],
-      "analyzed_at": "2026-01-28T20:28:48.7931728Z"
+      "analyzed_at": "2026-01-30T16:19:36.999970671Z"
     },
     "server/aws-cf/index.js": {
       "path": "server/aws-cf/index.js",
@@ -1575,7 +1575,7 @@
       "functions": null,
       "constants": null,
       "concepts": [],
-      "analyzed_at": "2026-01-28T20:28:48.793204175Z"
+      "analyzed_at": "2026-01-30T16:19:37.000104129Z"
     },
     "server/aws-etag/index.js": {
       "path": "server/aws-etag/index.js",
@@ -1590,7 +1590,7 @@
       "functions": null,
       "constants": null,
       "concepts": [],
-      "analyzed_at": "2026-01-28T20:28:48.793221092Z"
+      "analyzed_at": "2026-01-30T16:19:37.000220462Z"
     },
     "server/aws-sf/index.js": {
       "path": "server/aws-sf/index.js",
@@ -1605,7 +1605,7 @@
       "functions": null,
       "constants": null,
       "concepts": [],
-      "analyzed_at": "2026-01-28T20:28:48.793238175Z"
+      "analyzed_at": "2026-01-30T16:19:37.000267462Z"
     },
     "server/aws-sqs/index.js": {
       "path": "server/aws-sqs/index.js",
@@ -1620,7 +1620,7 @@
       "functions": null,
       "constants": null,
       "concepts": [],
-      "analyzed_at": "2026-01-28T20:28:48.793254842Z"
+      "analyzed_at": "2026-01-30T16:19:37.000300754Z"
     },
     "server/controllers/app-test.js": {
       "path": "server/controllers/app-test.js",
@@ -1635,7 +1635,7 @@
       "functions": null,
       "constants": null,
       "concepts": [],
-      "analyzed_at": "2026-01-28T20:28:48.793535967Z"
+      "analyzed_at": "2026-01-30T16:19:37.000738712Z"
     },
     "server/controllers/autoshot.js": {
       "path": "server/controllers/autoshot.js",
@@ -1650,7 +1650,7 @@
       "functions": null,
       "constants": null,
       "concepts": [],
-      "analyzed_at": "2026-01-28T20:28:48.793558508Z"
+      "analyzed_at": "2026-01-30T16:19:37.000777712Z"
     },
     "server/controllers/chrome-ext-test.js": {
       "path": "server/controllers/chrome-ext-test.js",
@@ -1665,7 +1665,7 @@
       "functions": null,
       "constants": null,
       "concepts": [],
-      "analyzed_at": "2026-01-28T20:28:48.793576508Z"
+      "analyzed_at": "2026-01-30T16:19:37.000894754Z"
     },
     "server/controllers/concurrency.js": {
       "path": "server/controllers/concurrency.js",
@@ -1680,7 +1680,7 @@
       "functions": null,
       "constants": null,
       "concepts": [],
-      "analyzed_at": "2026-01-28T20:28:48.793593217Z"
+      "analyzed_at": "2026-01-30T16:19:37.000923504Z"
     },
     "server/controllers/device.js": {
       "path": "server/controllers/device.js",
@@ -1695,7 +1695,7 @@
       "functions": null,
       "constants": null,
       "concepts": [],
-      "analyzed_at": "2026-01-28T20:28:48.793612342Z"
+      "analyzed_at": "2026-01-30T16:19:37.000957087Z"
     },
     "server/controllers/index.js": {
       "path": "server/controllers/index.js",
@@ -1710,7 +1710,7 @@
       "functions": null,
       "constants": null,
       "concepts": [],
-      "analyzed_at": "2026-01-28T20:28:48.793623175Z"
+      "analyzed_at": "2026-01-30T16:19:37.000979087Z"
     },
     "server/controllers/launcher.js": {
       "path": "server/controllers/launcher.js",
@@ -1725,7 +1725,7 @@
       "functions": null,
       "constants": null,
       "concepts": [],
-      "analyzed_at": "2026-01-28T20:28:48.7937058Z"
+      "analyzed_at": "2026-01-30T16:19:37.001075712Z"
     },
     "server/controllers/location.js": {
       "path": "server/controllers/location.js",
@@ -1740,7 +1740,7 @@
       "functions": null,
       "constants": null,
       "concepts": [],
-      "analyzed_at": "2026-01-28T20:28:48.793718383Z"
+      "analyzed_at": "2026-01-30T16:19:37.001100254Z"
     },
     "server/controllers/lums.js": {
       "path": "server/controllers/lums.js",
@@ -1755,7 +1755,7 @@
       "functions": null,
       "constants": null,
       "concepts": [],
-      "analyzed_at": "2026-01-28T20:28:48.793734842Z"
+      "analyzed_at": "2026-01-30T16:19:37.001127629Z"
     },
     "server/controllers/master.js": {
       "path": "server/controllers/master.js",
@@ -1770,7 +1770,7 @@
       "functions": null,
       "constants": null,
       "concepts": [],
-      "analyzed_at": "2026-01-28T20:28:48.793777217Z"
+      "analyzed_at": "2026-01-30T16:19:37.001184254Z"
     },
     "server/controllers/network-throttle.js": {
       "path": "server/controllers/network-throttle.js",
@@ -1785,7 +1785,7 @@
       "functions": null,
       "constants": null,
       "concepts": [],
-      "analyzed_at": "2026-01-28T20:28:48.793794467Z"
+      "analyzed_at": "2026-01-30T16:19:37.001221379Z"
     },
     "server/controllers/org-preferences.js": {
       "path": "server/controllers/org-preferences.js",
@@ -1800,7 +1800,7 @@
       "functions": null,
       "constants": null,
       "concepts": [],
-      "analyzed_at": "2026-01-28T20:28:48.793843675Z"
+      "analyzed_at": "2026-01-30T16:19:37.001289587Z"
     },
     "server/controllers/organization.js": {
       "path": "server/controllers/organization.js",
@@ -1815,7 +1815,7 @@
       "functions": null,
       "constants": null,
       "concepts": [],
-      "analyzed_at": "2026-01-28T20:28:48.793861383Z"
+      "analyzed_at": "2026-01-30T16:19:37.001317712Z"
     },
     "server/controllers/plan-keys.js": {
       "path": "server/controllers/plan-keys.js",
@@ -1830,7 +1830,7 @@
       "functions": null,
       "constants": null,
       "concepts": [],
-      "analyzed_at": "2026-01-28T20:28:48.793872008Z"
+      "analyzed_at": "2026-01-30T16:19:37.001337296Z"
     },
     "server/controllers/rbac.js": {
       "path": "server/controllers/rbac.js",
@@ -1845,7 +1845,7 @@
       "functions": null,
       "constants": null,
       "concepts": [],
-      "analyzed_at": "2026-01-28T20:28:48.7938888Z"
+      "analyzed_at": "2026-01-30T16:19:37.001366629Z"
     },
     "server/controllers/sanctum.js": {
       "path": "server/controllers/sanctum.js",
@@ -1860,7 +1860,7 @@
       "functions": null,
       "constants": null,
       "concepts": [],
-      "analyzed_at": "2026-01-28T20:28:48.793902633Z"
+      "analyzed_at": "2026-01-30T16:19:37.001401671Z"
     },
     "server/controllers/screenshot.js": {
       "path": "server/controllers/screenshot.js",
@@ -1875,7 +1875,7 @@
       "functions": null,
       "constants": null,
       "concepts": [],
-      "analyzed_at": "2026-01-28T20:28:48.793986842Z"
+      "analyzed_at": "2026-01-30T16:19:37.001502712Z"
     },
     "server/controllers/test.js": {
       "path": "server/controllers/test.js",
@@ -1890,7 +1890,7 @@
       "functions": null,
       "constants": null,
       "concepts": [],
-      "analyzed_at": "2026-01-28T20:28:48.794800508Z"
+      "analyzed_at": "2026-01-30T16:19:37.002179504Z"
     },
     "server/controllers/timezone.js": {
       "path": "server/controllers/timezone.js",
@@ -1905,7 +1905,7 @@
       "functions": null,
       "constants": null,
       "concepts": [],
-      "analyzed_at": "2026-01-28T20:28:48.794828633Z"
+      "analyzed_at": "2026-01-30T16:19:37.002201587Z"
     },
     "server/controllers/user-keys.js": {
       "path": "server/controllers/user-keys.js",
@@ -1920,7 +1920,7 @@
       "functions": null,
       "constants": null,
       "concepts": [],
-      "analyzed_at": "2026-01-28T20:28:48.794840967Z"
+      "analyzed_at": "2026-01-30T16:19:37.002224712Z"
     },
     "server/controllers/user-ops.js": {
       "path": "server/controllers/user-ops.js",
@@ -1935,7 +1935,7 @@
       "functions": null,
       "constants": null,
       "concepts": [],
-      "analyzed_at": "2026-01-28T20:28:48.794879758Z"
+      "analyzed_at": "2026-01-30T16:19:37.002291046Z"
     },
     "server/controllers/user.js": {
       "path": "server/controllers/user.js",
@@ -1950,7 +1950,7 @@
       "functions": null,
       "constants": null,
       "concepts": [],
-      "analyzed_at": "2026-01-28T20:28:48.794950383Z"
+      "analyzed_at": "2026-01-30T16:19:37.002340421Z"
     },
     "server/controllers/vm-operations.js": {
       "path": "server/controllers/vm-operations.js",
@@ -1965,7 +1965,7 @@
       "functions": null,
       "constants": null,
       "concepts": [],
-      "analyzed_at": "2026-01-28T20:28:48.794970175Z"
+      "analyzed_at": "2026-01-30T16:19:37.002372962Z"
     },
     "server/cote/index.js": {
       "path": "server/cote/index.js",
@@ -1980,7 +1980,7 @@
       "functions": null,
       "constants": null,
       "concepts": [],
-      "analyzed_at": "2026-01-28T20:28:48.794995258Z"
+      "analyzed_at": "2026-01-30T16:19:37.002428754Z"
     },
     "server/devices/index.js": {
       "path": "server/devices/index.js",
@@ -1995,7 +1995,7 @@
       "functions": null,
       "constants": null,
       "concepts": [],
-      "analyzed_at": "2026-01-28T20:28:48.795037925Z"
+      "analyzed_at": "2026-01-30T16:19:37.002526087Z"
     },
     "server/external-calls/index.js": {
       "path": "server/external-calls/index.js",
@@ -2010,7 +2010,7 @@
       "functions": null,
       "constants": null,
       "concepts": [],
-      "analyzed_at": "2026-01-28T20:28:48.795261217Z"
+      "analyzed_at": "2026-01-30T16:19:37.003031879Z"
     },
     "server/external-calls/release-vm.js": {
       "path": "server/external-calls/release-vm.js",
@@ -2025,7 +2025,7 @@
       "functions": null,
       "constants": null,
       "concepts": [],
-      "analyzed_at": "2026-01-28T20:28:48.795274467Z"
+      "analyzed_at": "2026-01-30T16:19:37.003523171Z"
     },
     "server/kafka/consumer.js": {
       "path": "server/kafka/consumer.js",
@@ -2040,7 +2040,7 @@
       "functions": null,
       "constants": null,
       "concepts": [],
-      "analyzed_at": "2026-01-28T20:28:48.795302383Z"
+      "analyzed_at": "2026-01-30T16:19:37.003731712Z"
     },
     "server/kafka/ml-producer.js": {
       "path": "server/kafka/ml-producer.js",
@@ -2055,7 +2055,7 @@
       "functions": null,
       "constants": null,
       "concepts": [],
-      "analyzed_at": "2026-01-28T20:28:48.795316342Z"
+      "analyzed_at": "2026-01-30T16:19:37.003838421Z"
     },
     "server/kafka/producer.js": {
       "path": "server/kafka/producer.js",
@@ -2070,7 +2070,7 @@
       "functions": null,
       "constants": null,
       "concepts": [],
-      "analyzed_at": "2026-01-28T20:28:48.795331967Z"
+      "analyzed_at": "2026-01-30T16:19:37.003887629Z"
     },
     "server/kafka/screenshot-producer.js": {
       "path": "server/kafka/screenshot-producer.js",
@@ -2085,7 +2085,7 @@
       "functions": null,
       "constants": null,
       "concepts": [],
-      "analyzed_at": "2026-01-28T20:28:48.795347092Z"
+      "analyzed_at": "2026-01-30T16:19:37.003948796Z"
     },
     "server/kafka/teller-producer.js": {
       "path": "server/kafka/teller-producer.js",
@@ -2100,7 +2100,7 @@
       "functions": null,
       "constants": null,
       "concepts": [],
-      "analyzed_at": "2026-01-28T20:28:48.79536055Z"
+      "analyzed_at": "2026-01-30T16:19:37.004290462Z"
     },
     "server/logger/index.js": {
       "path": "server/logger/index.js",
@@ -2115,7 +2115,7 @@
       "functions": null,
       "constants": null,
       "concepts": [],
-      "analyzed_at": "2026-01-28T20:28:48.795380842Z"
+      "analyzed_at": "2026-01-30T16:19:37.004366879Z"
     },
     "server/recorder-init.js": {
       "path": "server/recorder-init.js",
@@ -2130,7 +2130,7 @@
       "functions": null,
       "constants": null,
       "concepts": [],
-      "analyzed_at": "2026-01-28T20:28:48.795393175Z"
+      "analyzed_at": "2026-01-30T16:19:37.004422129Z"
     },
     "server/redis-sub/index.js": {
       "path": "server/redis-sub/index.js",
@@ -2145,7 +2145,7 @@
       "functions": null,
       "constants": null,
       "concepts": [],
-      "analyzed_at": "2026-01-28T20:28:48.795467925Z"
+      "analyzed_at": "2026-01-30T16:19:37.004668921Z"
     },
     "server/redis-sub/local-client.js": {
       "path": "server/redis-sub/local-client.js",
@@ -2160,7 +2160,7 @@
       "functions": null,
       "constants": null,
       "concepts": [],
-      "analyzed_at": "2026-01-28T20:28:48.795481758Z"
+      "analyzed_at": "2026-01-30T16:19:37.004716296Z"
     },
     "server/redis/index.js": {
       "path": "server/redis/index.js",
@@ -2175,7 +2175,7 @@
       "functions": null,
       "constants": null,
       "concepts": [],
-      "analyzed_at": "2026-01-28T20:28:48.795417592Z"
+      "analyzed_at": "2026-01-30T16:19:37.004527129Z"
     },
     "server/redis/local-client.js": {
       "path": "server/redis/local-client.js",
@@ -2190,7 +2190,7 @@
       "functions": null,
       "constants": null,
       "concepts": [],
-      "analyzed_at": "2026-01-28T20:28:48.795439675Z"
+      "analyzed_at": "2026-01-30T16:19:37.004586462Z"
     },
     "server/routes/index.js": {
       "path": "server/routes/index.js",
@@ -2205,7 +2205,7 @@
       "functions": null,
       "constants": null,
       "concepts": [],
-      "analyzed_at": "2026-01-28T20:28:48.795511758Z"
+      "analyzed_at": "2026-01-30T16:19:37.005133212Z"
     },
     "server/scheduler/index.js": {
       "path": "server/scheduler/index.js",
@@ -2220,7 +2220,7 @@
       "functions": null,
       "constants": null,
       "concepts": [],
-      "analyzed_at": "2026-01-28T20:28:48.795533467Z"
+      "analyzed_at": "2026-01-30T16:19:37.005208921Z"
     },
     "server/sequence_generator/index.js": {
       "path": "server/sequence_generator/index.js",
@@ -2235,7 +2235,7 @@
       "functions": null,
       "constants": null,
       "concepts": [],
-      "analyzed_at": "2026-01-28T20:28:48.795550842Z"
+      "analyzed_at": "2026-01-30T16:19:37.005253837Z"
     },
     "server/shared-redis/index.js": {
       "path": "server/shared-redis/index.js",
@@ -2250,7 +2250,7 @@
       "functions": null,
       "constants": null,
       "concepts": [],
-      "analyzed_at": "2026-01-28T20:28:48.795577008Z"
+      "analyzed_at": "2026-01-30T16:19:37.005312337Z"
     },
     "server/socket/index.js": {
       "path": "server/socket/index.js",
@@ -2265,7 +2265,7 @@
       "functions": null,
       "constants": null,
       "concepts": [],
-      "analyzed_at": "2026-01-28T20:28:48.7955998Z"
+      "analyzed_at": "2026-01-30T16:19:37.005371546Z"
     },
     "server/utils/constants.js": {
       "path": "server/utils/constants.js",
@@ -2280,7 +2280,7 @@
       "functions": null,
       "constants": null,
       "concepts": [],
-      "analyzed_at": "2026-01-28T20:28:48.795624717Z"
+      "analyzed_at": "2026-01-30T16:19:37.005440712Z"
     },
     "server/utils/crypto.js": {
       "path": "server/utils/crypto.js",
@@ -2295,7 +2295,7 @@
       "functions": null,
       "constants": null,
       "concepts": [],
-      "analyzed_at": "2026-01-28T20:28:48.7956348Z"
+      "analyzed_at": "2026-01-30T16:19:37.005485504Z"
     },
     "server/utils/ip2location.js": {
       "path": "server/utils/ip2location.js",
@@ -2310,7 +2310,7 @@
       "functions": null,
       "constants": null,
       "concepts": [],
-      "analyzed_at": "2026-01-28T20:28:48.795684633Z"
+      "analyzed_at": "2026-01-30T16:19:37.007177004Z"
     },
     "server/utils/nearestRegion.js": {
       "path": "server/utils/nearestRegion.js",
@@ -2327,7 +2327,7 @@
       "concepts": [
         "nearestregion.js"
       ],
-      "analyzed_at": "2026-01-28T20:28:48.795698758Z"
+      "analyzed_at": "2026-01-30T16:19:37.007245379Z"
     },
     "server/utils/org_customization.js": {
       "path": "server/utils/org_customization.js",
@@ -2342,7 +2342,7 @@
       "functions": null,
       "constants": null,
       "concepts": [],
-      "analyzed_at": "2026-01-28T20:28:48.795711592Z"
+      "analyzed_at": "2026-01-30T16:19:37.007369879Z"
     },
     "server/utils/remoteSharing.js": {
       "path": "server/utils/remoteSharing.js",
@@ -2359,7 +2359,7 @@
       "concepts": [
         "remotesharing.js"
       ],
-      "analyzed_at": "2026-01-28T20:28:48.7957308Z"
+      "analyzed_at": "2026-01-30T16:19:37.007401212Z"
     },
     "server/utils/test-helpers.js": {
       "path": "server/utils/test-helpers.js",
@@ -2374,7 +2374,7 @@
       "functions": null,
       "constants": null,
       "concepts": [],
-      "analyzed_at": "2026-01-28T20:28:48.795743092Z"
+      "analyzed_at": "2026-01-30T16:19:37.007425837Z"
     },
     "server/utils/upload_s3.js": {
       "path": "server/utils/upload_s3.js",
@@ -2389,7 +2389,7 @@
       "functions": null,
       "constants": null,
       "concepts": [],
-      "analyzed_at": "2026-01-28T20:28:48.795764258Z"
+      "analyzed_at": "2026-01-30T16:19:37.007449546Z"
     },
     "sonar-project.properties": {
       "path": "sonar-project.properties",
@@ -2404,7 +2404,7 @@
       "functions": null,
       "constants": null,
       "concepts": [],
-      "analyzed_at": "2026-01-28T20:28:48.795775175Z"
+      "analyzed_at": "2026-01-30T16:19:37.007473837Z"
     },
     "test/recorder.test.js": {
       "path": "test/recorder.test.js",
@@ -2419,7 +2419,7 @@
       "functions": null,
       "constants": null,
       "concepts": [],
-      "analyzed_at": "2026-01-28T20:28:48.795795258Z"
+      "analyzed_at": "2026-01-30T16:19:37.007604254Z"
     },
     "test/test-helper.js": {
       "path": "test/test-helper.js",
@@ -2434,7 +2434,7 @@
       "functions": null,
       "constants": null,
       "concepts": [],
-      "analyzed_at": "2026-01-28T20:28:48.795810717Z"
+      "analyzed_at": "2026-01-30T16:19:37.007634004Z"
     },
     "test/test.js": {
       "path": "test/test.js",
@@ -2449,17 +2449,55 @@
       "functions": null,
       "constants": null,
       "concepts": [],
-      "analyzed_at": "2026-01-28T20:28:48.79583855Z"
+      "analyzed_at": "2026-01-30T16:19:37.007674212Z"
     }
   },
   "architecture": {
     "overview": "Repository with 162 files across 34 modules. 0 public exports, 0 types, 0 functions.",
     "modules": [
       {
-        "path": "server/shared-redis",
-        "name": "shared-redis",
+        "path": "server/aws-sqs",
+        "name": "aws-sqs",
         "files": [
-          "server/shared-redis/index.js"
+          "server/aws-sqs/index.js"
+        ],
+        "is_internal": false
+      },
+      {
+        "path": "server",
+        "name": "server",
+        "files": [
+          "server/recorder-init.js"
+        ],
+        "is_internal": false
+      },
+      {
+        "path": "server/controllers",
+        "name": "controllers",
+        "files": [
+          "server/controllers/device.js",
+          "server/controllers/concurrency.js",
+          "server/controllers/user-ops.js",
+          "server/controllers/network-throttle.js",
+          "server/controllers/plan-keys.js",
+          "server/controllers/user.js",
+          "server/controllers/index.js",
+          "server/controllers/timezone.js",
+          "server/controllers/rbac.js",
+          "server/controllers/lums.js",
+          "server/controllers/autoshot.js",
+          "server/controllers/chrome-ext-test.js",
+          "server/controllers/app-test.js",
+          "server/controllers/screenshot.js",
+          "server/controllers/sanctum.js",
+          "server/controllers/org-preferences.js",
+          "server/controllers/master.js",
+          "server/controllers/test.js",
+          "server/controllers/launcher.js",
+          "server/controllers/user-keys.js",
+          "server/controllers/location.js",
+          "server/controllers/organization.js",
+          "server/controllers/vm-operations.js"
         ],
         "is_internal": false
       },
@@ -2467,38 +2505,26 @@
         "path": "db/config/components",
         "name": "components",
         "files": [
-          "db/config/components/android-emulator.json",
-          "db/config/components/invigilator.json",
-          "db/config/components/ltis.json",
-          "db/config/components/lvms.json",
-          "db/config/components/app-engine.json",
-          "db/config/components/redis.json",
-          "db/config/components/Ims.json",
-          "db/config/components/kafka.json",
-          "db/config/components/responsive.json",
-          "db/config/components/tms.json",
-          "db/config/components/app-engine-real-devices.json",
-          "db/config/components/lums.json",
-          "db/config/components/sanctum.json",
-          "db/config/components/lses.json",
-          "db/config/components/ltuns.json",
           "db/config/components/resolution.json",
-          "db/config/components/shared-redis.json",
-          "db/config/components/lims.json",
+          "db/config/components/redis.json",
+          "db/config/components/invigilator.json",
+          "db/config/components/kafka.json",
+          "db/config/components/lvms.json",
+          "db/config/components/ltis.json",
           "db/config/components/backend-analytics.json",
-          "db/config/components/lsss.json"
-        ],
-        "is_internal": false
-      },
-      {
-        "path": "server/kafka",
-        "name": "kafka",
-        "files": [
-          "server/kafka/producer.js",
-          "server/kafka/ml-producer.js",
-          "server/kafka/consumer.js",
-          "server/kafka/teller-producer.js",
-          "server/kafka/screenshot-producer.js"
+          "db/config/components/ltuns.json",
+          "db/config/components/responsive.json",
+          "db/config/components/lsss.json",
+          "db/config/components/sanctum.json",
+          "db/config/components/tms.json",
+          "db/config/components/Ims.json",
+          "db/config/components/lums.json",
+          "db/config/components/app-engine.json",
+          "db/config/components/android-emulator.json",
+          "db/config/components/lims.json",
+          "db/config/components/app-engine-real-devices.json",
+          "db/config/components/shared-redis.json",
+          "db/config/components/lses.json"
         ],
         "is_internal": false
       },
@@ -2506,45 +2532,44 @@
         "path": "db/migrations",
         "name": "migrations",
         "files": [
-          "db/migrations/20170531175302-create-test-type.js",
-          "db/migrations/20170531175308-create-os.js",
-          "db/migrations/20170531175329-create-os-device.js",
-          "db/migrations/20170531175311-create-os-version.js",
-          "db/migrations/20170531175304-create-browser.js",
-          "db/migrations/20170531175317-create-device.js",
-          "db/migrations/20170531175319-create-browser-version.js",
-          "db/migrations/20170531175307-create-monitor-size.js",
-          "db/migrations/20170531175312-create-test.js",
-          "db/migrations/20170531175303-create-resolution.js",
-          "db/migrations/20170531175313-create-activity.js",
-          "db/migrations/20170531175329-create-device-browser.js",
-          "db/migrations/20170531175329-create-test-metadata.js",
-          "db/migrations/20170531175309-create-project.js",
-          "db/migrations/20170531175329-create-os-resolution.js",
-          "db/migrations/20170531175315-create-video.js",
-          "db/migrations/20170531175306-create-manufacturer.js",
           "db/migrations/20170531175316-create-screenshot.js",
-          "db/migrations/20170531175310-create-project-version.js",
+          "db/migrations/20170531175313-create-activity.js",
+          "db/migrations/20170531175329-create-os-resolution.js",
+          "db/migrations/20170531175314-create-activity-detail.js",
+          "db/migrations/20170531175329-create-test-metadata.js",
           "db/migrations/20170531175329-create-os-browser.js",
-          "db/migrations/20170531175314-create-activity-detail.js"
+          "db/migrations/20170531175329-create-os-device.js",
+          "db/migrations/20170531175304-create-browser.js",
+          "db/migrations/20170531175302-create-test-type.js",
+          "db/migrations/20170531175312-create-test.js",
+          "db/migrations/20170531175308-create-os.js",
+          "db/migrations/20170531175319-create-browser-version.js",
+          "db/migrations/20170531175310-create-project-version.js",
+          "db/migrations/20170531175311-create-os-version.js",
+          "db/migrations/20170531175329-create-device-browser.js",
+          "db/migrations/20170531175309-create-project.js",
+          "db/migrations/20170531175315-create-video.js",
+          "db/migrations/20170531175303-create-resolution.js",
+          "db/migrations/20170531175307-create-monitor-size.js",
+          "db/migrations/20170531175306-create-manufacturer.js",
+          "db/migrations/20170531175317-create-device.js"
         ],
         "is_internal": false
       },
       {
-        "path": "root",
-        "name": "root",
+        "path": "db/config",
+        "name": "config",
         "files": [
-          "docker-compose.example.yml",
-          "README.md",
-          "app.js",
-          "newrelic.js",
-          "package.json",
-          ".env-sample",
-          "Dockerfile_multiarch",
-          "launch.sh",
-          "LICENSE",
-          "Dockerfile",
-          "sonar-project.properties"
+          "db/config/app.json",
+          "db/config/config.js"
+        ],
+        "is_internal": false
+      },
+      {
+        "path": "server/shared-redis",
+        "name": "shared-redis",
+        "files": [
+          "server/shared-redis/index.js"
         ],
         "is_internal": false
       },
@@ -2557,10 +2582,34 @@
         "is_internal": false
       },
       {
-        "path": "recorder/examples/app-upload-realdevice/url-storage-file",
-        "name": "url-storage-file",
+        "path": "server/aws-etag",
+        "name": "aws-etag",
         "files": [
-          "recorder/examples/app-upload-realdevice/url-storage-file/upload-1746476539960-h54osoz3v.json"
+          "server/aws-etag/index.js"
+        ],
+        "is_internal": false
+      },
+      {
+        "path": "server/logger",
+        "name": "logger",
+        "files": [
+          "server/logger/index.js"
+        ],
+        "is_internal": false
+      },
+      {
+        "path": "recorder/examples/app-upload-realdevice/appFile",
+        "name": "appFile",
+        "files": [
+          "recorder/examples/app-upload-realdevice/appFile/upload-1746474363047-assbjgrpp.json"
+        ],
+        "is_internal": false
+      },
+      {
+        "path": "server/socket",
+        "name": "socket",
+        "files": [
+          "server/socket/index.js"
         ],
         "is_internal": false
       },
@@ -2573,10 +2622,53 @@
         "is_internal": false
       },
       {
+        "path": "local-infra",
+        "name": "local-infra",
+        "files": [
+          "local-infra/kafka.yml"
+        ],
+        "is_internal": false
+      },
+      {
+        "path": "db",
+        "name": "db",
+        "files": [
+          "db/next.sql"
+        ],
+        "is_internal": false
+      },
+      {
+        "path": "server/external-calls",
+        "name": "external-calls",
+        "files": [
+          "server/external-calls/release-vm.js",
+          "server/external-calls/index.js"
+        ],
+        "is_internal": false
+      },
+      {
         "path": "server/cote",
         "name": "cote",
         "files": [
           "server/cote/index.js"
+        ],
+        "is_internal": false
+      },
+      {
+        "path": "root",
+        "name": "root",
+        "files": [
+          "launch.sh",
+          "package.json",
+          "Dockerfile_multiarch",
+          "README.md",
+          "sonar-project.properties",
+          "LICENSE",
+          "Dockerfile",
+          "docker-compose.example.yml",
+          ".env-sample",
+          "app.js",
+          "newrelic.js"
         ],
         "is_internal": false
       },
@@ -2589,18 +2681,28 @@
         "is_internal": false
       },
       {
-        "path": "server/aws-etag",
-        "name": "aws-etag",
+        "path": "test",
+        "name": "test",
         "files": [
-          "server/aws-etag/index.js"
+          "test/test-helper.js",
+          "test/recorder.test.js",
+          "test/test.js"
         ],
         "is_internal": false
       },
       {
-        "path": "recorder/examples/app-upload-realdevice/appFile",
-        "name": "appFile",
+        "path": "recorder/examples/app-upload-realdevice/url-storage-file",
+        "name": "url-storage-file",
         "files": [
-          "recorder/examples/app-upload-realdevice/appFile/upload-1746474363047-assbjgrpp.json"
+          "recorder/examples/app-upload-realdevice/url-storage-file/upload-1746476539960-h54osoz3v.json"
+        ],
+        "is_internal": false
+      },
+      {
+        "path": "recorder/examples/app-upload-realdevice/url",
+        "name": "url",
+        "files": [
+          "recorder/examples/app-upload-realdevice/url/upload-1746479877278-w3lv9cabj.json"
         ],
         "is_internal": false
       },
@@ -2614,233 +2716,10 @@
         "is_internal": false
       },
       {
-        "path": "test",
-        "name": "test",
-        "files": [
-          "test/test.js",
-          "test/recorder.test.js",
-          "test/test-helper.js"
-        ],
-        "is_internal": false
-      },
-      {
-        "path": "server/aws-sf",
-        "name": "aws-sf",
-        "files": [
-          "server/aws-sf/index.js"
-        ],
-        "is_internal": false
-      },
-      {
-        "path": "db/models",
-        "name": "models",
-        "files": [
-          "db/models/create-activity-detail.js",
-          "db/models/create-device-agents.js",
-          "db/models/create-os-browser.js",
-          "db/models/create-activity.js",
-          "db/models/create-test-profile.js",
-          "db/models/create-browser.js",
-          "db/models/create-manufacturer.js",
-          "db/models/create-locations.js",
-          "db/models/create-keyboard-layout.js",
-          "db/models/create-screenshot-queue.js",
-          "db/models/create-test-metadata.js",
-          "db/models/create-device-browser.js",
-          "db/models/create-organization-usage-logs.js",
-          "db/models/create-video.js",
-          "db/models/create-os-version.js",
-          "db/models/create-project.js",
-          "db/models/create-login-profile.js",
-          "db/models/create-screenshot.js",
-          "db/models/create-device.js",
-          "db/models/create-test-type.js",
-          "db/models/create-browser-version.js",
-          "db/models/create-config.js",
-          "db/models/create-os-device.js",
-          "db/models/create-timezone.js",
-          "db/models/create-os-resolution.js",
-          "db/models/create-screenshot-history.js",
-          "db/models/create-test.js",
-          "db/models/create-monitor-size.js",
-          "db/models/create-project-version.js",
-          "db/models/create-resolution.js",
-          "db/models/create-app-testing.js",
-          "db/models/create-organization-plan-attribute.js",
-          "db/models/index.js",
-          "db/models/create-organization_preferences.js",
-          "db/models/create-chrome-extension.js",
-          "db/models/create-user-preference.js",
-          "db/models/create-os.js"
-        ],
-        "is_internal": false
-      },
-      {
-        "path": "local-infra",
-        "name": "local-infra",
-        "files": [
-          "local-infra/kafka.yml"
-        ],
-        "is_internal": false
-      },
-      {
-        "path": "server/scheduler",
-        "name": "scheduler",
-        "files": [
-          "server/scheduler/index.js"
-        ],
-        "is_internal": false
-      },
-      {
-        "path": "server/aws-sqs",
-        "name": "aws-sqs",
-        "files": [
-          "server/aws-sqs/index.js"
-        ],
-        "is_internal": false
-      },
-      {
-        "path": "db",
-        "name": "db",
-        "files": [
-          "db/next.sql"
-        ],
-        "is_internal": false
-      },
-      {
-        "path": "server/devices",
-        "name": "devices",
-        "files": [
-          "server/devices/index.js"
-        ],
-        "is_internal": false
-      },
-      {
-        "path": "server/external-calls",
-        "name": "external-calls",
-        "files": [
-          "server/external-calls/index.js",
-          "server/external-calls/release-vm.js"
-        ],
-        "is_internal": false
-      },
-      {
-        "path": "recorder/examples/app-upload-realdevice/url",
-        "name": "url",
-        "files": [
-          "recorder/examples/app-upload-realdevice/url/upload-1746479877278-w3lv9cabj.json"
-        ],
-        "is_internal": false
-      },
-      {
-        "path": "server/controllers",
-        "name": "controllers",
-        "files": [
-          "server/controllers/master.js",
-          "server/controllers/user-keys.js",
-          "server/controllers/organization.js",
-          "server/controllers/vm-operations.js",
-          "server/controllers/device.js",
-          "server/controllers/lums.js",
-          "server/controllers/user.js",
-          "server/controllers/sanctum.js",
-          "server/controllers/user-ops.js",
-          "server/controllers/org-preferences.js",
-          "server/controllers/plan-keys.js",
-          "server/controllers/timezone.js",
-          "server/controllers/location.js",
-          "server/controllers/rbac.js",
-          "server/controllers/launcher.js",
-          "server/controllers/concurrency.js",
-          "server/controllers/screenshot.js",
-          "server/controllers/autoshot.js",
-          "server/controllers/network-throttle.js",
-          "server/controllers/app-test.js",
-          "server/controllers/chrome-ext-test.js",
-          "server/controllers/test.js",
-          "server/controllers/index.js"
-        ],
-        "is_internal": false
-      },
-      {
-        "path": "server/utils",
-        "name": "utils",
-        "files": [
-          "server/utils/crypto.js",
-          "server/utils/org_customization.js",
-          "server/utils/nearestRegion.js",
-          "server/utils/test-helpers.js",
-          "server/utils/upload_s3.js",
-          "server/utils/constants.js",
-          "server/utils/ip2location.js",
-          "server/utils/remoteSharing.js"
-        ],
-        "is_internal": false
-      },
-      {
-        "path": "db/config",
-        "name": "config",
-        "files": [
-          "db/config/config.js",
-          "db/config/app.json"
-        ],
-        "is_internal": false
-      },
-      {
-        "path": "server/redis",
-        "name": "redis",
-        "files": [
-          "server/redis/local-client.js",
-          "server/redis/index.js"
-        ],
-        "is_internal": false
-      },
-      {
         "path": "bin",
         "name": "bin",
         "files": [
           "bin/www"
-        ],
-        "is_internal": false
-      },
-      {
-        "path": "server/routes",
-        "name": "routes",
-        "files": [
-          "server/routes/index.js"
-        ],
-        "is_internal": false
-      },
-      {
-        "path": "server",
-        "name": "server",
-        "files": [
-          "server/recorder-init.js"
-        ],
-        "is_internal": false
-      },
-      {
-        "path": "server/socket",
-        "name": "socket",
-        "files": [
-          "server/socket/index.js"
-        ],
-        "is_internal": false
-      },
-      {
-        "path": "server/logger",
-        "name": "logger",
-        "files": [
-          "server/logger/index.js"
-        ],
-        "is_internal": false
-      },
-      {
-        "path": "docker",
-        "name": "docker",
-        "files": [
-          "docker/mysqld.cnf",
-          "docker/ltms.sql"
         ],
         "is_internal": false
       },
@@ -2854,106 +2733,133 @@
           "recorder/type.js"
         ],
         "is_internal": false
+      },
+      {
+        "path": "server/redis",
+        "name": "redis",
+        "files": [
+          "server/redis/index.js",
+          "server/redis/local-client.js"
+        ],
+        "is_internal": false
+      },
+      {
+        "path": "db/models",
+        "name": "models",
+        "files": [
+          "db/models/create-user-preference.js",
+          "db/models/create-keyboard-layout.js",
+          "db/models/create-os-resolution.js",
+          "db/models/create-os-device.js",
+          "db/models/create-organization-usage-logs.js",
+          "db/models/create-device-agents.js",
+          "db/models/create-chrome-extension.js",
+          "db/models/create-locations.js",
+          "db/models/create-organization-plan-attribute.js",
+          "db/models/create-organization_preferences.js",
+          "db/models/create-test.js",
+          "db/models/create-browser.js",
+          "db/models/create-test-profile.js",
+          "db/models/create-screenshot-history.js",
+          "db/models/create-timezone.js",
+          "db/models/create-device-browser.js",
+          "db/models/create-monitor-size.js",
+          "db/models/create-os-version.js",
+          "db/models/create-activity-detail.js",
+          "db/models/create-app-testing.js",
+          "db/models/create-project-version.js",
+          "db/models/create-device.js",
+          "db/models/create-login-profile.js",
+          "db/models/create-resolution.js",
+          "db/models/create-test-metadata.js",
+          "db/models/create-manufacturer.js",
+          "db/models/index.js",
+          "db/models/create-screenshot-queue.js",
+          "db/models/create-config.js",
+          "db/models/create-os.js",
+          "db/models/create-screenshot.js",
+          "db/models/create-browser-version.js",
+          "db/models/create-video.js",
+          "db/models/create-os-browser.js",
+          "db/models/create-activity.js",
+          "db/models/create-test-type.js",
+          "db/models/create-project.js"
+        ],
+        "is_internal": false
+      },
+      {
+        "path": "server/kafka",
+        "name": "kafka",
+        "files": [
+          "server/kafka/ml-producer.js",
+          "server/kafka/teller-producer.js",
+          "server/kafka/screenshot-producer.js",
+          "server/kafka/producer.js",
+          "server/kafka/consumer.js"
+        ],
+        "is_internal": false
+      },
+      {
+        "path": "server/devices",
+        "name": "devices",
+        "files": [
+          "server/devices/index.js"
+        ],
+        "is_internal": false
+      },
+      {
+        "path": "server/utils",
+        "name": "utils",
+        "files": [
+          "server/utils/org_customization.js",
+          "server/utils/remoteSharing.js",
+          "server/utils/ip2location.js",
+          "server/utils/constants.js",
+          "server/utils/nearestRegion.js",
+          "server/utils/upload_s3.js",
+          "server/utils/crypto.js",
+          "server/utils/test-helpers.js"
+        ],
+        "is_internal": false
+      },
+      {
+        "path": "server/aws-sf",
+        "name": "aws-sf",
+        "files": [
+          "server/aws-sf/index.js"
+        ],
+        "is_internal": false
+      },
+      {
+        "path": "docker",
+        "name": "docker",
+        "files": [
+          "docker/mysqld.cnf",
+          "docker/ltms.sql"
+        ],
+        "is_internal": false
+      },
+      {
+        "path": "server/routes",
+        "name": "routes",
+        "files": [
+          "server/routes/index.js"
+        ],
+        "is_internal": false
+      },
+      {
+        "path": "server/scheduler",
+        "name": "scheduler",
+        "files": [
+          "server/scheduler/index.js"
+        ],
+        "is_internal": false
       }
     ],
     "entry_points": null,
     "dependencies": null,
     "build_system": "npm",
-    "main_packages": null,
-    "ai_analysis": {
-      "pattern": "Layered microservice architecture with event-driven components",
-      "layers": [
-        {
-          "name": "Presentation Layer",
-          "purpose": "Handle HTTP requests, routing, and real-time communication",
-          "components": [
-            "controllers",
-            "routes",
-            "socket",
-            "server"
-          ]
-        },
-        {
-          "name": "Business Logic Layer",
-          "purpose": "Core application logic and component orchestration",
-          "components": [
-            "components",
-            "utils",
-            "scheduler",
-            "recorder"
-          ]
-        },
-        {
-          "name": "Data Access Layer",
-          "purpose": "Database operations and data modeling",
-          "components": [
-            "models",
-            "db",
-            "migrations"
-          ]
-        },
-        {
-          "name": "Integration Layer",
-          "purpose": "External service communication and messaging",
-          "components": [
-            "kafka",
-            "external-calls",
-            "cote",
-            "aws-sqs"
-          ]
-        },
-        {
-          "name": "Infrastructure Layer",
-          "purpose": "Caching, storage, and cloud service integrations",
-          "components": [
-            "redis",
-            "shared-redis",
-            "redis-sub",
-            "aws-cf",
-            "aws-sf",
-            "aws-etag"
-          ]
-        },
-        {
-          "name": "Configuration Layer",
-          "purpose": "System configuration, logging, and deployment",
-          "components": [
-            "config",
-            "logger",
-            "docker",
-            "local-infra",
-            "bin"
-          ]
-        }
-      ],
-      "data_flow": "Requests enter through controllers/routes, flow to business components for processing, interact with models for data operations, communicate with external services via Kafka/SQS, utilize Redis for caching, and AWS services for file storage and workflow management",
-      "strengths": [
-        "Clear separation of concerns with layered architecture",
-        "Event-driven architecture with Kafka integration for scalability",
-        "Multiple caching strategies with Redis",
-        "Comprehensive AWS cloud service integration",
-        "Database migration support for schema evolution",
-        "Real-time communication via socket support"
-      ],
-      "weaknesses": [
-        "High coupling between layers indicated by numerous integration points",
-        "Complex dependency management with 34 modules",
-        "Potential redundancy in Redis implementations (shared-redis, redis, redis-sub)",
-        "Single large service rather than true microservices decomposition",
-        "Mixed responsibilities in some modules (e.g., utils handling multiple concerns)"
-      ],
-      "recommendations": [
-        "Consider decomposing into smaller, more focused microservices",
-        "Consolidate Redis-related modules to reduce complexity",
-        "Implement API gateway pattern for better request routing",
-        "Add service discovery mechanism for better scalability",
-        "Establish clear module boundaries and reduce cross-cutting dependencies",
-        "Implement comprehensive monitoring and observability across layers"
-      ],
-      "generated_at": "2026-01-29T13:35:42.394599388Z",
-      "tokens_used": 1229,
-      "provider": "anthropic"
-    }
+    "main_packages": null
   },
   "statistics": {
     "total_files": 162,
@@ -2970,55 +2876,304 @@
     },
     "function_count": 0,
     "type_count": 0,
-    "export_count": 0
+    "export_count": 0,
+    "indexed_concepts": 8
   },
   "version": 1,
-  "ai_summary": {
-    "overview": "A comprehensive test management service for LambdaTest platform that handles test execution, device management, and result processing. The service provides APIs for managing test sessions, coordinating with various AWS services, and handling real-time communication through WebSockets.",
-    "purpose": "To provide a centralized backend service for managing automated testing workflows, device allocation, test result storage, and integration with cloud infrastructure for the LambdaTest testing platform",
-    "key_features": [
-      "Test session management",
-      "Device orchestration",
-      "Real-time WebSocket communication",
-      "AWS cloud integration",
-      "Kafka message processing",
-      "Redis caching",
-      "Database migrations",
-      "File upload handling",
-      "Test recording capabilities"
-    ],
-    "technology_stack": [
-      "Node.js",
-      "JavaScript",
-      "Redis",
-      "Kafka",
-      "AWS Services",
-      "PostgreSQL/MySQL",
-      "Docker",
-      "WebSockets",
-      "Cote.js"
-    ],
-    "architecture_style": "Microservices with event-driven architecture",
-    "main_components": [
-      "API Controllers",
-      "Database Models",
-      "Message Queue Handlers",
-      "AWS Integration Services",
-      "Redis Cache Layer",
-      "WebSocket Server",
-      "Device Management",
-      "Test Recorder",
-      "External API Integrations"
-    ],
-    "suggestions": [
-      "Consider implementing comprehensive API documentation",
-      "Add more unit tests for better coverage",
-      "Implement health check endpoints for monitoring",
-      "Consider breaking down larger controller files",
-      "Add API rate limiting for better resource management"
-    ],
-    "generated_at": "2026-01-29T13:35:28.959910715Z",
-    "tokens_used": 1020,
-    "provider": "anthropic"
+  "call_graph": {
+    "nodes": {},
+    "edges": []
+  },
+  "search_index": {
+    "function_names": {},
+    "concepts": {
+      "appfile": [
+        {
+          "file": "recorder/examples/app-upload-realdevice/appFile/upload-1746474363047-assbjgrpp.json",
+          "function": "",
+          "line": 0,
+          "summary": "JSON data/configuration"
+        }
+      ],
+      "dockerfile": [
+        {
+          "file": "Dockerfile",
+          "function": "",
+          "line": 0,
+          "summary": "Docker container definition"
+        }
+      ],
+      "dockerfile_multiarch": [
+        {
+          "file": "Dockerfile_multiarch",
+          "function": "",
+          "line": 0,
+          "summary": "Docker container definition"
+        }
+      ],
+      "ims.json": [
+        {
+          "file": "db/config/components/Ims.json",
+          "function": "",
+          "line": 0,
+          "summary": "Configuration file"
+        }
+      ],
+      "license": [
+        {
+          "file": "LICENSE",
+          "function": "",
+          "line": 0,
+          "summary": "License file"
+        }
+      ],
+      "nearestregion.js": [
+        {
+          "file": "server/utils/nearestRegion.js",
+          "function": "",
+          "line": 0,
+          "summary": "javascript source file"
+        }
+      ],
+      "readme.md": [
+        {
+          "file": "README.md",
+          "function": "",
+          "line": 0,
+          "summary": "Project documentation"
+        }
+      ],
+      "remotesharing.js": [
+        {
+          "file": "server/utils/remoteSharing.js",
+          "function": "",
+          "line": 0,
+          "summary": "javascript source file"
+        }
+      ]
+    },
+    "side_effects": {},
+    "type_usage": {},
+    "error_types": {},
+    "routes": {},
+    "packages": {
+      "app-upload-framework": [
+        "recorder/examples/app-upload-framework/upload-1746480165638-hx91fsg6j.json"
+      ],
+      "appFile": [
+        "recorder/examples/app-upload-realdevice/appFile/upload-1746474363047-assbjgrpp.json"
+      ],
+      "aws-cf": [
+        "server/aws-cf/index.js"
+      ],
+      "aws-etag": [
+        "server/aws-etag/index.js"
+      ],
+      "aws-sf": [
+        "server/aws-sf/index.js"
+      ],
+      "aws-sqs": [
+        "server/aws-sqs/index.js"
+      ],
+      "bin": [
+        "bin/www"
+      ],
+      "components": [
+        "db/config/components/resolution.json",
+        "db/config/components/redis.json",
+        "db/config/components/invigilator.json",
+        "db/config/components/kafka.json",
+        "db/config/components/ltis.json",
+        "db/config/components/lvms.json",
+        "db/config/components/backend-analytics.json",
+        "db/config/components/ltuns.json",
+        "db/config/components/responsive.json",
+        "db/config/components/lsss.json",
+        "db/config/components/sanctum.json",
+        "db/config/components/tms.json",
+        "db/config/components/Ims.json",
+        "db/config/components/lums.json",
+        "db/config/components/app-engine.json",
+        "db/config/components/android-emulator.json",
+        "db/config/components/lims.json",
+        "db/config/components/app-engine-real-devices.json",
+        "db/config/components/shared-redis.json",
+        "db/config/components/lses.json"
+      ],
+      "config": [
+        "db/config/app.json",
+        "db/config/config.js"
+      ],
+      "controllers": [
+        "server/controllers/device.js",
+        "server/controllers/concurrency.js",
+        "server/controllers/user-ops.js",
+        "server/controllers/user.js",
+        "server/controllers/network-throttle.js",
+        "server/controllers/plan-keys.js",
+        "server/controllers/index.js",
+        "server/controllers/timezone.js",
+        "server/controllers/rbac.js",
+        "server/controllers/lums.js",
+        "server/controllers/autoshot.js",
+        "server/controllers/chrome-ext-test.js",
+        "server/controllers/app-test.js",
+        "server/controllers/screenshot.js",
+        "server/controllers/sanctum.js",
+        "server/controllers/org-preferences.js",
+        "server/controllers/master.js",
+        "server/controllers/test.js",
+        "server/controllers/launcher.js",
+        "server/controllers/user-keys.js",
+        "server/controllers/vm-operations.js",
+        "server/controllers/location.js",
+        "server/controllers/organization.js"
+      ],
+      "cote": [
+        "server/cote/index.js"
+      ],
+      "db": [
+        "db/next.sql"
+      ],
+      "devices": [
+        "server/devices/index.js"
+      ],
+      "docker": [
+        "docker/mysqld.cnf",
+        "docker/ltms.sql"
+      ],
+      "external-calls": [
+        "server/external-calls/release-vm.js",
+        "server/external-calls/index.js"
+      ],
+      "kafka": [
+        "server/kafka/ml-producer.js",
+        "server/kafka/teller-producer.js",
+        "server/kafka/screenshot-producer.js",
+        "server/kafka/producer.js",
+        "server/kafka/consumer.js"
+      ],
+      "local-infra": [
+        "local-infra/kafka.yml"
+      ],
+      "logger": [
+        "server/logger/index.js"
+      ],
+      "migrations": [
+        "db/migrations/20170531175316-create-screenshot.js",
+        "db/migrations/20170531175313-create-activity.js",
+        "db/migrations/20170531175329-create-os-resolution.js",
+        "db/migrations/20170531175314-create-activity-detail.js",
+        "db/migrations/20170531175329-create-os-browser.js",
+        "db/migrations/20170531175329-create-test-metadata.js",
+        "db/migrations/20170531175329-create-os-device.js",
+        "db/migrations/20170531175304-create-browser.js",
+        "db/migrations/20170531175302-create-test-type.js",
+        "db/migrations/20170531175312-create-test.js",
+        "db/migrations/20170531175308-create-os.js",
+        "db/migrations/20170531175319-create-browser-version.js",
+        "db/migrations/20170531175310-create-project-version.js",
+        "db/migrations/20170531175311-create-os-version.js",
+        "db/migrations/20170531175329-create-device-browser.js",
+        "db/migrations/20170531175303-create-resolution.js",
+        "db/migrations/20170531175309-create-project.js",
+        "db/migrations/20170531175315-create-video.js",
+        "db/migrations/20170531175307-create-monitor-size.js",
+        "db/migrations/20170531175306-create-manufacturer.js",
+        "db/migrations/20170531175317-create-device.js"
+      ],
+      "models": [
+        "db/models/create-user-preference.js",
+        "db/models/create-keyboard-layout.js",
+        "db/models/create-os-device.js",
+        "db/models/create-os-resolution.js",
+        "db/models/create-organization-usage-logs.js",
+        "db/models/create-device-agents.js",
+        "db/models/create-chrome-extension.js",
+        "db/models/create-locations.js",
+        "db/models/create-organization-plan-attribute.js",
+        "db/models/create-browser.js",
+        "db/models/create-organization_preferences.js",
+        "db/models/create-test.js",
+        "db/models/create-test-profile.js",
+        "db/models/create-device-browser.js",
+        "db/models/create-screenshot-history.js",
+        "db/models/create-timezone.js",
+        "db/models/create-os-version.js",
+        "db/models/create-monitor-size.js",
+        "db/models/create-activity-detail.js",
+        "db/models/create-app-testing.js",
+        "db/models/create-project-version.js",
+        "db/models/create-resolution.js",
+        "db/models/create-test-metadata.js",
+        "db/models/create-device.js",
+        "db/models/create-login-profile.js",
+        "db/models/create-manufacturer.js",
+        "db/models/create-screenshot-queue.js",
+        "db/models/index.js",
+        "db/models/create-config.js",
+        "db/models/create-os.js",
+        "db/models/create-screenshot.js",
+        "db/models/create-browser-version.js",
+        "db/models/create-video.js",
+        "db/models/create-os-browser.js",
+        "db/models/create-activity.js",
+        "db/models/create-project.js",
+        "db/models/create-test-type.js"
+      ],
+      "recorder": [
+        "recorder/recorder.test.js",
+        "recorder/setup.js",
+        "recorder/recorder.js",
+        "recorder/type.js"
+      ],
+      "redis": [
+        "server/redis/index.js",
+        "server/redis/local-client.js"
+      ],
+      "redis-sub": [
+        "server/redis-sub/index.js",
+        "server/redis-sub/local-client.js"
+      ],
+      "routes": [
+        "server/routes/index.js"
+      ],
+      "scheduler": [
+        "server/scheduler/index.js"
+      ],
+      "sequence_generator": [
+        "server/sequence_generator/index.js"
+      ],
+      "server": [
+        "server/recorder-init.js"
+      ],
+      "shared-redis": [
+        "server/shared-redis/index.js"
+      ],
+      "socket": [
+        "server/socket/index.js"
+      ],
+      "test": [
+        "test/test-helper.js",
+        "test/recorder.test.js",
+        "test/test.js"
+      ],
+      "url": [
+        "recorder/examples/app-upload-realdevice/url/upload-1746479877278-w3lv9cabj.json"
+      ],
+      "url-storage-file": [
+        "recorder/examples/app-upload-realdevice/url-storage-file/upload-1746476539960-h54osoz3v.json"
+      ],
+      "utils": [
+        "server/utils/org_customization.js",
+        "server/utils/remoteSharing.js",
+        "server/utils/ip2location.js",
+        "server/utils/constants.js",
+        "server/utils/nearestRegion.js",
+        "server/utils/upload_s3.js",
+        "server/utils/crypto.js",
+        "server/utils/test-helpers.js"
+      ]
+    }
   }
 }

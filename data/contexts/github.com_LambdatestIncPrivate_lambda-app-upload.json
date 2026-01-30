@@ -3,7 +3,7 @@
   "url": "https://github.com/LambdatestIncPrivate/lambda-app-upload",
   "branch": "stage",
   "commit_hash": "f0099153c8d0d6d474e7b00a6f50dbda88e36291",
-  "analyzed_at": "2026-01-28T20:28:41.583934005Z",
+  "analyzed_at": "2026-01-30T16:19:46.5041238Z",
   "files": {
     ".npmignore": {
       "path": ".npmignore",
@@ -18,7 +18,7 @@
       "functions": null,
       "constants": null,
       "concepts": [],
-      "analyzed_at": "2026-01-28T20:28:41.583984672Z"
+      "analyzed_at": "2026-01-30T16:19:46.50420655Z"
     },
     "README.md": {
       "path": "README.md",
@@ -35,7 +35,7 @@
       "concepts": [
         "readme.md"
       ],
-      "analyzed_at": "2026-01-28T20:28:41.583996672Z"
+      "analyzed_at": "2026-01-30T16:19:46.504315467Z"
     },
     "app.js": {
       "path": "app.js",
@@ -50,7 +50,7 @@
       "functions": null,
       "constants": null,
       "concepts": [],
-      "analyzed_at": "2026-01-28T20:28:41.584010713Z"
+      "analyzed_at": "2026-01-30T16:19:46.504416134Z"
     },
     "cmd/main.go": {
       "path": "cmd/main.go",
@@ -277,7 +277,53 @@
           "is_public": false,
           "line_start": 34,
           "line_end": 42,
-          "complexity": 3
+          "complexity": 3,
+          "behavior": {
+            "summary": "Initialize"
+          },
+          "calls": [
+            {
+              "function": "Getenv",
+              "package": "os",
+              "file": "cmd/main.go",
+              "line": 36,
+              "type": "stdlib"
+            }
+          ],
+          "error_handling": {
+            "returns_error": false,
+            "wraps_errors": false,
+            "logs_errors": false,
+            "panics_on_error": false,
+            "propagates_error": false,
+            "error_checks": 0
+          },
+          "uses_imports": [
+            "os"
+          ],
+          "api_flow": {
+            "is_http_handler": false,
+            "steps": [
+              {
+                "step_number": 1,
+                "action": "os.Getenv()",
+                "type": "internal",
+                "line": 36,
+                "output": "username"
+              },
+              {
+                "step_number": 2,
+                "action": "os.Getenv()",
+                "type": "internal",
+                "line": 39,
+                "output": "password"
+              }
+            ],
+            "validation_steps": [
+              "Validate username is not empty",
+              "Validate password is not empty"
+            ]
+          }
         },
         {
           "name": "main",
@@ -285,7 +331,44 @@
           "is_public": false,
           "line_start": 73,
           "line_end": 75,
-          "complexity": 1
+          "complexity": 1,
+          "behavior": {
+            "summary": "lambda.Start",
+            "steps": [
+              "1. lambda.Start"
+            ]
+          },
+          "calls": [
+            {
+              "function": "Start",
+              "package": "lambda",
+              "file": "cmd/main.go",
+              "line": 74,
+              "type": "external"
+            }
+          ],
+          "error_handling": {
+            "returns_error": false,
+            "wraps_errors": false,
+            "logs_errors": false,
+            "panics_on_error": false,
+            "propagates_error": false,
+            "error_checks": 0
+          },
+          "uses_imports": [
+            "github.com/aws/aws-lambda-go/lambda"
+          ],
+          "api_flow": {
+            "is_http_handler": false,
+            "steps": [
+              {
+                "step_number": 1,
+                "action": "lambda.Start()",
+                "type": "internal",
+                "line": 74
+              }
+            ]
+          }
         },
         {
           "name": "handler",
@@ -308,7 +391,117 @@
           "is_public": false,
           "line_start": 78,
           "line_end": 101,
-          "complexity": 6
+          "complexity": 6,
+          "behavior": {
+            "summary": "Log message, then Log message, then Return result",
+            "steps": [
+              "1. Log message",
+              "2. Log message",
+              "3. Return result"
+            ],
+            "input_usage": {
+              "event": "Passed to json.Unmarshal"
+            },
+            "output_source": "Returns result of handleAsyncUpload",
+            "patterns": [
+              "handler"
+            ]
+          },
+          "calls": [
+            {
+              "function": "Unmarshal",
+              "package": "json",
+              "file": "cmd/main.go",
+              "line": 81,
+              "type": "stdlib"
+            },
+            {
+              "function": "handleAPIGatewayRequest",
+              "file": "cmd/main.go",
+              "line": 83,
+              "type": "internal"
+            },
+            {
+              "function": "Printf",
+              "package": "log",
+              "file": "cmd/main.go",
+              "line": 89,
+              "type": "stdlib"
+            },
+            {
+              "function": "sendErrorResponse",
+              "file": "cmd/main.go",
+              "line": 90,
+              "type": "internal"
+            },
+            {
+              "function": "Sprintf",
+              "package": "fmt",
+              "file": "cmd/main.go",
+              "line": 90,
+              "type": "stdlib"
+            },
+            {
+              "function": "handleAsyncUpload",
+              "file": "cmd/main.go",
+              "line": 100,
+              "type": "internal"
+            }
+          ],
+          "side_effects": [
+            "logging"
+          ],
+          "error_handling": {
+            "returns_error": true,
+            "wraps_errors": false,
+            "logs_errors": true,
+            "panics_on_error": false,
+            "propagates_error": true,
+            "error_checks": 1
+          },
+          "uses_imports": [
+            "fmt",
+            "github.com/aws/aws-lambda-go/events",
+            "encoding/json",
+            "log"
+          ],
+          "api_flow": {
+            "is_http_handler": false,
+            "steps": [
+              {
+                "step_number": 1,
+                "action": "Deserialize from JSON",
+                "type": "serialization",
+                "line": 81,
+                "output": "err"
+              },
+              {
+                "step_number": 2,
+                "action": "Deserialize from JSON",
+                "type": "serialization",
+                "line": 88,
+                "output": "err"
+              },
+              {
+                "step_number": 3,
+                "action": "Log: Printf",
+                "type": "logging",
+                "line": 89
+              },
+              {
+                "step_number": 4,
+                "action": "Log: Printf",
+                "type": "logging",
+                "line": 98
+              },
+              {
+                "step_number": 5,
+                "action": "Log: Printf",
+                "type": "logging",
+                "line": 99
+              }
+            ]
+          }
         },
         {
           "name": "handleAPIGatewayRequest",
@@ -327,7 +520,132 @@
           "is_public": false,
           "line_start": 104,
           "line_end": 159,
-          "complexity": 7
+          "complexity": 7,
+          "behavior": {
+            "summary": "Log message, then Call performUpload, then Encode to JSON",
+            "steps": [
+              "1. Log message",
+              "2. Call performUpload",
+              "3. Encode to JSON",
+              "4. Return result"
+            ],
+            "output_source": "Returns result of sendErrorResponse",
+            "patterns": [
+              "handler"
+            ]
+          },
+          "calls": [
+            {
+              "function": "sendErrorResponse",
+              "file": "cmd/main.go",
+              "line": 121,
+              "type": "internal"
+            },
+            {
+              "function": "Unmarshal",
+              "package": "json",
+              "file": "cmd/main.go",
+              "line": 126,
+              "type": "stdlib"
+            },
+            {
+              "function": "Sprintf",
+              "package": "fmt",
+              "file": "cmd/main.go",
+              "line": 127,
+              "type": "stdlib"
+            },
+            {
+              "function": "Printf",
+              "package": "log",
+              "file": "cmd/main.go",
+              "line": 139,
+              "type": "stdlib"
+            },
+            {
+              "function": "performUpload",
+              "file": "cmd/main.go",
+              "line": 140,
+              "type": "internal"
+            },
+            {
+              "function": "Error",
+              "package": "err",
+              "file": "cmd/main.go",
+              "line": 142,
+              "type": "method"
+            },
+            {
+              "function": "Marshal",
+              "package": "json",
+              "file": "cmd/main.go",
+              "line": 145,
+              "type": "stdlib"
+            },
+            {
+              "function": "string",
+              "file": "cmd/main.go",
+              "line": 157,
+              "type": "internal"
+            }
+          ],
+          "called_by": [
+            {
+              "function": "handler",
+              "file": "cmd/main.go",
+              "line": 83,
+              "type": "internal"
+            }
+          ],
+          "side_effects": [
+            "logging"
+          ],
+          "error_handling": {
+            "returns_error": true,
+            "wraps_errors": false,
+            "logs_errors": true,
+            "panics_on_error": false,
+            "propagates_error": true,
+            "error_checks": 2
+          },
+          "uses_imports": [
+            "fmt",
+            "log",
+            "github.com/aws/aws-lambda-go/events",
+            "encoding/json"
+          ],
+          "api_flow": {
+            "is_http_handler": false,
+            "steps": [
+              {
+                "step_number": 1,
+                "action": "Deserialize from JSON",
+                "type": "serialization",
+                "line": 126,
+                "output": "err"
+              },
+              {
+                "step_number": 2,
+                "action": "Log: Printf",
+                "type": "logging",
+                "line": 139
+              },
+              {
+                "step_number": 3,
+                "action": "Call performUpload()",
+                "type": "internal",
+                "line": 140,
+                "output": "uploadedURL, err"
+              },
+              {
+                "step_number": 4,
+                "action": "Serialize to JSON",
+                "type": "serialization",
+                "line": 145,
+                "output": "responseBody, _"
+              }
+            ]
+          }
         },
         {
           "name": "handleAsyncUpload",
@@ -346,7 +664,172 @@
           "is_public": false,
           "line_start": 162,
           "line_end": 216,
-          "complexity": 5
+          "complexity": 5,
+          "behavior": {
+            "summary": "Log message, then Call performUpload, then Validate input is not nil",
+            "steps": [
+              "1. Log message",
+              "2. Call performUpload",
+              "3. Validate input is not nil",
+              "4. Encode to JSON",
+              "5. Return result"
+            ],
+            "output_source": "Returns result of sendErrorResponse",
+            "patterns": [
+              "handler"
+            ]
+          },
+          "calls": [
+            {
+              "function": "Printf",
+              "package": "log",
+              "file": "cmd/main.go",
+              "line": 163,
+              "type": "stdlib"
+            },
+            {
+              "function": "sendCallbackError",
+              "file": "cmd/main.go",
+              "line": 166,
+              "type": "internal"
+            },
+            {
+              "function": "sendErrorResponse",
+              "file": "cmd/main.go",
+              "line": 167,
+              "type": "internal"
+            },
+            {
+              "function": "performUpload",
+              "file": "cmd/main.go",
+              "line": 176,
+              "type": "internal"
+            },
+            {
+              "function": "Error",
+              "package": "err",
+              "file": "cmd/main.go",
+              "line": 185,
+              "type": "method"
+            },
+            {
+              "function": "sendCallback",
+              "file": "cmd/main.go",
+              "line": 197,
+              "type": "internal"
+            },
+            {
+              "function": "Marshal",
+              "package": "json",
+              "file": "cmd/main.go",
+              "line": 202,
+              "type": "stdlib"
+            },
+            {
+              "function": "string",
+              "file": "cmd/main.go",
+              "line": 214,
+              "type": "internal"
+            }
+          ],
+          "called_by": [
+            {
+              "function": "handler",
+              "file": "cmd/main.go",
+              "line": 100,
+              "type": "internal"
+            }
+          ],
+          "side_effects": [
+            "logging"
+          ],
+          "error_handling": {
+            "returns_error": true,
+            "wraps_errors": false,
+            "logs_errors": true,
+            "panics_on_error": false,
+            "propagates_error": true,
+            "error_checks": 2
+          },
+          "uses_imports": [
+            "log",
+            "encoding/json",
+            "github.com/aws/aws-lambda-go/events"
+          ],
+          "api_flow": {
+            "is_http_handler": false,
+            "steps": [
+              {
+                "step_number": 1,
+                "action": "Log: Printf",
+                "type": "logging",
+                "line": 163
+              },
+              {
+                "step_number": 2,
+                "action": "Call sendCallbackError()",
+                "type": "internal",
+                "line": 166
+              },
+              {
+                "step_number": 3,
+                "action": "Call sendCallbackError()",
+                "type": "internal",
+                "line": 171
+              },
+              {
+                "step_number": 4,
+                "action": "Call performUpload()",
+                "type": "internal",
+                "line": 176,
+                "output": "uploadedURL, err"
+              },
+              {
+                "step_number": 5,
+                "action": "Log: Printf",
+                "type": "logging",
+                "line": 181
+              },
+              {
+                "step_number": 6,
+                "action": "Create CallbackPayload struct",
+                "type": "struct_creation",
+                "line": 182
+              },
+              {
+                "step_number": 7,
+                "action": "Log: Printf",
+                "type": "logging",
+                "line": 188
+              },
+              {
+                "step_number": 8,
+                "action": "Create CallbackPayload struct",
+                "type": "struct_creation",
+                "line": 189
+              },
+              {
+                "step_number": 9,
+                "action": "Call sendCallback()",
+                "type": "internal",
+                "line": 197,
+                "output": "callbackErr"
+              },
+              {
+                "step_number": 10,
+                "action": "Log: Printf",
+                "type": "logging",
+                "line": 198
+              },
+              {
+                "step_number": 11,
+                "action": "Serialize to JSON",
+                "type": "serialization",
+                "line": 202,
+                "output": "responseBody, _"
+              }
+            ]
+          }
         },
         {
           "name": "performUpload",
@@ -369,7 +852,428 @@
           "is_public": false,
           "line_start": 220,
           "line_end": 312,
-          "complexity": 20
+          "complexity": 20,
+          "behavior": {
+            "summary": "Get filename, then OS: CreateTemp, then tmpFile.Name",
+            "steps": [
+              "1. Get filename",
+              "2. OS: CreateTemp",
+              "3. tmpFile.Name",
+              "4. Log message",
+              "5. downloadClient.Get",
+              "6. Call make",
+              "7. IO: CopyBuffer",
+              "8. Validate input is not nil",
+              "9. Validate input is not nil",
+              "10. Log message",
+              "11. Open file",
+              "12. uploadReader.Stat",
+              "13. Log message",
+              "14. Call uploadFileFromReader",
+              "15. Return result"
+            ],
+            "input_usage": {
+              "sourceURL": "Passed to downloadClient.Get",
+              "uploadURL": "Passed to strings.Split"
+            },
+            "output_source": "Returns uploadURLWithoutQuery"
+          },
+          "calls": [
+            {
+              "function": "getFilename",
+              "file": "cmd/main.go",
+              "line": 222,
+              "type": "internal"
+            },
+            {
+              "function": "isValidFileType",
+              "file": "cmd/main.go",
+              "line": 223,
+              "type": "internal"
+            },
+            {
+              "function": "Errorf",
+              "package": "fmt",
+              "file": "cmd/main.go",
+              "line": 224,
+              "type": "stdlib"
+            },
+            {
+              "function": "CreateTemp",
+              "package": "os",
+              "file": "cmd/main.go",
+              "line": 228,
+              "type": "stdlib"
+            },
+            {
+              "function": "Name",
+              "package": "tmpFile",
+              "file": "cmd/main.go",
+              "line": 232,
+              "type": "method"
+            },
+            {
+              "function": "Remove",
+              "package": "os",
+              "file": "cmd/main.go",
+              "line": 234,
+              "type": "stdlib"
+            },
+            {
+              "function": "Printf",
+              "package": "log",
+              "file": "cmd/main.go",
+              "line": 235,
+              "type": "stdlib"
+            },
+            {
+              "function": "Get",
+              "package": "downloadClient",
+              "file": "cmd/main.go",
+              "line": 241,
+              "type": "method"
+            },
+            {
+              "function": "Close",
+              "package": "tmpFile",
+              "file": "cmd/main.go",
+              "line": 243,
+              "type": "method"
+            },
+            {
+              "function": "Close",
+              "file": "cmd/main.go",
+              "line": 250,
+              "type": "method"
+            },
+            {
+              "function": "make",
+              "file": "cmd/main.go",
+              "line": 260,
+              "type": "internal"
+            },
+            {
+              "function": "CopyBuffer",
+              "package": "io",
+              "file": "cmd/main.go",
+              "line": 261,
+              "type": "stdlib"
+            },
+            {
+              "function": "float64",
+              "file": "cmd/main.go",
+              "line": 274,
+              "type": "internal"
+            },
+            {
+              "function": "Open",
+              "package": "os",
+              "file": "cmd/main.go",
+              "line": 277,
+              "type": "stdlib"
+            },
+            {
+              "function": "Close",
+              "package": "uploadReader",
+              "file": "cmd/main.go",
+              "line": 282,
+              "type": "method"
+            },
+            {
+              "function": "Stat",
+              "package": "uploadReader",
+              "file": "cmd/main.go",
+              "line": 288,
+              "type": "method"
+            },
+            {
+              "function": "Size",
+              "package": "fileInfo",
+              "file": "cmd/main.go",
+              "line": 294,
+              "type": "method"
+            },
+            {
+              "function": "uploadFileFromReader",
+              "file": "cmd/main.go",
+              "line": 295,
+              "type": "internal"
+            },
+            {
+              "function": "ReadAll",
+              "package": "io",
+              "file": "cmd/main.go",
+              "line": 306,
+              "type": "stdlib"
+            },
+            {
+              "function": "string",
+              "file": "cmd/main.go",
+              "line": 307,
+              "type": "internal"
+            },
+            {
+              "function": "Split",
+              "package": "strings",
+              "file": "cmd/main.go",
+              "line": 310,
+              "type": "stdlib"
+            }
+          ],
+          "called_by": [
+            {
+              "function": "handleAPIGatewayRequest",
+              "file": "cmd/main.go",
+              "line": 140,
+              "type": "internal"
+            },
+            {
+              "function": "handleAsyncUpload",
+              "file": "cmd/main.go",
+              "line": 176,
+              "type": "internal"
+            }
+          ],
+          "side_effects": [
+            "file_io",
+            "logging",
+            "io_operation"
+          ],
+          "error_handling": {
+            "returns_error": true,
+            "error_types": [
+              "formatted_error"
+            ],
+            "wraps_errors": false,
+            "logs_errors": true,
+            "panics_on_error": false,
+            "propagates_error": true,
+            "error_checks": 15
+          },
+          "uses_imports": [
+            "strings",
+            "fmt",
+            "os",
+            "log",
+            "net/http",
+            "io"
+          ],
+          "api_flow": {
+            "is_http_handler": false,
+            "steps": [
+              {
+                "step_number": 1,
+                "action": "Call getFilename()",
+                "type": "internal",
+                "line": 222,
+                "output": "filename"
+              },
+              {
+                "step_number": 2,
+                "action": "os.CreateTemp()",
+                "type": "internal",
+                "line": 228,
+                "output": "tmpFile, err"
+              },
+              {
+                "step_number": 3,
+                "action": "tmpFile.Name()",
+                "type": "internal",
+                "line": 232,
+                "output": "tmpPath"
+              },
+              {
+                "step_number": 4,
+                "action": "os.Remove()",
+                "type": "internal",
+                "line": 234,
+                "output": "err"
+              },
+              {
+                "step_number": 5,
+                "action": "Log: Printf",
+                "type": "logging",
+                "line": 235
+              },
+              {
+                "step_number": 6,
+                "action": "Log: Printf",
+                "type": "logging",
+                "line": 240
+              },
+              {
+                "step_number": 7,
+                "action": "downloadClient.Get()",
+                "type": "internal",
+                "line": 241,
+                "output": "resp, err"
+              },
+              {
+                "step_number": 8,
+                "action": "tmpFile.Close()",
+                "type": "internal",
+                "line": 243,
+                "output": "closeErr"
+              },
+              {
+                "step_number": 9,
+                "action": "Log: Printf",
+                "type": "logging",
+                "line": 244
+              },
+              {
+                "step_number": 10,
+                "action": ".Close()",
+                "type": "internal",
+                "line": 250,
+                "output": "closeErr"
+              },
+              {
+                "step_number": 11,
+                "action": "Log: Printf",
+                "type": "logging",
+                "line": 251
+              },
+              {
+                "step_number": 12,
+                "action": "tmpFile.Close()",
+                "type": "internal",
+                "line": 253,
+                "output": "closeErr"
+              },
+              {
+                "step_number": 13,
+                "action": "Log: Printf",
+                "type": "logging",
+                "line": 254
+              },
+              {
+                "step_number": 14,
+                "action": "Call make()",
+                "type": "internal",
+                "line": 260,
+                "output": "buf"
+              },
+              {
+                "step_number": 15,
+                "action": "io.CopyBuffer()",
+                "type": "internal",
+                "line": 261,
+                "output": "written, err"
+              },
+              {
+                "step_number": 16,
+                "action": ".Close()",
+                "type": "internal",
+                "line": 262,
+                "output": "closeErr"
+              },
+              {
+                "step_number": 17,
+                "action": "Log: Printf",
+                "type": "logging",
+                "line": 263
+              },
+              {
+                "step_number": 18,
+                "action": "tmpFile.Close()",
+                "type": "internal",
+                "line": 266,
+                "output": "closeErr"
+              },
+              {
+                "step_number": 19,
+                "action": "Log: Printf",
+                "type": "logging",
+                "line": 267
+              },
+              {
+                "step_number": 20,
+                "action": "tmpFile.Close()",
+                "type": "internal",
+                "line": 271,
+                "output": "closeErr"
+              },
+              {
+                "step_number": 21,
+                "action": "Log: Printf",
+                "type": "logging",
+                "line": 272
+              },
+              {
+                "step_number": 22,
+                "action": "Log: Printf",
+                "type": "logging",
+                "line": 274
+              },
+              {
+                "step_number": 23,
+                "action": "os.Open()",
+                "type": "internal",
+                "line": 277,
+                "output": "uploadReader, err"
+              },
+              {
+                "step_number": 24,
+                "action": "uploadReader.Close()",
+                "type": "internal",
+                "line": 282,
+                "output": "err"
+              },
+              {
+                "step_number": 25,
+                "action": "Log: Printf",
+                "type": "logging",
+                "line": 283
+              },
+              {
+                "step_number": 26,
+                "action": "uploadReader.Stat()",
+                "type": "internal",
+                "line": 288,
+                "output": "fileInfo, err"
+              },
+              {
+                "step_number": 27,
+                "action": "Log: Printf",
+                "type": "logging",
+                "line": 294
+              },
+              {
+                "step_number": 28,
+                "action": "Call uploadFileFromReader()",
+                "type": "internal",
+                "line": 295,
+                "output": "uploadResp, err"
+              },
+              {
+                "step_number": 29,
+                "action": ".Close()",
+                "type": "internal",
+                "line": 300,
+                "output": "err"
+              },
+              {
+                "step_number": 30,
+                "action": "Log: Printf",
+                "type": "logging",
+                "line": 301
+              },
+              {
+                "step_number": 31,
+                "action": "io.ReadAll()",
+                "type": "internal",
+                "line": 306,
+                "output": "body, _"
+              }
+            ],
+            "external_calls": [
+              {
+                "method": "GET",
+                "line": 241
+              }
+            ]
+          }
         },
         {
           "name": "sendCallback",
@@ -391,7 +1295,212 @@
           "is_public": false,
           "line_start": 315,
           "line_end": 351,
-          "complexity": 9
+          "complexity": 9,
+          "behavior": {
+            "summary": "Encode to JSON, then Create HTTP request, then client.Do",
+            "steps": [
+              "1. Encode to JSON",
+              "2. Create HTTP request",
+              "3. client.Do",
+              "4. Log message",
+              "5. Return result"
+            ],
+            "input_usage": {
+              "callbackURL": "Passed to http.NewRequest",
+              "payload": "Passed to json.Marshal"
+            },
+            "output_source": "Returns nil",
+            "patterns": [
+              "http-client"
+            ]
+          },
+          "calls": [
+            {
+              "function": "Marshal",
+              "package": "json",
+              "file": "cmd/main.go",
+              "line": 316,
+              "type": "stdlib"
+            },
+            {
+              "function": "Errorf",
+              "package": "fmt",
+              "file": "cmd/main.go",
+              "line": 318,
+              "type": "stdlib"
+            },
+            {
+              "function": "NewRequest",
+              "package": "http",
+              "file": "cmd/main.go",
+              "line": 321,
+              "type": "stdlib"
+            },
+            {
+              "function": "NewReader",
+              "package": "bytes",
+              "file": "cmd/main.go",
+              "line": 321,
+              "type": "stdlib"
+            },
+            {
+              "function": "Set",
+              "file": "cmd/main.go",
+              "line": 326,
+              "type": "method"
+            },
+            {
+              "function": "SetBasicAuth",
+              "package": "req",
+              "file": "cmd/main.go",
+              "line": 330,
+              "type": "method"
+            },
+            {
+              "function": "Do",
+              "package": "client",
+              "file": "cmd/main.go",
+              "line": 334,
+              "type": "method"
+            },
+            {
+              "function": "Close",
+              "file": "cmd/main.go",
+              "line": 339,
+              "type": "method"
+            },
+            {
+              "function": "Printf",
+              "package": "log",
+              "file": "cmd/main.go",
+              "line": 340,
+              "type": "stdlib"
+            },
+            {
+              "function": "ReadAll",
+              "package": "io",
+              "file": "cmd/main.go",
+              "line": 345,
+              "type": "stdlib"
+            },
+            {
+              "function": "string",
+              "file": "cmd/main.go",
+              "line": 346,
+              "type": "internal"
+            }
+          ],
+          "called_by": [
+            {
+              "function": "handleAsyncUpload",
+              "file": "cmd/main.go",
+              "line": 197,
+              "type": "internal"
+            },
+            {
+              "function": "sendCallbackError",
+              "file": "cmd/main.go",
+              "line": 358,
+              "type": "internal"
+            }
+          ],
+          "side_effects": [
+            "http_call",
+            "logging",
+            "io_operation"
+          ],
+          "error_handling": {
+            "returns_error": true,
+            "error_types": [
+              "formatted_error"
+            ],
+            "wraps_errors": false,
+            "logs_errors": true,
+            "panics_on_error": false,
+            "propagates_error": true,
+            "error_checks": 4
+          },
+          "uses_imports": [
+            "log",
+            "io",
+            "encoding/json",
+            "fmt",
+            "net/http",
+            "bytes"
+          ],
+          "api_flow": {
+            "is_http_handler": false,
+            "steps": [
+              {
+                "step_number": 1,
+                "action": "Serialize to JSON",
+                "type": "serialization",
+                "line": 316,
+                "output": "payloadBytes, err"
+              },
+              {
+                "step_number": 2,
+                "action": "http.NewRequest()",
+                "type": "http_client",
+                "line": 321,
+                "output": "req, err"
+              },
+              {
+                "step_number": 3,
+                "action": ".Set()",
+                "type": "internal",
+                "line": 326
+              },
+              {
+                "step_number": 4,
+                "action": "req.SetBasicAuth()",
+                "type": "internal",
+                "line": 330
+              },
+              {
+                "step_number": 5,
+                "action": "Execute HTTP request",
+                "type": "http_client",
+                "line": 334,
+                "output": "resp, err"
+              },
+              {
+                "step_number": 6,
+                "action": ".Close()",
+                "type": "internal",
+                "line": 339,
+                "output": "err"
+              },
+              {
+                "step_number": 7,
+                "action": "Log: Printf",
+                "type": "logging",
+                "line": 340
+              },
+              {
+                "step_number": 8,
+                "action": "io.ReadAll()",
+                "type": "internal",
+                "line": 345,
+                "output": "body, _"
+              },
+              {
+                "step_number": 9,
+                "action": "Log: Printf",
+                "type": "logging",
+                "line": 349
+              }
+            ],
+            "external_calls": [
+              {
+                "method": "DO",
+                "line": 334
+              }
+            ],
+            "validation_steps": [
+              "Validate CallbackAuthPassword is not empty"
+            ]
+          }
         },
         {
           "name": "sendCallbackError",
@@ -414,7 +1523,55 @@
           "is_public": false,
           "line_start": 354,
           "line_end": 363,
-          "complexity": 3
+          "complexity": 3,
+          "behavior": {
+            "summary": "Send callback",
+            "steps": [
+              "1. Send callback"
+            ],
+            "input_usage": {
+              "callbackURL": "Passed to sendCallback"
+            }
+          },
+          "calls": [
+            {
+              "function": "sendCallback",
+              "file": "cmd/main.go",
+              "line": 358,
+              "type": "internal"
+            }
+          ],
+          "called_by": [
+            {
+              "function": "handleAsyncUpload",
+              "file": "cmd/main.go",
+              "line": 166,
+              "type": "internal"
+            }
+          ],
+          "error_handling": {
+            "returns_error": false,
+            "wraps_errors": false,
+            "logs_errors": false,
+            "panics_on_error": false,
+            "propagates_error": false,
+            "error_checks": 0
+          },
+          "api_flow": {
+            "is_http_handler": false,
+            "steps": [
+              {
+                "step_number": 1,
+                "action": "Call sendCallback()",
+                "type": "internal",
+                "line": 358,
+                "output": "_"
+              }
+            ],
+            "validation_steps": [
+              "Validate requestID is not empty"
+            ]
+          }
         },
         {
           "name": "getFilename",
@@ -431,7 +1588,72 @@
           "is_public": false,
           "line_start": 365,
           "line_end": 374,
-          "complexity": 2
+          "complexity": 2,
+          "behavior": {
+            "summary": "filepath.Base, then Return result",
+            "steps": [
+              "1. filepath.Base",
+              "2. Return result"
+            ],
+            "input_usage": {
+              "url": "Passed to strings.Split"
+            },
+            "output_source": "Returns filename",
+            "patterns": [
+              "read"
+            ]
+          },
+          "calls": [
+            {
+              "function": "Split",
+              "package": "strings",
+              "file": "cmd/main.go",
+              "line": 366,
+              "type": "stdlib"
+            },
+            {
+              "function": "Base",
+              "package": "filepath",
+              "file": "cmd/main.go",
+              "line": 367,
+              "type": "stdlib"
+            }
+          ],
+          "called_by": [
+            {
+              "function": "performUpload",
+              "file": "cmd/main.go",
+              "line": 222,
+              "type": "internal"
+            }
+          ],
+          "error_handling": {
+            "returns_error": false,
+            "wraps_errors": false,
+            "logs_errors": false,
+            "panics_on_error": false,
+            "propagates_error": false,
+            "error_checks": 0
+          },
+          "uses_imports": [
+            "strings",
+            "path/filepath"
+          ],
+          "api_flow": {
+            "is_http_handler": false,
+            "steps": [
+              {
+                "step_number": 1,
+                "action": "filepath.Base()",
+                "type": "internal",
+                "line": 367,
+                "output": "filename"
+              }
+            ],
+            "validation_steps": [
+              "Validate filename is not empty"
+            ]
+          }
         },
         {
           "name": "isValidFileType",
@@ -448,7 +1670,70 @@
           "is_public": false,
           "line_start": 376,
           "line_end": 385,
-          "complexity": 3
+          "complexity": 3,
+          "behavior": {
+            "summary": "Convert to lowercase, then Iterate over validExts, then Return result",
+            "steps": [
+              "1. Convert to lowercase",
+              "2. Iterate over validExts",
+              "3. Return result"
+            ],
+            "input_usage": {
+              "filename": "Passed to filepath.Ext"
+            },
+            "output_source": "Returns false",
+            "patterns": [
+              "validation"
+            ]
+          },
+          "calls": [
+            {
+              "function": "ToLower",
+              "package": "strings",
+              "file": "cmd/main.go",
+              "line": 377,
+              "type": "stdlib"
+            },
+            {
+              "function": "Ext",
+              "package": "filepath",
+              "file": "cmd/main.go",
+              "line": 377,
+              "type": "stdlib"
+            }
+          ],
+          "called_by": [
+            {
+              "function": "performUpload",
+              "file": "cmd/main.go",
+              "line": 223,
+              "type": "internal"
+            }
+          ],
+          "error_handling": {
+            "returns_error": false,
+            "wraps_errors": false,
+            "logs_errors": false,
+            "panics_on_error": false,
+            "propagates_error": false,
+            "error_checks": 0
+          },
+          "uses_imports": [
+            "strings",
+            "path/filepath"
+          ],
+          "api_flow": {
+            "is_http_handler": false,
+            "steps": [
+              {
+                "step_number": 1,
+                "action": "strings.ToLower()",
+                "type": "internal",
+                "line": 377,
+                "output": "ext"
+              }
+            ]
+          }
         },
         {
           "name": "uploadFileFromReader",
@@ -478,7 +1763,119 @@
           "is_public": false,
           "line_start": 387,
           "line_end": 414,
-          "complexity": 8
+          "complexity": 8,
+          "behavior": {
+            "summary": "Create HTTP request, then Convert to lowercase, then Switch on condition",
+            "steps": [
+              "1. Create HTTP request",
+              "2. Convert to lowercase",
+              "3. Switch on condition",
+              "4. Return result"
+            ],
+            "input_usage": {
+              "filename": "Passed to filepath.Ext",
+              "reader": "Passed to http.NewRequest",
+              "uploadURL": "Passed to http.NewRequest"
+            },
+            "output_source": "Returns result of client.Do",
+            "patterns": [
+              "http-client"
+            ]
+          },
+          "calls": [
+            {
+              "function": "NewRequest",
+              "package": "http",
+              "file": "cmd/main.go",
+              "line": 388,
+              "type": "stdlib"
+            },
+            {
+              "function": "ToLower",
+              "package": "strings",
+              "file": "cmd/main.go",
+              "line": 395,
+              "type": "stdlib"
+            },
+            {
+              "function": "Ext",
+              "package": "filepath",
+              "file": "cmd/main.go",
+              "line": 395,
+              "type": "stdlib"
+            },
+            {
+              "function": "Set",
+              "file": "cmd/main.go",
+              "line": 409,
+              "type": "method"
+            },
+            {
+              "function": "Do",
+              "package": "client",
+              "file": "cmd/main.go",
+              "line": 413,
+              "type": "method"
+            }
+          ],
+          "called_by": [
+            {
+              "function": "performUpload",
+              "file": "cmd/main.go",
+              "line": 295,
+              "type": "internal"
+            }
+          ],
+          "side_effects": [
+            "http_call"
+          ],
+          "error_handling": {
+            "returns_error": true,
+            "error_types": [
+              "propagated_error"
+            ],
+            "wraps_errors": false,
+            "logs_errors": false,
+            "panics_on_error": false,
+            "propagates_error": true,
+            "error_checks": 1
+          },
+          "uses_imports": [
+            "strings",
+            "path/filepath",
+            "net/http"
+          ],
+          "api_flow": {
+            "is_http_handler": false,
+            "steps": [
+              {
+                "step_number": 1,
+                "action": "http.NewRequest()",
+                "type": "http_client",
+                "line": 388,
+                "output": "req, err"
+              },
+              {
+                "step_number": 2,
+                "action": "strings.ToLower()",
+                "type": "internal",
+                "line": 395,
+                "output": "ext"
+              },
+              {
+                "step_number": 3,
+                "action": ".Set()",
+                "type": "internal",
+                "line": 409
+              }
+            ],
+            "external_calls": [
+              {
+                "method": "DO",
+                "line": 413
+              }
+            ]
+          }
         },
         {
           "name": "sendErrorResponse",
@@ -499,7 +1896,79 @@
           "is_public": false,
           "line_start": 416,
           "line_end": 430,
-          "complexity": 1
+          "complexity": 1,
+          "behavior": {
+            "summary": "Encode to JSON, then Return result",
+            "steps": [
+              "1. Encode to JSON",
+              "2. Return result"
+            ]
+          },
+          "calls": [
+            {
+              "function": "Marshal",
+              "package": "json",
+              "file": "cmd/main.go",
+              "line": 421,
+              "type": "stdlib"
+            },
+            {
+              "function": "string",
+              "file": "cmd/main.go",
+              "line": 428,
+              "type": "internal"
+            }
+          ],
+          "called_by": [
+            {
+              "function": "handler",
+              "file": "cmd/main.go",
+              "line": 90,
+              "type": "internal"
+            },
+            {
+              "function": "handleAPIGatewayRequest",
+              "file": "cmd/main.go",
+              "line": 121,
+              "type": "internal"
+            },
+            {
+              "function": "handleAsyncUpload",
+              "file": "cmd/main.go",
+              "line": 167,
+              "type": "internal"
+            }
+          ],
+          "error_handling": {
+            "returns_error": false,
+            "wraps_errors": false,
+            "logs_errors": false,
+            "panics_on_error": false,
+            "propagates_error": false,
+            "error_checks": 0
+          },
+          "uses_imports": [
+            "encoding/json",
+            "github.com/aws/aws-lambda-go/events"
+          ],
+          "api_flow": {
+            "is_http_handler": false,
+            "steps": [
+              {
+                "step_number": 1,
+                "action": "Create Response struct",
+                "type": "struct_creation",
+                "line": 417
+              },
+              {
+                "step_number": 2,
+                "action": "Serialize to JSON",
+                "type": "serialization",
+                "line": 421,
+                "output": "responseBody, _"
+              }
+            ]
+          }
         }
       ],
       "constants": [
@@ -511,31 +1980,31 @@
         }
       ],
       "concepts": [
-        "valid",
-        "file",
-        "from",
-        "response",
-        "gateway",
-        "error",
         "filename",
-        "perform",
+        "from",
+        "request",
+        "async",
+        "upload",
         "get",
-        "reader",
-        "requestbody",
+        "valid",
+        "type",
+        "callbackpayload",
+        "init",
+        "handle",
+        "gateway",
         "asyncrequestbody",
         "main",
-        "async",
-        "send",
+        "perform",
+        "file",
         "callback",
-        "callbackpayload",
-        "handle",
-        "request",
-        "upload",
-        "init",
+        "error",
+        "reader",
+        "requestbody",
+        "response",
         "handler",
-        "type"
+        "send"
       ],
-      "analyzed_at": "2026-01-28T20:28:41.58450388Z"
+      "analyzed_at": "2026-01-30T16:19:46.506211925Z"
     },
     "go.mod": {
       "path": "go.mod",
@@ -550,7 +2019,7 @@
       "functions": null,
       "constants": null,
       "concepts": [],
-      "analyzed_at": "2026-01-28T20:28:41.584630547Z"
+      "analyzed_at": "2026-01-30T16:19:46.508424842Z"
     },
     "package.json": {
       "path": "package.json",
@@ -565,7 +2034,7 @@
       "functions": null,
       "constants": null,
       "concepts": [],
-      "analyzed_at": "2026-01-28T20:28:41.584641713Z"
+      "analyzed_at": "2026-01-30T16:19:46.508464925Z"
     },
     "serverless-go.yml": {
       "path": "serverless-go.yml",
@@ -580,7 +2049,7 @@
       "functions": null,
       "constants": null,
       "concepts": [],
-      "analyzed_at": "2026-01-28T20:28:41.58466363Z"
+      "analyzed_at": "2026-01-30T16:19:46.508518425Z"
     },
     "serverless.yml": {
       "path": "serverless.yml",
@@ -595,7 +2064,7 @@
       "functions": null,
       "constants": null,
       "concepts": [],
-      "analyzed_at": "2026-01-28T20:28:41.584838755Z"
+      "analyzed_at": "2026-01-30T16:19:46.5085633Z"
     },
     "yamllint.yaml": {
       "path": "yamllint.yaml",
@@ -610,7 +2079,7 @@
       "functions": null,
       "constants": null,
       "concepts": [],
-      "analyzed_at": "2026-01-28T20:28:41.584947713Z"
+      "analyzed_at": "2026-01-30T16:19:46.508690759Z"
     }
   },
   "architecture": {
@@ -620,13 +2089,13 @@
         "path": "root",
         "name": "root",
         "files": [
-          ".npmignore",
-          "go.mod",
-          "serverless-go.yml",
-          "serverless.yml",
           "README.md",
           "app.js",
+          "go.mod",
+          ".npmignore",
           "package.json",
+          "serverless-go.yml",
+          "serverless.yml",
           "yamllint.yaml"
         ],
         "is_internal": false
@@ -648,50 +2117,10 @@
       }
     ],
     "dependencies": null,
-    "build_system": "npm",
+    "build_system": "go modules",
     "main_packages": [
       "cmd"
-    ],
-    "ai_analysis": {
-      "pattern": "Simple CLI Application",
-      "layers": [
-        {
-          "name": "Entry Point",
-          "purpose": "Application bootstrapping and CLI interface",
-          "components": [
-            "cmd/main.go"
-          ]
-        },
-        {
-          "name": "Core Logic",
-          "purpose": "Business logic and application functionality",
-          "components": [
-            "root module files"
-          ]
-        }
-      ],
-      "data_flow": "CLI commands are processed by main.go, which delegates to core business logic in root module files for app upload functionality to LambdaTest platform",
-      "strengths": [
-        "Simple and straightforward structure",
-        "Clear separation of entry point from business logic",
-        "Minimal complexity for CLI tool"
-      ],
-      "weaknesses": [
-        "Flat structure may not scale well",
-        "Limited modularity and separation of concerns",
-        "Potential for tight coupling between components",
-        "No clear abstraction layers"
-      ],
-      "recommendations": [
-        "Consider introducing internal packages for better organization",
-        "Implement proper separation of concerns with dedicated service/handler layers",
-        "Add configuration management layer",
-        "Consider adding interfaces for better testability"
-      ],
-      "generated_at": "2026-01-29T13:34:54.443500213Z",
-      "tokens_used": 463,
-      "provider": "anthropic"
-    }
+    ]
   },
   "statistics": {
     "total_files": 9,
@@ -707,40 +2136,1912 @@
     },
     "function_count": 12,
     "type_count": 4,
-    "export_count": 6
+    "export_count": 6,
+    "call_graph_nodes": 12,
+    "call_graph_edges": 13,
+    "indexed_concepts": 41,
+    "avg_complexity": 5.666666666666667
   },
   "version": 1,
-  "ai_summary": {
-    "overview": "This repository appears to be a Go-based application upload service for LambdaTest's platform. It provides functionality to upload and manage application files with both synchronous and asynchronous processing capabilities.",
-    "purpose": "To handle application file uploads for LambdaTest's testing platform, enabling users to upload mobile apps or other testing assets that can be used in their automated testing workflows",
-    "key_features": [
-      "Synchronous and asynchronous file upload processing",
-      "Callback mechanism for async operations",
-      "RESTful API interface for upload operations",
-      "File validation and processing pipeline"
-    ],
-    "technology_stack": [
-      "Go",
-      "JavaScript",
-      "YAML configuration",
-      "JSON for data exchange"
-    ],
-    "architecture_style": "Microservice with REST API",
-    "main_components": [
-      "Upload handler service",
-      "Request/Response data structures",
-      "Async processing with callback system",
-      "Configuration management"
-    ],
-    "suggestions": [
-      "Add comprehensive error handling and logging",
-      "Implement file size and type validation",
-      "Add authentication and authorization mechanisms",
-      "Include unit tests and integration tests",
-      "Add API documentation and OpenAPI specification"
-    ],
-    "generated_at": "2026-01-29T13:34:48.42680796Z",
-    "tokens_used": 661,
-    "provider": "anthropic"
+  "call_graph": {
+    "nodes": {
+      "cmd/main.go:getFilename": {
+        "id": "cmd/main.go:getFilename",
+        "file": "cmd/main.go",
+        "function": "getFilename",
+        "signature": "getFilename(url string) string",
+        "package": "cmd",
+        "is_public": false,
+        "calls": [],
+        "called_by": [
+          "cmd/main.go:performUpload"
+        ]
+      },
+      "cmd/main.go:handleAPIGatewayRequest": {
+        "id": "cmd/main.go:handleAPIGatewayRequest",
+        "file": "cmd/main.go",
+        "function": "handleAPIGatewayRequest",
+        "signature": "handleAPIGatewayRequest(request events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error)",
+        "package": "cmd",
+        "is_public": false,
+        "calls": [
+          "cmd/main.go:sendErrorResponse",
+          "cmd/main.go:performUpload"
+        ],
+        "called_by": [
+          "cmd/main.go:handler"
+        ]
+      },
+      "cmd/main.go:handleAsyncUpload": {
+        "id": "cmd/main.go:handleAsyncUpload",
+        "file": "cmd/main.go",
+        "function": "handleAsyncUpload",
+        "signature": "handleAsyncUpload(reqBody AsyncRequestBody) (events.APIGatewayProxyResponse, error)",
+        "package": "cmd",
+        "is_public": false,
+        "calls": [
+          "cmd/main.go:sendCallbackError",
+          "cmd/main.go:sendErrorResponse",
+          "cmd/main.go:performUpload",
+          "cmd/main.go:sendCallback"
+        ],
+        "called_by": [
+          "cmd/main.go:handler"
+        ]
+      },
+      "cmd/main.go:handler": {
+        "id": "cmd/main.go:handler",
+        "file": "cmd/main.go",
+        "function": "handler",
+        "signature": "handler(ctx context.Context, event json.RawMessage) (events.APIGatewayProxyResponse, error)",
+        "package": "cmd",
+        "is_public": false,
+        "calls": [
+          "cmd/main.go:handleAPIGatewayRequest",
+          "cmd/main.go:sendErrorResponse",
+          "cmd/main.go:handleAsyncUpload"
+        ],
+        "called_by": []
+      },
+      "cmd/main.go:init": {
+        "id": "cmd/main.go:init",
+        "file": "cmd/main.go",
+        "function": "init",
+        "signature": "init()",
+        "package": "cmd",
+        "is_public": false,
+        "calls": [],
+        "called_by": []
+      },
+      "cmd/main.go:isValidFileType": {
+        "id": "cmd/main.go:isValidFileType",
+        "file": "cmd/main.go",
+        "function": "isValidFileType",
+        "signature": "isValidFileType(filename string) bool",
+        "package": "cmd",
+        "is_public": false,
+        "calls": [],
+        "called_by": [
+          "cmd/main.go:performUpload"
+        ]
+      },
+      "cmd/main.go:main": {
+        "id": "cmd/main.go:main",
+        "file": "cmd/main.go",
+        "function": "main",
+        "signature": "main()",
+        "package": "cmd",
+        "is_public": false,
+        "calls": [],
+        "called_by": []
+      },
+      "cmd/main.go:performUpload": {
+        "id": "cmd/main.go:performUpload",
+        "file": "cmd/main.go",
+        "function": "performUpload",
+        "signature": "performUpload(sourceURL string, uploadURL string) (string, error)",
+        "package": "cmd",
+        "is_public": false,
+        "calls": [
+          "cmd/main.go:getFilename",
+          "cmd/main.go:isValidFileType",
+          "cmd/main.go:uploadFileFromReader"
+        ],
+        "called_by": [
+          "cmd/main.go:handleAPIGatewayRequest",
+          "cmd/main.go:handleAsyncUpload"
+        ]
+      },
+      "cmd/main.go:sendCallback": {
+        "id": "cmd/main.go:sendCallback",
+        "file": "cmd/main.go",
+        "function": "sendCallback",
+        "signature": "sendCallback(callbackURL string, payload CallbackPayload) error",
+        "package": "cmd",
+        "is_public": false,
+        "calls": [],
+        "called_by": [
+          "cmd/main.go:handleAsyncUpload",
+          "cmd/main.go:sendCallbackError"
+        ]
+      },
+      "cmd/main.go:sendCallbackError": {
+        "id": "cmd/main.go:sendCallbackError",
+        "file": "cmd/main.go",
+        "function": "sendCallbackError",
+        "signature": "sendCallbackError(callbackURL string, requestID string, errorMsg string)",
+        "package": "cmd",
+        "is_public": false,
+        "calls": [
+          "cmd/main.go:sendCallback"
+        ],
+        "called_by": [
+          "cmd/main.go:handleAsyncUpload"
+        ]
+      },
+      "cmd/main.go:sendErrorResponse": {
+        "id": "cmd/main.go:sendErrorResponse",
+        "file": "cmd/main.go",
+        "function": "sendErrorResponse",
+        "signature": "sendErrorResponse(statusCode int, message string) events.APIGatewayProxyResponse",
+        "package": "cmd",
+        "is_public": false,
+        "calls": [],
+        "called_by": [
+          "cmd/main.go:handler",
+          "cmd/main.go:handleAPIGatewayRequest",
+          "cmd/main.go:handleAsyncUpload"
+        ]
+      },
+      "cmd/main.go:uploadFileFromReader": {
+        "id": "cmd/main.go:uploadFileFromReader",
+        "file": "cmd/main.go",
+        "function": "uploadFileFromReader",
+        "signature": "uploadFileFromReader(uploadURL string, filename string, reader io.Reader, contentLength int64) (*http.Response, error)",
+        "package": "cmd",
+        "is_public": false,
+        "calls": [],
+        "called_by": [
+          "cmd/main.go:performUpload"
+        ]
+      }
+    },
+    "edges": [
+      {
+        "from": "cmd/main.go:handler",
+        "to": "cmd/main.go:handleAPIGatewayRequest",
+        "line": 83,
+        "call_type": "internal"
+      },
+      {
+        "from": "cmd/main.go:handler",
+        "to": "cmd/main.go:sendErrorResponse",
+        "line": 90,
+        "call_type": "internal"
+      },
+      {
+        "from": "cmd/main.go:handler",
+        "to": "cmd/main.go:handleAsyncUpload",
+        "line": 100,
+        "call_type": "internal"
+      },
+      {
+        "from": "cmd/main.go:handleAPIGatewayRequest",
+        "to": "cmd/main.go:sendErrorResponse",
+        "line": 121,
+        "call_type": "internal"
+      },
+      {
+        "from": "cmd/main.go:handleAPIGatewayRequest",
+        "to": "cmd/main.go:performUpload",
+        "line": 140,
+        "call_type": "internal"
+      },
+      {
+        "from": "cmd/main.go:handleAsyncUpload",
+        "to": "cmd/main.go:sendCallbackError",
+        "line": 166,
+        "call_type": "internal"
+      },
+      {
+        "from": "cmd/main.go:handleAsyncUpload",
+        "to": "cmd/main.go:sendErrorResponse",
+        "line": 167,
+        "call_type": "internal"
+      },
+      {
+        "from": "cmd/main.go:handleAsyncUpload",
+        "to": "cmd/main.go:performUpload",
+        "line": 176,
+        "call_type": "internal"
+      },
+      {
+        "from": "cmd/main.go:handleAsyncUpload",
+        "to": "cmd/main.go:sendCallback",
+        "line": 197,
+        "call_type": "internal"
+      },
+      {
+        "from": "cmd/main.go:performUpload",
+        "to": "cmd/main.go:getFilename",
+        "line": 222,
+        "call_type": "internal"
+      },
+      {
+        "from": "cmd/main.go:performUpload",
+        "to": "cmd/main.go:isValidFileType",
+        "line": 223,
+        "call_type": "internal"
+      },
+      {
+        "from": "cmd/main.go:performUpload",
+        "to": "cmd/main.go:uploadFileFromReader",
+        "line": 295,
+        "call_type": "internal"
+      },
+      {
+        "from": "cmd/main.go:sendCallbackError",
+        "to": "cmd/main.go:sendCallback",
+        "line": 358,
+        "call_type": "internal"
+      }
+    ]
+  },
+  "search_index": {
+    "function_names": {
+      "async": [
+        {
+          "file": "cmd/main.go",
+          "function": "handleAsyncUpload",
+          "line": 162,
+          "signature": "handleAsyncUpload(reqBody AsyncRequestBody) (events.APIGatewayProxyResponse, error)",
+          "summary": "Log message, then Call performUpload, then Validate input is not nil"
+        }
+      ],
+      "callback": [
+        {
+          "file": "cmd/main.go",
+          "function": "sendCallback",
+          "line": 315,
+          "signature": "sendCallback(callbackURL string, payload CallbackPayload) error",
+          "summary": "Encode to JSON, then Create HTTP request, then client.Do"
+        },
+        {
+          "file": "cmd/main.go",
+          "function": "sendCallbackError",
+          "line": 354,
+          "signature": "sendCallbackError(callbackURL string, requestID string, errorMsg string)",
+          "summary": "Send callback"
+        }
+      ],
+      "error": [
+        {
+          "file": "cmd/main.go",
+          "function": "sendCallbackError",
+          "line": 354,
+          "signature": "sendCallbackError(callbackURL string, requestID string, errorMsg string)",
+          "summary": "Send callback"
+        },
+        {
+          "file": "cmd/main.go",
+          "function": "sendErrorResponse",
+          "line": 416,
+          "signature": "sendErrorResponse(statusCode int, message string) events.APIGatewayProxyResponse",
+          "summary": "Encode to JSON, then Return result"
+        }
+      ],
+      "file": [
+        {
+          "file": "cmd/main.go",
+          "function": "isValidFileType",
+          "line": 376,
+          "signature": "isValidFileType(filename string) bool",
+          "summary": "Convert to lowercase, then Iterate over validExts, then Return result"
+        },
+        {
+          "file": "cmd/main.go",
+          "function": "uploadFileFromReader",
+          "line": 387,
+          "signature": "uploadFileFromReader(uploadURL string, filename string, reader io.Reader, contentLength int64) (*http.Response, error)",
+          "summary": "Create HTTP request, then Convert to lowercase, then Switch on condition"
+        }
+      ],
+      "filename": [
+        {
+          "file": "cmd/main.go",
+          "function": "getFilename",
+          "line": 365,
+          "signature": "getFilename(url string) string",
+          "summary": "filepath.Base, then Return result"
+        }
+      ],
+      "from": [
+        {
+          "file": "cmd/main.go",
+          "function": "uploadFileFromReader",
+          "line": 387,
+          "signature": "uploadFileFromReader(uploadURL string, filename string, reader io.Reader, contentLength int64) (*http.Response, error)",
+          "summary": "Create HTTP request, then Convert to lowercase, then Switch on condition"
+        }
+      ],
+      "gateway": [
+        {
+          "file": "cmd/main.go",
+          "function": "handleAPIGatewayRequest",
+          "line": 104,
+          "signature": "handleAPIGatewayRequest(request events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error)",
+          "summary": "Log message, then Call performUpload, then Encode to JSON"
+        }
+      ],
+      "get": [
+        {
+          "file": "cmd/main.go",
+          "function": "getFilename",
+          "line": 365,
+          "signature": "getFilename(url string) string",
+          "summary": "filepath.Base, then Return result"
+        }
+      ],
+      "getfilename": [
+        {
+          "file": "cmd/main.go",
+          "function": "getFilename",
+          "line": 365,
+          "signature": "getFilename(url string) string",
+          "summary": "filepath.Base, then Return result"
+        }
+      ],
+      "handle": [
+        {
+          "file": "cmd/main.go",
+          "function": "handleAPIGatewayRequest",
+          "line": 104,
+          "signature": "handleAPIGatewayRequest(request events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error)",
+          "summary": "Log message, then Call performUpload, then Encode to JSON"
+        },
+        {
+          "file": "cmd/main.go",
+          "function": "handleAsyncUpload",
+          "line": 162,
+          "signature": "handleAsyncUpload(reqBody AsyncRequestBody) (events.APIGatewayProxyResponse, error)",
+          "summary": "Log message, then Call performUpload, then Validate input is not nil"
+        }
+      ],
+      "handleapigatewayrequest": [
+        {
+          "file": "cmd/main.go",
+          "function": "handleAPIGatewayRequest",
+          "line": 104,
+          "signature": "handleAPIGatewayRequest(request events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error)",
+          "summary": "Log message, then Call performUpload, then Encode to JSON"
+        }
+      ],
+      "handleasyncupload": [
+        {
+          "file": "cmd/main.go",
+          "function": "handleAsyncUpload",
+          "line": 162,
+          "signature": "handleAsyncUpload(reqBody AsyncRequestBody) (events.APIGatewayProxyResponse, error)",
+          "summary": "Log message, then Call performUpload, then Validate input is not nil"
+        }
+      ],
+      "handler": [
+        {
+          "file": "cmd/main.go",
+          "function": "handler",
+          "line": 78,
+          "signature": "handler(ctx context.Context, event json.RawMessage) (events.APIGatewayProxyResponse, error)",
+          "summary": "Log message, then Log message, then Return result"
+        },
+        {
+          "file": "cmd/main.go",
+          "function": "handler",
+          "line": 78,
+          "signature": "handler(ctx context.Context, event json.RawMessage) (events.APIGatewayProxyResponse, error)",
+          "summary": "Log message, then Log message, then Return result"
+        }
+      ],
+      "init": [
+        {
+          "file": "cmd/main.go",
+          "function": "init",
+          "line": 34,
+          "signature": "init()",
+          "summary": "Initialize"
+        },
+        {
+          "file": "cmd/main.go",
+          "function": "init",
+          "line": 34,
+          "signature": "init()",
+          "summary": "Initialize"
+        }
+      ],
+      "isvalidfiletype": [
+        {
+          "file": "cmd/main.go",
+          "function": "isValidFileType",
+          "line": 376,
+          "signature": "isValidFileType(filename string) bool",
+          "summary": "Convert to lowercase, then Iterate over validExts, then Return result"
+        }
+      ],
+      "main": [
+        {
+          "file": "cmd/main.go",
+          "function": "main",
+          "line": 73,
+          "signature": "main()",
+          "summary": "lambda.Start"
+        },
+        {
+          "file": "cmd/main.go",
+          "function": "main",
+          "line": 73,
+          "signature": "main()",
+          "summary": "lambda.Start"
+        }
+      ],
+      "perform": [
+        {
+          "file": "cmd/main.go",
+          "function": "performUpload",
+          "line": 220,
+          "signature": "performUpload(sourceURL string, uploadURL string) (string, error)",
+          "summary": "Get filename, then OS: CreateTemp, then tmpFile.Name"
+        }
+      ],
+      "performupload": [
+        {
+          "file": "cmd/main.go",
+          "function": "performUpload",
+          "line": 220,
+          "signature": "performUpload(sourceURL string, uploadURL string) (string, error)",
+          "summary": "Get filename, then OS: CreateTemp, then tmpFile.Name"
+        }
+      ],
+      "reader": [
+        {
+          "file": "cmd/main.go",
+          "function": "uploadFileFromReader",
+          "line": 387,
+          "signature": "uploadFileFromReader(uploadURL string, filename string, reader io.Reader, contentLength int64) (*http.Response, error)",
+          "summary": "Create HTTP request, then Convert to lowercase, then Switch on condition"
+        }
+      ],
+      "request": [
+        {
+          "file": "cmd/main.go",
+          "function": "handleAPIGatewayRequest",
+          "line": 104,
+          "signature": "handleAPIGatewayRequest(request events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error)",
+          "summary": "Log message, then Call performUpload, then Encode to JSON"
+        }
+      ],
+      "response": [
+        {
+          "file": "cmd/main.go",
+          "function": "sendErrorResponse",
+          "line": 416,
+          "signature": "sendErrorResponse(statusCode int, message string) events.APIGatewayProxyResponse",
+          "summary": "Encode to JSON, then Return result"
+        }
+      ],
+      "send": [
+        {
+          "file": "cmd/main.go",
+          "function": "sendCallback",
+          "line": 315,
+          "signature": "sendCallback(callbackURL string, payload CallbackPayload) error",
+          "summary": "Encode to JSON, then Create HTTP request, then client.Do"
+        },
+        {
+          "file": "cmd/main.go",
+          "function": "sendCallbackError",
+          "line": 354,
+          "signature": "sendCallbackError(callbackURL string, requestID string, errorMsg string)",
+          "summary": "Send callback"
+        },
+        {
+          "file": "cmd/main.go",
+          "function": "sendErrorResponse",
+          "line": 416,
+          "signature": "sendErrorResponse(statusCode int, message string) events.APIGatewayProxyResponse",
+          "summary": "Encode to JSON, then Return result"
+        }
+      ],
+      "sendcallback": [
+        {
+          "file": "cmd/main.go",
+          "function": "sendCallback",
+          "line": 315,
+          "signature": "sendCallback(callbackURL string, payload CallbackPayload) error",
+          "summary": "Encode to JSON, then Create HTTP request, then client.Do"
+        }
+      ],
+      "sendcallbackerror": [
+        {
+          "file": "cmd/main.go",
+          "function": "sendCallbackError",
+          "line": 354,
+          "signature": "sendCallbackError(callbackURL string, requestID string, errorMsg string)",
+          "summary": "Send callback"
+        }
+      ],
+      "senderrorresponse": [
+        {
+          "file": "cmd/main.go",
+          "function": "sendErrorResponse",
+          "line": 416,
+          "signature": "sendErrorResponse(statusCode int, message string) events.APIGatewayProxyResponse",
+          "summary": "Encode to JSON, then Return result"
+        }
+      ],
+      "type": [
+        {
+          "file": "cmd/main.go",
+          "function": "isValidFileType",
+          "line": 376,
+          "signature": "isValidFileType(filename string) bool",
+          "summary": "Convert to lowercase, then Iterate over validExts, then Return result"
+        }
+      ],
+      "upload": [
+        {
+          "file": "cmd/main.go",
+          "function": "handleAsyncUpload",
+          "line": 162,
+          "signature": "handleAsyncUpload(reqBody AsyncRequestBody) (events.APIGatewayProxyResponse, error)",
+          "summary": "Log message, then Call performUpload, then Validate input is not nil"
+        },
+        {
+          "file": "cmd/main.go",
+          "function": "performUpload",
+          "line": 220,
+          "signature": "performUpload(sourceURL string, uploadURL string) (string, error)",
+          "summary": "Get filename, then OS: CreateTemp, then tmpFile.Name"
+        },
+        {
+          "file": "cmd/main.go",
+          "function": "uploadFileFromReader",
+          "line": 387,
+          "signature": "uploadFileFromReader(uploadURL string, filename string, reader io.Reader, contentLength int64) (*http.Response, error)",
+          "summary": "Create HTTP request, then Convert to lowercase, then Switch on condition"
+        }
+      ],
+      "uploadfilefromreader": [
+        {
+          "file": "cmd/main.go",
+          "function": "uploadFileFromReader",
+          "line": 387,
+          "signature": "uploadFileFromReader(uploadURL string, filename string, reader io.Reader, contentLength int64) (*http.Response, error)",
+          "summary": "Create HTTP request, then Convert to lowercase, then Switch on condition"
+        }
+      ],
+      "valid": [
+        {
+          "file": "cmd/main.go",
+          "function": "isValidFileType",
+          "line": 376,
+          "signature": "isValidFileType(filename string) bool",
+          "summary": "Convert to lowercase, then Iterate over validExts, then Return result"
+        }
+      ]
+    },
+    "concepts": {
+      "async": [
+        {
+          "file": "cmd/main.go",
+          "function": "AsyncRequestBody",
+          "line": 51
+        },
+        {
+          "file": "cmd/main.go",
+          "function": "",
+          "line": 0,
+          "summary": "Package main"
+        }
+      ],
+      "asyncrequestbody": [
+        {
+          "file": "cmd/main.go",
+          "function": "",
+          "line": 0,
+          "summary": "Package main"
+        }
+      ],
+      "body": [
+        {
+          "file": "cmd/main.go",
+          "function": "RequestBody",
+          "line": 45
+        },
+        {
+          "file": "cmd/main.go",
+          "function": "AsyncRequestBody",
+          "line": 51
+        }
+      ],
+      "callback": [
+        {
+          "file": "cmd/main.go",
+          "function": "CallbackPayload",
+          "line": 66
+        },
+        {
+          "file": "cmd/main.go",
+          "function": "",
+          "line": 0,
+          "summary": "Package main"
+        }
+      ],
+      "callbackpayload": [
+        {
+          "file": "cmd/main.go",
+          "function": "",
+          "line": 0,
+          "summary": "Package main"
+        }
+      ],
+      "crud": [
+        {
+          "file": "cmd/main.go",
+          "function": "getFilename",
+          "line": 365,
+          "signature": "getFilename(url string) string",
+          "summary": "filepath.Base, then Return result"
+        },
+        {
+          "file": "cmd/main.go",
+          "function": "uploadFileFromReader",
+          "line": 387,
+          "signature": "uploadFileFromReader(uploadURL string, filename string, reader io.Reader, contentLength int64) (*http.Response, error)",
+          "summary": "Create HTTP request, then Convert to lowercase, then Switch on condition"
+        }
+      ],
+      "error": [
+        {
+          "file": "cmd/main.go",
+          "function": "",
+          "line": 0,
+          "summary": "Package main"
+        }
+      ],
+      "file": [
+        {
+          "file": "cmd/main.go",
+          "function": "",
+          "line": 0,
+          "summary": "Package main"
+        }
+      ],
+      "file_io": [
+        {
+          "file": "cmd/main.go",
+          "function": "performUpload",
+          "line": 220,
+          "signature": "performUpload(sourceURL string, uploadURL string) (string, error)",
+          "summary": "Get filename, then OS: CreateTemp, then tmpFile.Name"
+        },
+        {
+          "file": "cmd/main.go",
+          "function": "getFilename",
+          "line": 365,
+          "signature": "getFilename(url string) string",
+          "summary": "filepath.Base, then Return result"
+        }
+      ],
+      "filename": [
+        {
+          "file": "cmd/main.go",
+          "function": "",
+          "line": 0,
+          "summary": "Package main"
+        }
+      ],
+      "from": [
+        {
+          "file": "cmd/main.go",
+          "function": "",
+          "line": 0,
+          "summary": "Package main"
+        }
+      ],
+      "gateway": [
+        {
+          "file": "cmd/main.go",
+          "function": "",
+          "line": 0,
+          "summary": "Package main"
+        }
+      ],
+      "get": [
+        {
+          "file": "cmd/main.go",
+          "function": "",
+          "line": 0,
+          "summary": "Package main"
+        }
+      ],
+      "get_operation": [
+        {
+          "file": "cmd/main.go",
+          "function": "getFilename",
+          "line": 365,
+          "signature": "getFilename(url string) string",
+          "summary": "filepath.Base, then Return result"
+        }
+      ],
+      "handle": [
+        {
+          "file": "cmd/main.go",
+          "function": "",
+          "line": 0,
+          "summary": "Package main"
+        }
+      ],
+      "handle_operation": [
+        {
+          "file": "cmd/main.go",
+          "function": "handler",
+          "line": 78,
+          "signature": "handler(ctx context.Context, event json.RawMessage) (events.APIGatewayProxyResponse, error)",
+          "summary": "Log message, then Log message, then Return result"
+        },
+        {
+          "file": "cmd/main.go",
+          "function": "handleAPIGatewayRequest",
+          "line": 104,
+          "signature": "handleAPIGatewayRequest(request events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error)",
+          "summary": "Log message, then Call performUpload, then Encode to JSON"
+        },
+        {
+          "file": "cmd/main.go",
+          "function": "handleAsyncUpload",
+          "line": 162,
+          "signature": "handleAsyncUpload(reqBody AsyncRequestBody) (events.APIGatewayProxyResponse, error)",
+          "summary": "Log message, then Call performUpload, then Validate input is not nil"
+        }
+      ],
+      "handler": [
+        {
+          "file": "cmd/main.go",
+          "function": "handler",
+          "line": 78,
+          "signature": "handler(ctx context.Context, event json.RawMessage) (events.APIGatewayProxyResponse, error)",
+          "summary": "Log message, then Log message, then Return result"
+        },
+        {
+          "file": "cmd/main.go",
+          "function": "handler",
+          "line": 78,
+          "signature": "handler(ctx context.Context, event json.RawMessage) (events.APIGatewayProxyResponse, error)",
+          "summary": "Log message, then Log message, then Return result"
+        },
+        {
+          "file": "cmd/main.go",
+          "function": "handleAPIGatewayRequest",
+          "line": 104,
+          "signature": "handleAPIGatewayRequest(request events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error)",
+          "summary": "Log message, then Call performUpload, then Encode to JSON"
+        },
+        {
+          "file": "cmd/main.go",
+          "function": "handleAPIGatewayRequest",
+          "line": 104,
+          "signature": "handleAPIGatewayRequest(request events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error)",
+          "summary": "Log message, then Call performUpload, then Encode to JSON"
+        },
+        {
+          "file": "cmd/main.go",
+          "function": "handleAsyncUpload",
+          "line": 162,
+          "signature": "handleAsyncUpload(reqBody AsyncRequestBody) (events.APIGatewayProxyResponse, error)",
+          "summary": "Log message, then Call performUpload, then Validate input is not nil"
+        },
+        {
+          "file": "cmd/main.go",
+          "function": "handleAsyncUpload",
+          "line": 162,
+          "signature": "handleAsyncUpload(reqBody AsyncRequestBody) (events.APIGatewayProxyResponse, error)",
+          "summary": "Log message, then Call performUpload, then Validate input is not nil"
+        },
+        {
+          "file": "cmd/main.go",
+          "function": "",
+          "line": 0,
+          "summary": "Package main"
+        }
+      ],
+      "http": [
+        {
+          "file": "cmd/main.go",
+          "function": "sendCallback",
+          "line": 315,
+          "signature": "sendCallback(callbackURL string, payload CallbackPayload) error",
+          "summary": "Encode to JSON, then Create HTTP request, then client.Do"
+        },
+        {
+          "file": "cmd/main.go",
+          "function": "uploadFileFromReader",
+          "line": 387,
+          "signature": "uploadFileFromReader(uploadURL string, filename string, reader io.Reader, contentLength int64) (*http.Response, error)",
+          "summary": "Create HTTP request, then Convert to lowercase, then Switch on condition"
+        }
+      ],
+      "http-client": [
+        {
+          "file": "cmd/main.go",
+          "function": "sendCallback",
+          "line": 315,
+          "signature": "sendCallback(callbackURL string, payload CallbackPayload) error",
+          "summary": "Encode to JSON, then Create HTTP request, then client.Do"
+        },
+        {
+          "file": "cmd/main.go",
+          "function": "uploadFileFromReader",
+          "line": 387,
+          "signature": "uploadFileFromReader(uploadURL string, filename string, reader io.Reader, contentLength int64) (*http.Response, error)",
+          "summary": "Create HTTP request, then Convert to lowercase, then Switch on condition"
+        }
+      ],
+      "init": [
+        {
+          "file": "cmd/main.go",
+          "function": "",
+          "line": 0,
+          "summary": "Package main"
+        }
+      ],
+      "initialization": [
+        {
+          "file": "cmd/main.go",
+          "function": "init",
+          "line": 34,
+          "signature": "init()",
+          "summary": "Initialize"
+        }
+      ],
+      "is_operation": [
+        {
+          "file": "cmd/main.go",
+          "function": "isValidFileType",
+          "line": 376,
+          "signature": "isValidFileType(filename string) bool",
+          "summary": "Convert to lowercase, then Iterate over validExts, then Return result"
+        }
+      ],
+      "json": [
+        {
+          "file": "cmd/main.go",
+          "function": "handleAPIGatewayRequest",
+          "line": 104,
+          "signature": "handleAPIGatewayRequest(request events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error)",
+          "summary": "Log message, then Call performUpload, then Encode to JSON"
+        },
+        {
+          "file": "cmd/main.go",
+          "function": "handleAsyncUpload",
+          "line": 162,
+          "signature": "handleAsyncUpload(reqBody AsyncRequestBody) (events.APIGatewayProxyResponse, error)",
+          "summary": "Log message, then Call performUpload, then Validate input is not nil"
+        },
+        {
+          "file": "cmd/main.go",
+          "function": "sendCallback",
+          "line": 315,
+          "signature": "sendCallback(callbackURL string, payload CallbackPayload) error",
+          "summary": "Encode to JSON, then Create HTTP request, then client.Do"
+        },
+        {
+          "file": "cmd/main.go",
+          "function": "sendErrorResponse",
+          "line": 416,
+          "signature": "sendErrorResponse(statusCode int, message string) events.APIGatewayProxyResponse",
+          "summary": "Encode to JSON, then Return result"
+        }
+      ],
+      "logging": [
+        {
+          "file": "cmd/main.go",
+          "function": "handler",
+          "line": 78,
+          "signature": "handler(ctx context.Context, event json.RawMessage) (events.APIGatewayProxyResponse, error)",
+          "summary": "Log message, then Log message, then Return result"
+        },
+        {
+          "file": "cmd/main.go",
+          "function": "handleAPIGatewayRequest",
+          "line": 104,
+          "signature": "handleAPIGatewayRequest(request events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error)",
+          "summary": "Log message, then Call performUpload, then Encode to JSON"
+        },
+        {
+          "file": "cmd/main.go",
+          "function": "handleAsyncUpload",
+          "line": 162,
+          "signature": "handleAsyncUpload(reqBody AsyncRequestBody) (events.APIGatewayProxyResponse, error)",
+          "summary": "Log message, then Call performUpload, then Validate input is not nil"
+        },
+        {
+          "file": "cmd/main.go",
+          "function": "performUpload",
+          "line": 220,
+          "signature": "performUpload(sourceURL string, uploadURL string) (string, error)",
+          "summary": "Get filename, then OS: CreateTemp, then tmpFile.Name"
+        },
+        {
+          "file": "cmd/main.go",
+          "function": "sendCallback",
+          "line": 315,
+          "signature": "sendCallback(callbackURL string, payload CallbackPayload) error",
+          "summary": "Encode to JSON, then Create HTTP request, then client.Do"
+        }
+      ],
+      "main": [
+        {
+          "file": "cmd/main.go",
+          "function": "",
+          "line": 0,
+          "summary": "Package main"
+        }
+      ],
+      "notification": [
+        {
+          "file": "cmd/main.go",
+          "function": "sendCallback",
+          "line": 315,
+          "signature": "sendCallback(callbackURL string, payload CallbackPayload) error",
+          "summary": "Encode to JSON, then Create HTTP request, then client.Do"
+        },
+        {
+          "file": "cmd/main.go",
+          "function": "sendCallbackError",
+          "line": 354,
+          "signature": "sendCallbackError(callbackURL string, requestID string, errorMsg string)",
+          "summary": "Send callback"
+        },
+        {
+          "file": "cmd/main.go",
+          "function": "sendErrorResponse",
+          "line": 416,
+          "signature": "sendErrorResponse(statusCode int, message string) events.APIGatewayProxyResponse",
+          "summary": "Encode to JSON, then Return result"
+        }
+      ],
+      "payload": [
+        {
+          "file": "cmd/main.go",
+          "function": "CallbackPayload",
+          "line": 66
+        }
+      ],
+      "perform": [
+        {
+          "file": "cmd/main.go",
+          "function": "",
+          "line": 0,
+          "summary": "Package main"
+        }
+      ],
+      "read": [
+        {
+          "file": "cmd/main.go",
+          "function": "getFilename",
+          "line": 365,
+          "signature": "getFilename(url string) string",
+          "summary": "filepath.Base, then Return result"
+        }
+      ],
+      "reader": [
+        {
+          "file": "cmd/main.go",
+          "function": "",
+          "line": 0,
+          "summary": "Package main"
+        }
+      ],
+      "readme.md": [
+        {
+          "file": "README.md",
+          "function": "",
+          "line": 0,
+          "summary": "Project documentation"
+        }
+      ],
+      "request": [
+        {
+          "file": "cmd/main.go",
+          "function": "sendCallback",
+          "line": 315,
+          "signature": "sendCallback(callbackURL string, payload CallbackPayload) error",
+          "summary": "Encode to JSON, then Create HTTP request, then client.Do"
+        },
+        {
+          "file": "cmd/main.go",
+          "function": "uploadFileFromReader",
+          "line": 387,
+          "signature": "uploadFileFromReader(uploadURL string, filename string, reader io.Reader, contentLength int64) (*http.Response, error)",
+          "summary": "Create HTTP request, then Convert to lowercase, then Switch on condition"
+        },
+        {
+          "file": "cmd/main.go",
+          "function": "RequestBody",
+          "line": 45
+        },
+        {
+          "file": "cmd/main.go",
+          "function": "AsyncRequestBody",
+          "line": 51
+        },
+        {
+          "file": "cmd/main.go",
+          "function": "",
+          "line": 0,
+          "summary": "Package main"
+        }
+      ],
+      "requestbody": [
+        {
+          "file": "cmd/main.go",
+          "function": "",
+          "line": 0,
+          "summary": "Package main"
+        }
+      ],
+      "response": [
+        {
+          "file": "cmd/main.go",
+          "function": "Response",
+          "line": 58
+        },
+        {
+          "file": "cmd/main.go",
+          "function": "",
+          "line": 0,
+          "summary": "Package main"
+        }
+      ],
+      "send": [
+        {
+          "file": "cmd/main.go",
+          "function": "",
+          "line": 0,
+          "summary": "Package main"
+        }
+      ],
+      "serialization": [
+        {
+          "file": "cmd/main.go",
+          "function": "handleAPIGatewayRequest",
+          "line": 104,
+          "signature": "handleAPIGatewayRequest(request events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error)",
+          "summary": "Log message, then Call performUpload, then Encode to JSON"
+        },
+        {
+          "file": "cmd/main.go",
+          "function": "handleAsyncUpload",
+          "line": 162,
+          "signature": "handleAsyncUpload(reqBody AsyncRequestBody) (events.APIGatewayProxyResponse, error)",
+          "summary": "Log message, then Call performUpload, then Validate input is not nil"
+        },
+        {
+          "file": "cmd/main.go",
+          "function": "sendCallback",
+          "line": 315,
+          "signature": "sendCallback(callbackURL string, payload CallbackPayload) error",
+          "summary": "Encode to JSON, then Create HTTP request, then client.Do"
+        },
+        {
+          "file": "cmd/main.go",
+          "function": "sendErrorResponse",
+          "line": 416,
+          "signature": "sendErrorResponse(statusCode int, message string) events.APIGatewayProxyResponse",
+          "summary": "Encode to JSON, then Return result"
+        }
+      ],
+      "struct": [
+        {
+          "file": "cmd/main.go",
+          "function": "RequestBody",
+          "line": 45
+        },
+        {
+          "file": "cmd/main.go",
+          "function": "AsyncRequestBody",
+          "line": 51
+        },
+        {
+          "file": "cmd/main.go",
+          "function": "Response",
+          "line": 58
+        },
+        {
+          "file": "cmd/main.go",
+          "function": "CallbackPayload",
+          "line": 66
+        }
+      ],
+      "type": [
+        {
+          "file": "cmd/main.go",
+          "function": "",
+          "line": 0,
+          "summary": "Package main"
+        }
+      ],
+      "upload": [
+        {
+          "file": "cmd/main.go",
+          "function": "",
+          "line": 0,
+          "summary": "Package main"
+        }
+      ],
+      "valid": [
+        {
+          "file": "cmd/main.go",
+          "function": "",
+          "line": 0,
+          "summary": "Package main"
+        }
+      ],
+      "validation": [
+        {
+          "file": "cmd/main.go",
+          "function": "handleAsyncUpload",
+          "line": 162,
+          "signature": "handleAsyncUpload(reqBody AsyncRequestBody) (events.APIGatewayProxyResponse, error)",
+          "summary": "Log message, then Call performUpload, then Validate input is not nil"
+        },
+        {
+          "file": "cmd/main.go",
+          "function": "performUpload",
+          "line": 220,
+          "signature": "performUpload(sourceURL string, uploadURL string) (string, error)",
+          "summary": "Get filename, then OS: CreateTemp, then tmpFile.Name"
+        },
+        {
+          "file": "cmd/main.go",
+          "function": "isValidFileType",
+          "line": 376,
+          "signature": "isValidFileType(filename string) bool",
+          "summary": "Convert to lowercase, then Iterate over validExts, then Return result"
+        },
+        {
+          "file": "cmd/main.go",
+          "function": "isValidFileType",
+          "line": 376,
+          "signature": "isValidFileType(filename string) bool",
+          "summary": "Convert to lowercase, then Iterate over validExts, then Return result"
+        }
+      ]
+    },
+    "side_effects": {
+      "file_io": [
+        {
+          "file": "cmd/main.go",
+          "function": "performUpload",
+          "line": 220,
+          "signature": "performUpload(sourceURL string, uploadURL string) (string, error)",
+          "summary": "Get filename, then OS: CreateTemp, then tmpFile.Name"
+        }
+      ],
+      "http_call": [
+        {
+          "file": "cmd/main.go",
+          "function": "sendCallback",
+          "line": 315,
+          "signature": "sendCallback(callbackURL string, payload CallbackPayload) error",
+          "summary": "Encode to JSON, then Create HTTP request, then client.Do"
+        },
+        {
+          "file": "cmd/main.go",
+          "function": "uploadFileFromReader",
+          "line": 387,
+          "signature": "uploadFileFromReader(uploadURL string, filename string, reader io.Reader, contentLength int64) (*http.Response, error)",
+          "summary": "Create HTTP request, then Convert to lowercase, then Switch on condition"
+        }
+      ],
+      "io_operation": [
+        {
+          "file": "cmd/main.go",
+          "function": "performUpload",
+          "line": 220,
+          "signature": "performUpload(sourceURL string, uploadURL string) (string, error)",
+          "summary": "Get filename, then OS: CreateTemp, then tmpFile.Name"
+        },
+        {
+          "file": "cmd/main.go",
+          "function": "sendCallback",
+          "line": 315,
+          "signature": "sendCallback(callbackURL string, payload CallbackPayload) error",
+          "summary": "Encode to JSON, then Create HTTP request, then client.Do"
+        }
+      ],
+      "logging": [
+        {
+          "file": "cmd/main.go",
+          "function": "handler",
+          "line": 78,
+          "signature": "handler(ctx context.Context, event json.RawMessage) (events.APIGatewayProxyResponse, error)",
+          "summary": "Log message, then Log message, then Return result"
+        },
+        {
+          "file": "cmd/main.go",
+          "function": "handleAPIGatewayRequest",
+          "line": 104,
+          "signature": "handleAPIGatewayRequest(request events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error)",
+          "summary": "Log message, then Call performUpload, then Encode to JSON"
+        },
+        {
+          "file": "cmd/main.go",
+          "function": "handleAsyncUpload",
+          "line": 162,
+          "signature": "handleAsyncUpload(reqBody AsyncRequestBody) (events.APIGatewayProxyResponse, error)",
+          "summary": "Log message, then Call performUpload, then Validate input is not nil"
+        },
+        {
+          "file": "cmd/main.go",
+          "function": "performUpload",
+          "line": 220,
+          "signature": "performUpload(sourceURL string, uploadURL string) (string, error)",
+          "summary": "Get filename, then OS: CreateTemp, then tmpFile.Name"
+        },
+        {
+          "file": "cmd/main.go",
+          "function": "sendCallback",
+          "line": 315,
+          "signature": "sendCallback(callbackURL string, payload CallbackPayload) error",
+          "summary": "Encode to JSON, then Create HTTP request, then client.Do"
+        }
+      ]
+    },
+    "type_usage": {
+      "asyncrequestbody": [
+        {
+          "file": "cmd/main.go",
+          "function": "handleAsyncUpload",
+          "line": 162,
+          "signature": "handleAsyncUpload(reqBody AsyncRequestBody) (events.APIGatewayProxyResponse, error)",
+          "summary": "Log message, then Call performUpload, then Validate input is not nil"
+        },
+        {
+          "file": "cmd/main.go",
+          "function": "AsyncRequestBody",
+          "line": 51
+        }
+      ],
+      "bool": [
+        {
+          "file": "cmd/main.go",
+          "function": "isValidFileType",
+          "line": 376,
+          "signature": "isValidFileType(filename string) bool",
+          "summary": "Convert to lowercase, then Iterate over validExts, then Return result"
+        }
+      ],
+      "bytes": [
+        {
+          "file": "cmd/main.go",
+          "function": "sendCallback",
+          "line": 315,
+          "signature": "sendCallback(callbackURL string, payload CallbackPayload) error",
+          "summary": "Encode to JSON, then Create HTTP request, then client.Do"
+        }
+      ],
+      "callbackpayload": [
+        {
+          "file": "cmd/main.go",
+          "function": "sendCallback",
+          "line": 315,
+          "signature": "sendCallback(callbackURL string, payload CallbackPayload) error",
+          "summary": "Encode to JSON, then Create HTTP request, then client.Do"
+        },
+        {
+          "file": "cmd/main.go",
+          "function": "CallbackPayload",
+          "line": 66
+        }
+      ],
+      "context.context": [
+        {
+          "file": "cmd/main.go",
+          "function": "handler",
+          "line": 78,
+          "signature": "handler(ctx context.Context, event json.RawMessage) (events.APIGatewayProxyResponse, error)",
+          "summary": "Log message, then Log message, then Return result"
+        }
+      ],
+      "encoding/json": [
+        {
+          "file": "cmd/main.go",
+          "function": "handler",
+          "line": 78,
+          "signature": "handler(ctx context.Context, event json.RawMessage) (events.APIGatewayProxyResponse, error)",
+          "summary": "Log message, then Log message, then Return result"
+        },
+        {
+          "file": "cmd/main.go",
+          "function": "handleAPIGatewayRequest",
+          "line": 104,
+          "signature": "handleAPIGatewayRequest(request events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error)",
+          "summary": "Log message, then Call performUpload, then Encode to JSON"
+        },
+        {
+          "file": "cmd/main.go",
+          "function": "handleAsyncUpload",
+          "line": 162,
+          "signature": "handleAsyncUpload(reqBody AsyncRequestBody) (events.APIGatewayProxyResponse, error)",
+          "summary": "Log message, then Call performUpload, then Validate input is not nil"
+        },
+        {
+          "file": "cmd/main.go",
+          "function": "sendCallback",
+          "line": 315,
+          "signature": "sendCallback(callbackURL string, payload CallbackPayload) error",
+          "summary": "Encode to JSON, then Create HTTP request, then client.Do"
+        },
+        {
+          "file": "cmd/main.go",
+          "function": "sendErrorResponse",
+          "line": 416,
+          "signature": "sendErrorResponse(statusCode int, message string) events.APIGatewayProxyResponse",
+          "summary": "Encode to JSON, then Return result"
+        }
+      ],
+      "error": [
+        {
+          "file": "cmd/main.go",
+          "function": "handler",
+          "line": 78,
+          "signature": "handler(ctx context.Context, event json.RawMessage) (events.APIGatewayProxyResponse, error)",
+          "summary": "Log message, then Log message, then Return result"
+        },
+        {
+          "file": "cmd/main.go",
+          "function": "handleAPIGatewayRequest",
+          "line": 104,
+          "signature": "handleAPIGatewayRequest(request events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error)",
+          "summary": "Log message, then Call performUpload, then Encode to JSON"
+        },
+        {
+          "file": "cmd/main.go",
+          "function": "handleAsyncUpload",
+          "line": 162,
+          "signature": "handleAsyncUpload(reqBody AsyncRequestBody) (events.APIGatewayProxyResponse, error)",
+          "summary": "Log message, then Call performUpload, then Validate input is not nil"
+        },
+        {
+          "file": "cmd/main.go",
+          "function": "performUpload",
+          "line": 220,
+          "signature": "performUpload(sourceURL string, uploadURL string) (string, error)",
+          "summary": "Get filename, then OS: CreateTemp, then tmpFile.Name"
+        },
+        {
+          "file": "cmd/main.go",
+          "function": "sendCallback",
+          "line": 315,
+          "signature": "sendCallback(callbackURL string, payload CallbackPayload) error",
+          "summary": "Encode to JSON, then Create HTTP request, then client.Do"
+        },
+        {
+          "file": "cmd/main.go",
+          "function": "uploadFileFromReader",
+          "line": 387,
+          "signature": "uploadFileFromReader(uploadURL string, filename string, reader io.Reader, contentLength int64) (*http.Response, error)",
+          "summary": "Create HTTP request, then Convert to lowercase, then Switch on condition"
+        }
+      ],
+      "events.apigatewayproxyrequest": [
+        {
+          "file": "cmd/main.go",
+          "function": "handleAPIGatewayRequest",
+          "line": 104,
+          "signature": "handleAPIGatewayRequest(request events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error)",
+          "summary": "Log message, then Call performUpload, then Encode to JSON"
+        }
+      ],
+      "events.apigatewayproxyresponse": [
+        {
+          "file": "cmd/main.go",
+          "function": "handler",
+          "line": 78,
+          "signature": "handler(ctx context.Context, event json.RawMessage) (events.APIGatewayProxyResponse, error)",
+          "summary": "Log message, then Log message, then Return result"
+        },
+        {
+          "file": "cmd/main.go",
+          "function": "handleAPIGatewayRequest",
+          "line": 104,
+          "signature": "handleAPIGatewayRequest(request events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error)",
+          "summary": "Log message, then Call performUpload, then Encode to JSON"
+        },
+        {
+          "file": "cmd/main.go",
+          "function": "handleAsyncUpload",
+          "line": 162,
+          "signature": "handleAsyncUpload(reqBody AsyncRequestBody) (events.APIGatewayProxyResponse, error)",
+          "summary": "Log message, then Call performUpload, then Validate input is not nil"
+        },
+        {
+          "file": "cmd/main.go",
+          "function": "sendErrorResponse",
+          "line": 416,
+          "signature": "sendErrorResponse(statusCode int, message string) events.APIGatewayProxyResponse",
+          "summary": "Encode to JSON, then Return result"
+        }
+      ],
+      "fmt": [
+        {
+          "file": "cmd/main.go",
+          "function": "handler",
+          "line": 78,
+          "signature": "handler(ctx context.Context, event json.RawMessage) (events.APIGatewayProxyResponse, error)",
+          "summary": "Log message, then Log message, then Return result"
+        },
+        {
+          "file": "cmd/main.go",
+          "function": "handleAPIGatewayRequest",
+          "line": 104,
+          "signature": "handleAPIGatewayRequest(request events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error)",
+          "summary": "Log message, then Call performUpload, then Encode to JSON"
+        },
+        {
+          "file": "cmd/main.go",
+          "function": "performUpload",
+          "line": 220,
+          "signature": "performUpload(sourceURL string, uploadURL string) (string, error)",
+          "summary": "Get filename, then OS: CreateTemp, then tmpFile.Name"
+        },
+        {
+          "file": "cmd/main.go",
+          "function": "sendCallback",
+          "line": 315,
+          "signature": "sendCallback(callbackURL string, payload CallbackPayload) error",
+          "summary": "Encode to JSON, then Create HTTP request, then client.Do"
+        }
+      ],
+      "github.com/aws/aws-lambda-go/events": [
+        {
+          "file": "cmd/main.go",
+          "function": "handler",
+          "line": 78,
+          "signature": "handler(ctx context.Context, event json.RawMessage) (events.APIGatewayProxyResponse, error)",
+          "summary": "Log message, then Log message, then Return result"
+        },
+        {
+          "file": "cmd/main.go",
+          "function": "handleAPIGatewayRequest",
+          "line": 104,
+          "signature": "handleAPIGatewayRequest(request events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error)",
+          "summary": "Log message, then Call performUpload, then Encode to JSON"
+        },
+        {
+          "file": "cmd/main.go",
+          "function": "handleAsyncUpload",
+          "line": 162,
+          "signature": "handleAsyncUpload(reqBody AsyncRequestBody) (events.APIGatewayProxyResponse, error)",
+          "summary": "Log message, then Call performUpload, then Validate input is not nil"
+        },
+        {
+          "file": "cmd/main.go",
+          "function": "sendErrorResponse",
+          "line": 416,
+          "signature": "sendErrorResponse(statusCode int, message string) events.APIGatewayProxyResponse",
+          "summary": "Encode to JSON, then Return result"
+        }
+      ],
+      "github.com/aws/aws-lambda-go/lambda": [
+        {
+          "file": "cmd/main.go",
+          "function": "main",
+          "line": 73,
+          "signature": "main()",
+          "summary": "lambda.Start"
+        }
+      ],
+      "http.response": [
+        {
+          "file": "cmd/main.go",
+          "function": "uploadFileFromReader",
+          "line": 387,
+          "signature": "uploadFileFromReader(uploadURL string, filename string, reader io.Reader, contentLength int64) (*http.Response, error)",
+          "summary": "Create HTTP request, then Convert to lowercase, then Switch on condition"
+        }
+      ],
+      "int": [
+        {
+          "file": "cmd/main.go",
+          "function": "sendErrorResponse",
+          "line": 416,
+          "signature": "sendErrorResponse(statusCode int, message string) events.APIGatewayProxyResponse",
+          "summary": "Encode to JSON, then Return result"
+        },
+        {
+          "file": "cmd/main.go",
+          "function": "Response",
+          "line": 58
+        }
+      ],
+      "int64": [
+        {
+          "file": "cmd/main.go",
+          "function": "uploadFileFromReader",
+          "line": 387,
+          "signature": "uploadFileFromReader(uploadURL string, filename string, reader io.Reader, contentLength int64) (*http.Response, error)",
+          "summary": "Create HTTP request, then Convert to lowercase, then Switch on condition"
+        }
+      ],
+      "io": [
+        {
+          "file": "cmd/main.go",
+          "function": "performUpload",
+          "line": 220,
+          "signature": "performUpload(sourceURL string, uploadURL string) (string, error)",
+          "summary": "Get filename, then OS: CreateTemp, then tmpFile.Name"
+        },
+        {
+          "file": "cmd/main.go",
+          "function": "sendCallback",
+          "line": 315,
+          "signature": "sendCallback(callbackURL string, payload CallbackPayload) error",
+          "summary": "Encode to JSON, then Create HTTP request, then client.Do"
+        }
+      ],
+      "io.reader": [
+        {
+          "file": "cmd/main.go",
+          "function": "uploadFileFromReader",
+          "line": 387,
+          "signature": "uploadFileFromReader(uploadURL string, filename string, reader io.Reader, contentLength int64) (*http.Response, error)",
+          "summary": "Create HTTP request, then Convert to lowercase, then Switch on condition"
+        }
+      ],
+      "json.rawmessage": [
+        {
+          "file": "cmd/main.go",
+          "function": "handler",
+          "line": 78,
+          "signature": "handler(ctx context.Context, event json.RawMessage) (events.APIGatewayProxyResponse, error)",
+          "summary": "Log message, then Log message, then Return result"
+        }
+      ],
+      "log": [
+        {
+          "file": "cmd/main.go",
+          "function": "handler",
+          "line": 78,
+          "signature": "handler(ctx context.Context, event json.RawMessage) (events.APIGatewayProxyResponse, error)",
+          "summary": "Log message, then Log message, then Return result"
+        },
+        {
+          "file": "cmd/main.go",
+          "function": "handleAPIGatewayRequest",
+          "line": 104,
+          "signature": "handleAPIGatewayRequest(request events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error)",
+          "summary": "Log message, then Call performUpload, then Encode to JSON"
+        },
+        {
+          "file": "cmd/main.go",
+          "function": "handleAsyncUpload",
+          "line": 162,
+          "signature": "handleAsyncUpload(reqBody AsyncRequestBody) (events.APIGatewayProxyResponse, error)",
+          "summary": "Log message, then Call performUpload, then Validate input is not nil"
+        },
+        {
+          "file": "cmd/main.go",
+          "function": "performUpload",
+          "line": 220,
+          "signature": "performUpload(sourceURL string, uploadURL string) (string, error)",
+          "summary": "Get filename, then OS: CreateTemp, then tmpFile.Name"
+        },
+        {
+          "file": "cmd/main.go",
+          "function": "sendCallback",
+          "line": 315,
+          "signature": "sendCallback(callbackURL string, payload CallbackPayload) error",
+          "summary": "Encode to JSON, then Create HTTP request, then client.Do"
+        }
+      ],
+      "net/http": [
+        {
+          "file": "cmd/main.go",
+          "function": "performUpload",
+          "line": 220,
+          "signature": "performUpload(sourceURL string, uploadURL string) (string, error)",
+          "summary": "Get filename, then OS: CreateTemp, then tmpFile.Name"
+        },
+        {
+          "file": "cmd/main.go",
+          "function": "sendCallback",
+          "line": 315,
+          "signature": "sendCallback(callbackURL string, payload CallbackPayload) error",
+          "summary": "Encode to JSON, then Create HTTP request, then client.Do"
+        },
+        {
+          "file": "cmd/main.go",
+          "function": "uploadFileFromReader",
+          "line": 387,
+          "signature": "uploadFileFromReader(uploadURL string, filename string, reader io.Reader, contentLength int64) (*http.Response, error)",
+          "summary": "Create HTTP request, then Convert to lowercase, then Switch on condition"
+        }
+      ],
+      "os": [
+        {
+          "file": "cmd/main.go",
+          "function": "init",
+          "line": 34,
+          "signature": "init()",
+          "summary": "Initialize"
+        },
+        {
+          "file": "cmd/main.go",
+          "function": "performUpload",
+          "line": 220,
+          "signature": "performUpload(sourceURL string, uploadURL string) (string, error)",
+          "summary": "Get filename, then OS: CreateTemp, then tmpFile.Name"
+        }
+      ],
+      "path/filepath": [
+        {
+          "file": "cmd/main.go",
+          "function": "getFilename",
+          "line": 365,
+          "signature": "getFilename(url string) string",
+          "summary": "filepath.Base, then Return result"
+        },
+        {
+          "file": "cmd/main.go",
+          "function": "isValidFileType",
+          "line": 376,
+          "signature": "isValidFileType(filename string) bool",
+          "summary": "Convert to lowercase, then Iterate over validExts, then Return result"
+        },
+        {
+          "file": "cmd/main.go",
+          "function": "uploadFileFromReader",
+          "line": 387,
+          "signature": "uploadFileFromReader(uploadURL string, filename string, reader io.Reader, contentLength int64) (*http.Response, error)",
+          "summary": "Create HTTP request, then Convert to lowercase, then Switch on condition"
+        }
+      ],
+      "requestbody": [
+        {
+          "file": "cmd/main.go",
+          "function": "RequestBody",
+          "line": 45
+        }
+      ],
+      "response": [
+        {
+          "file": "cmd/main.go",
+          "function": "Response",
+          "line": 58
+        }
+      ],
+      "string": [
+        {
+          "file": "cmd/main.go",
+          "function": "performUpload",
+          "line": 220,
+          "signature": "performUpload(sourceURL string, uploadURL string) (string, error)",
+          "summary": "Get filename, then OS: CreateTemp, then tmpFile.Name"
+        },
+        {
+          "file": "cmd/main.go",
+          "function": "performUpload",
+          "line": 220,
+          "signature": "performUpload(sourceURL string, uploadURL string) (string, error)",
+          "summary": "Get filename, then OS: CreateTemp, then tmpFile.Name"
+        },
+        {
+          "file": "cmd/main.go",
+          "function": "performUpload",
+          "line": 220,
+          "signature": "performUpload(sourceURL string, uploadURL string) (string, error)",
+          "summary": "Get filename, then OS: CreateTemp, then tmpFile.Name"
+        },
+        {
+          "file": "cmd/main.go",
+          "function": "sendCallback",
+          "line": 315,
+          "signature": "sendCallback(callbackURL string, payload CallbackPayload) error",
+          "summary": "Encode to JSON, then Create HTTP request, then client.Do"
+        },
+        {
+          "file": "cmd/main.go",
+          "function": "sendCallbackError",
+          "line": 354,
+          "signature": "sendCallbackError(callbackURL string, requestID string, errorMsg string)",
+          "summary": "Send callback"
+        },
+        {
+          "file": "cmd/main.go",
+          "function": "sendCallbackError",
+          "line": 354,
+          "signature": "sendCallbackError(callbackURL string, requestID string, errorMsg string)",
+          "summary": "Send callback"
+        },
+        {
+          "file": "cmd/main.go",
+          "function": "sendCallbackError",
+          "line": 354,
+          "signature": "sendCallbackError(callbackURL string, requestID string, errorMsg string)",
+          "summary": "Send callback"
+        },
+        {
+          "file": "cmd/main.go",
+          "function": "getFilename",
+          "line": 365,
+          "signature": "getFilename(url string) string",
+          "summary": "filepath.Base, then Return result"
+        },
+        {
+          "file": "cmd/main.go",
+          "function": "getFilename",
+          "line": 365,
+          "signature": "getFilename(url string) string",
+          "summary": "filepath.Base, then Return result"
+        },
+        {
+          "file": "cmd/main.go",
+          "function": "isValidFileType",
+          "line": 376,
+          "signature": "isValidFileType(filename string) bool",
+          "summary": "Convert to lowercase, then Iterate over validExts, then Return result"
+        },
+        {
+          "file": "cmd/main.go",
+          "function": "uploadFileFromReader",
+          "line": 387,
+          "signature": "uploadFileFromReader(uploadURL string, filename string, reader io.Reader, contentLength int64) (*http.Response, error)",
+          "summary": "Create HTTP request, then Convert to lowercase, then Switch on condition"
+        },
+        {
+          "file": "cmd/main.go",
+          "function": "uploadFileFromReader",
+          "line": 387,
+          "signature": "uploadFileFromReader(uploadURL string, filename string, reader io.Reader, contentLength int64) (*http.Response, error)",
+          "summary": "Create HTTP request, then Convert to lowercase, then Switch on condition"
+        },
+        {
+          "file": "cmd/main.go",
+          "function": "sendErrorResponse",
+          "line": 416,
+          "signature": "sendErrorResponse(statusCode int, message string) events.APIGatewayProxyResponse",
+          "summary": "Encode to JSON, then Return result"
+        },
+        {
+          "file": "cmd/main.go",
+          "function": "RequestBody",
+          "line": 45
+        },
+        {
+          "file": "cmd/main.go",
+          "function": "RequestBody",
+          "line": 45
+        },
+        {
+          "file": "cmd/main.go",
+          "function": "AsyncRequestBody",
+          "line": 51
+        },
+        {
+          "file": "cmd/main.go",
+          "function": "AsyncRequestBody",
+          "line": 51
+        },
+        {
+          "file": "cmd/main.go",
+          "function": "AsyncRequestBody",
+          "line": 51
+        },
+        {
+          "file": "cmd/main.go",
+          "function": "AsyncRequestBody",
+          "line": 51
+        },
+        {
+          "file": "cmd/main.go",
+          "function": "Response",
+          "line": 58
+        },
+        {
+          "file": "cmd/main.go",
+          "function": "Response",
+          "line": 58
+        },
+        {
+          "file": "cmd/main.go",
+          "function": "Response",
+          "line": 58
+        },
+        {
+          "file": "cmd/main.go",
+          "function": "CallbackPayload",
+          "line": 66
+        },
+        {
+          "file": "cmd/main.go",
+          "function": "CallbackPayload",
+          "line": 66
+        },
+        {
+          "file": "cmd/main.go",
+          "function": "CallbackPayload",
+          "line": 66
+        },
+        {
+          "file": "cmd/main.go",
+          "function": "CallbackPayload",
+          "line": 66
+        }
+      ],
+      "strings": [
+        {
+          "file": "cmd/main.go",
+          "function": "performUpload",
+          "line": 220,
+          "signature": "performUpload(sourceURL string, uploadURL string) (string, error)",
+          "summary": "Get filename, then OS: CreateTemp, then tmpFile.Name"
+        },
+        {
+          "file": "cmd/main.go",
+          "function": "getFilename",
+          "line": 365,
+          "signature": "getFilename(url string) string",
+          "summary": "filepath.Base, then Return result"
+        },
+        {
+          "file": "cmd/main.go",
+          "function": "isValidFileType",
+          "line": 376,
+          "signature": "isValidFileType(filename string) bool",
+          "summary": "Convert to lowercase, then Iterate over validExts, then Return result"
+        },
+        {
+          "file": "cmd/main.go",
+          "function": "uploadFileFromReader",
+          "line": 387,
+          "signature": "uploadFileFromReader(uploadURL string, filename string, reader io.Reader, contentLength int64) (*http.Response, error)",
+          "summary": "Create HTTP request, then Convert to lowercase, then Switch on condition"
+        }
+      ]
+    },
+    "error_types": {
+      "formatted_error": [
+        {
+          "file": "cmd/main.go",
+          "function": "performUpload",
+          "line": 220,
+          "signature": "performUpload(sourceURL string, uploadURL string) (string, error)",
+          "summary": "Get filename, then OS: CreateTemp, then tmpFile.Name"
+        },
+        {
+          "file": "cmd/main.go",
+          "function": "sendCallback",
+          "line": 315,
+          "signature": "sendCallback(callbackURL string, payload CallbackPayload) error",
+          "summary": "Encode to JSON, then Create HTTP request, then client.Do"
+        }
+      ],
+      "propagated_error": [
+        {
+          "file": "cmd/main.go",
+          "function": "uploadFileFromReader",
+          "line": 387,
+          "signature": "uploadFileFromReader(uploadURL string, filename string, reader io.Reader, contentLength int64) (*http.Response, error)",
+          "summary": "Create HTTP request, then Convert to lowercase, then Switch on condition"
+        }
+      ]
+    },
+    "routes": {},
+    "packages": {
+      "cmd": [
+        "cmd/main.go"
+      ]
+    }
   }
 }

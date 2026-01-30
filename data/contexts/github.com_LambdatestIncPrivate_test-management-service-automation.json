@@ -1,9 +1,9 @@
 {
   "id": "github.com/LambdatestIncPrivate/test-management-service-automation",
-  "url": "https://github.com/LambdatestIncPrivate/test-management-service-automation.git",
+  "url": "https://github.com/LambdatestIncPrivate/test-management-service-automation",
   "branch": "prod",
   "commit_hash": "744cc98fdaf8f2bb1a69173e42421723876b6aba",
-  "analyzed_at": "2026-01-28T20:12:40.098996171Z",
+  "analyzed_at": "2026-01-30T16:19:49.296314885Z",
   "files": {
     ".editorconfig": {
       "path": ".editorconfig",
@@ -18,7 +18,7 @@
       "functions": null,
       "constants": null,
       "concepts": [],
-      "analyzed_at": "2026-01-28T20:12:40.099057421Z"
+      "analyzed_at": "2026-01-30T16:19:49.296424343Z"
     },
     ".eslintrc.js": {
       "path": ".eslintrc.js",
@@ -33,7 +33,7 @@
       "functions": null,
       "constants": null,
       "concepts": [],
-      "analyzed_at": "2026-01-28T20:12:40.099070921Z"
+      "analyzed_at": "2026-01-30T16:19:49.29646126Z"
     },
     ".prettierrc": {
       "path": ".prettierrc",
@@ -48,7 +48,7 @@
       "functions": null,
       "constants": null,
       "concepts": [],
-      "analyzed_at": "2026-01-28T20:12:40.099083838Z"
+      "analyzed_at": "2026-01-30T16:19:49.29649276Z"
     },
     ".sailsrc": {
       "path": ".sailsrc",
@@ -63,7 +63,7 @@
       "functions": null,
       "constants": null,
       "concepts": [],
-      "analyzed_at": "2026-01-28T20:12:40.099092921Z"
+      "analyzed_at": "2026-01-30T16:19:49.296530968Z"
     },
     "Dockerfile": {
       "path": "Dockerfile",
@@ -80,7 +80,7 @@
       "concepts": [
         "dockerfile"
       ],
-      "analyzed_at": "2026-01-28T20:12:40.099104754Z"
+      "analyzed_at": "2026-01-30T16:19:49.296570927Z"
     },
     "Dockerfile_dev": {
       "path": "Dockerfile_dev",
@@ -97,7 +97,7 @@
       "concepts": [
         "dockerfile_dev"
       ],
-      "analyzed_at": "2026-01-28T20:12:40.099116671Z"
+      "analyzed_at": "2026-01-30T16:19:49.296639885Z"
     },
     "README.md": {
       "path": "README.md",
@@ -114,7 +114,7 @@
       "concepts": [
         "readme.md"
       ],
-      "analyzed_at": "2026-01-28T20:12:40.099128338Z"
+      "analyzed_at": "2026-01-30T16:19:49.296667968Z"
     },
     "__tests__/__mocks__/testDetails.js": {
       "path": "__tests__/__mocks__/testDetails.js",
@@ -131,7 +131,7 @@
       "concepts": [
         "testdetails.js"
       ],
-      "analyzed_at": "2026-01-28T20:12:40.099156421Z"
+      "analyzed_at": "2026-01-30T16:19:49.296720343Z"
     },
     "__tests__/__mocks__/userInfo.js": {
       "path": "__tests__/__mocks__/userInfo.js",
@@ -148,7 +148,7 @@
       "concepts": [
         "userinfo.js"
       ],
-      "analyzed_at": "2026-01-28T20:12:40.099166588Z"
+      "analyzed_at": "2026-01-30T16:19:49.296754302Z"
     },
     "__tests__/api/controllers/analytics/build.test.js": {
       "path": "__tests__/api/controllers/analytics/build.test.js",
@@ -163,7 +163,7 @@
       "functions": null,
       "constants": null,
       "concepts": [],
-      "analyzed_at": "2026-01-28T20:12:40.099200213Z"
+      "analyzed_at": "2026-01-30T16:19:49.297044177Z"
     },
     "__tests__/api/controllers/exposed-apis/geolocation.test.js": {
       "path": "__tests__/api/controllers/exposed-apis/geolocation.test.js",
@@ -178,7 +178,7 @@
       "functions": null,
       "constants": null,
       "concepts": [],
-      "analyzed_at": "2026-01-28T20:12:40.099217254Z"
+      "analyzed_at": "2026-01-30T16:19:49.297163468Z"
     },
     "__tests__/api/controllers/test/concurrency.test.js": {
       "path": "__tests__/api/controllers/test/concurrency.test.js",
@@ -193,7 +193,7 @@
       "functions": null,
       "constants": null,
       "concepts": [],
-      "analyzed_at": "2026-01-28T20:12:40.099243838Z"
+      "analyzed_at": "2026-01-30T16:19:49.297230093Z"
     },
     "__tests__/api/controllers/test/get.test.js": {
       "path": "__tests__/api/controllers/test/get.test.js",
@@ -208,7 +208,7 @@
       "functions": null,
       "constants": null,
       "concepts": [],
-      "analyzed_at": "2026-01-28T20:12:40.099257838Z"
+      "analyzed_at": "2026-01-30T16:19:49.297305552Z"
     },
     "__tests__/api/controllers/test/update.test.js": {
       "path": "__tests__/api/controllers/test/update.test.js",
@@ -223,7 +223,7 @@
       "functions": null,
       "constants": null,
       "concepts": [],
-      "analyzed_at": "2026-01-28T20:12:40.099270713Z"
+      "analyzed_at": "2026-01-30T16:19:49.297392885Z"
     },
     "__tests__/api/controllers/v2/analytics/concurrency.test.js": {
       "path": "__tests__/api/controllers/v2/analytics/concurrency.test.js",
@@ -238,7 +238,7 @@
       "functions": null,
       "constants": null,
       "concepts": [],
-      "analyzed_at": "2026-01-28T20:12:40.099296004Z"
+      "analyzed_at": "2026-01-30T16:19:49.29746551Z"
     },
     "__tests__/api/controllers/v2/test/org-details.test.js": {
       "path": "__tests__/api/controllers/v2/test/org-details.test.js",
@@ -253,7 +253,7 @@
       "functions": null,
       "constants": null,
       "concepts": [],
-      "analyzed_at": "2026-01-28T20:12:40.099316088Z"
+      "analyzed_at": "2026-01-30T16:19:49.297522218Z"
     },
     "__tests__/api/controllers/v2/test/update.test.js": {
       "path": "__tests__/api/controllers/v2/test/update.test.js",
@@ -268,7 +268,7 @@
       "functions": null,
       "constants": null,
       "concepts": [],
-      "analyzed_at": "2026-01-28T20:12:40.099327796Z"
+      "analyzed_at": "2026-01-30T16:19:49.297569927Z"
     },
     "__tests__/api/services/httphandler.test.js": {
       "path": "__tests__/api/services/httphandler.test.js",
@@ -283,7 +283,7 @@
       "functions": null,
       "constants": null,
       "concepts": [],
-      "analyzed_at": "2026-01-28T20:12:40.099345338Z"
+      "analyzed_at": "2026-01-30T16:19:49.297609427Z"
     },
     "__tests__/api/services/utils.test.js": {
       "path": "__tests__/api/services/utils.test.js",
@@ -298,7 +298,7 @@
       "functions": null,
       "constants": null,
       "concepts": [],
-      "analyzed_at": "2026-01-28T20:12:40.099355629Z"
+      "analyzed_at": "2026-01-30T16:19:49.297655177Z"
     },
     "api/controllers/analytics/build.js": {
       "path": "api/controllers/analytics/build.js",
@@ -313,7 +313,7 @@
       "functions": null,
       "constants": null,
       "concepts": [],
-      "analyzed_at": "2026-01-28T20:12:40.099399421Z"
+      "analyzed_at": "2026-01-30T16:19:49.29774301Z"
     },
     "api/controllers/analytics/concurrency.js": {
       "path": "api/controllers/analytics/concurrency.js",
@@ -328,7 +328,7 @@
       "functions": null,
       "constants": null,
       "concepts": [],
-      "analyzed_at": "2026-01-28T20:12:40.099418379Z"
+      "analyzed_at": "2026-01-30T16:19:49.297795218Z"
     },
     "api/controllers/analytics/stats.js": {
       "path": "api/controllers/analytics/stats.js",
@@ -343,7 +343,7 @@
       "functions": null,
       "constants": null,
       "concepts": [],
-      "analyzed_at": "2026-01-28T20:12:40.099442963Z"
+      "analyzed_at": "2026-01-30T16:19:49.297852593Z"
     },
     "api/controllers/analytics/test.js": {
       "path": "api/controllers/analytics/test.js",
@@ -358,7 +358,7 @@
       "functions": null,
       "constants": null,
       "concepts": [],
-      "analyzed_at": "2026-01-28T20:12:40.099459588Z"
+      "analyzed_at": "2026-01-30T16:19:49.297904552Z"
     },
     "api/controllers/analytics/v2/concurrency.js": {
       "path": "api/controllers/analytics/v2/concurrency.js",
@@ -373,7 +373,7 @@
       "functions": null,
       "constants": null,
       "concepts": [],
-      "analyzed_at": "2026-01-28T20:12:40.099486213Z"
+      "analyzed_at": "2026-01-30T16:19:49.297974052Z"
     },
     "api/controllers/app/config.js": {
       "path": "api/controllers/app/config.js",
@@ -388,7 +388,7 @@
       "functions": null,
       "constants": null,
       "concepts": [],
-      "analyzed_at": "2026-01-28T20:12:40.099504588Z"
+      "analyzed_at": "2026-01-30T16:19:49.298046635Z"
     },
     "api/controllers/app/middleware/authorisation.js": {
       "path": "api/controllers/app/middleware/authorisation.js",
@@ -403,7 +403,7 @@
       "functions": null,
       "constants": null,
       "concepts": [],
-      "analyzed_at": "2026-01-28T20:12:40.099522254Z"
+      "analyzed_at": "2026-01-30T16:19:49.298098427Z"
     },
     "api/controllers/app/update-config.js": {
       "path": "api/controllers/app/update-config.js",
@@ -418,7 +418,7 @@
       "functions": null,
       "constants": null,
       "concepts": [],
-      "analyzed_at": "2026-01-28T20:12:40.099534463Z"
+      "analyzed_at": "2026-01-30T16:19:49.298134302Z"
     },
     "api/controllers/browsers/add-browser.js": {
       "path": "api/controllers/browsers/add-browser.js",
@@ -433,7 +433,7 @@
       "functions": null,
       "constants": null,
       "concepts": [],
-      "analyzed_at": "2026-01-28T20:12:40.099561546Z"
+      "analyzed_at": "2026-01-30T16:19:49.298204968Z"
     },
     "api/controllers/browsers/latest-browsers.js": {
       "path": "api/controllers/browsers/latest-browsers.js",
@@ -448,7 +448,7 @@
       "functions": null,
       "constants": null,
       "concepts": [],
-      "analyzed_at": "2026-01-28T20:12:40.099574004Z"
+      "analyzed_at": "2026-01-30T16:19:49.298297802Z"
     },
     "api/controllers/browsers/latest-selenium-versions.js": {
       "path": "api/controllers/browsers/latest-selenium-versions.js",
@@ -463,7 +463,7 @@
       "functions": null,
       "constants": null,
       "concepts": [],
-      "analyzed_at": "2026-01-28T20:12:40.099587171Z"
+      "analyzed_at": "2026-01-30T16:19:49.298335718Z"
     },
     "api/controllers/browsers/selenium.js": {
       "path": "api/controllers/browsers/selenium.js",
@@ -478,7 +478,7 @@
       "functions": null,
       "constants": null,
       "concepts": [],
-      "analyzed_at": "2026-01-28T20:12:40.099600379Z"
+      "analyzed_at": "2026-01-30T16:19:49.298521802Z"
     },
     "api/controllers/browsers/update-browser.js": {
       "path": "api/controllers/browsers/update-browser.js",
@@ -493,7 +493,7 @@
       "functions": null,
       "constants": null,
       "concepts": [],
-      "analyzed_at": "2026-01-28T20:12:40.099616254Z"
+      "analyzed_at": "2026-01-30T16:19:49.298556927Z"
     },
     "api/controllers/build/bulk-delete.js": {
       "path": "api/controllers/build/bulk-delete.js",
@@ -508,7 +508,7 @@
       "functions": null,
       "constants": null,
       "concepts": [],
-      "analyzed_at": "2026-01-28T20:12:40.099639129Z"
+      "analyzed_at": "2026-01-30T16:19:49.29861226Z"
     },
     "api/controllers/build/delete.js": {
       "path": "api/controllers/build/delete.js",
@@ -523,7 +523,7 @@
       "functions": null,
       "constants": null,
       "concepts": [],
-      "analyzed_at": "2026-01-28T20:12:40.099655629Z"
+      "analyzed_at": "2026-01-30T16:19:49.298651927Z"
     },
     "api/controllers/build/search.js": {
       "path": "api/controllers/build/search.js",
@@ -538,7 +538,7 @@
       "functions": null,
       "constants": null,
       "concepts": [],
-      "analyzed_at": "2026-01-28T20:12:40.099677296Z"
+      "analyzed_at": "2026-01-30T16:19:49.298696718Z"
     },
     "api/controllers/build/update-build-name.js": {
       "path": "api/controllers/build/update-build-name.js",
@@ -553,7 +553,7 @@
       "functions": null,
       "constants": null,
       "concepts": [],
-      "analyzed_at": "2026-01-28T20:12:40.099692379Z"
+      "analyzed_at": "2026-01-30T16:19:49.29889776Z"
     },
     "api/controllers/charts/index.js": {
       "path": "api/controllers/charts/index.js",
@@ -568,7 +568,7 @@
       "functions": null,
       "constants": null,
       "concepts": [],
-      "analyzed_at": "2026-01-28T20:12:40.099709629Z"
+      "analyzed_at": "2026-01-30T16:19:49.29893626Z"
     },
     "api/controllers/exposed-apis/geolocation.js": {
       "path": "api/controllers/exposed-apis/geolocation.js",
@@ -583,7 +583,7 @@
       "functions": null,
       "constants": null,
       "concepts": [],
-      "analyzed_at": "2026-01-28T20:12:40.099726713Z"
+      "analyzed_at": "2026-01-30T16:19:49.298965677Z"
     },
     "api/controllers/exposed-apis/platform.js": {
       "path": "api/controllers/exposed-apis/platform.js",
@@ -598,7 +598,7 @@
       "functions": null,
       "constants": null,
       "concepts": [],
-      "analyzed_at": "2026-01-28T20:12:40.099738004Z"
+      "analyzed_at": "2026-01-30T16:19:49.29898676Z"
     },
     "api/controllers/health/api.js": {
       "path": "api/controllers/health/api.js",
@@ -613,7 +613,7 @@
       "functions": null,
       "constants": null,
       "concepts": [],
-      "analyzed_at": "2026-01-28T20:12:40.099754171Z"
+      "analyzed_at": "2026-01-30T16:19:49.299019093Z"
     },
     "api/controllers/internal/update-browser-upload-timestamp.js": {
       "path": "api/controllers/internal/update-browser-upload-timestamp.js",
@@ -628,7 +628,7 @@
       "functions": null,
       "constants": null,
       "concepts": [],
-      "analyzed_at": "2026-01-28T20:12:40.099770796Z"
+      "analyzed_at": "2026-01-30T16:19:49.299053885Z"
     },
     "api/controllers/master/browser.js": {
       "path": "api/controllers/master/browser.js",
@@ -643,7 +643,7 @@
       "functions": null,
       "constants": null,
       "concepts": [],
-      "analyzed_at": "2026-01-28T20:12:40.099788338Z"
+      "analyzed_at": "2026-01-30T16:19:49.299082218Z"
     },
     "api/controllers/master/capability.js": {
       "path": "api/controllers/master/capability.js",
@@ -658,7 +658,7 @@
       "functions": null,
       "constants": null,
       "concepts": [],
-      "analyzed_at": "2026-01-28T20:12:40.099818379Z"
+      "analyzed_at": "2026-01-30T16:19:49.299145427Z"
     },
     "api/controllers/master/config.js": {
       "path": "api/controllers/master/config.js",
@@ -673,7 +673,7 @@
       "functions": null,
       "constants": null,
       "concepts": [],
-      "analyzed_at": "2026-01-28T20:12:40.099829796Z"
+      "analyzed_at": "2026-01-30T16:19:49.299171135Z"
     },
     "api/controllers/master/device.js": {
       "path": "api/controllers/master/device.js",
@@ -688,7 +688,7 @@
       "functions": null,
       "constants": null,
       "concepts": [],
-      "analyzed_at": "2026-01-28T20:12:40.099840713Z"
+      "analyzed_at": "2026-01-30T16:19:49.299188135Z"
     },
     "api/controllers/master/org-details.js": {
       "path": "api/controllers/master/org-details.js",
@@ -703,7 +703,7 @@
       "functions": null,
       "constants": null,
       "concepts": [],
-      "analyzed_at": "2026-01-28T20:12:40.099854421Z"
+      "analyzed_at": "2026-01-30T16:19:49.299240593Z"
     },
     "api/controllers/master/os.js": {
       "path": "api/controllers/master/os.js",
@@ -718,7 +718,7 @@
       "functions": null,
       "constants": null,
       "concepts": [],
-      "analyzed_at": "2026-01-28T20:12:40.099866588Z"
+      "analyzed_at": "2026-01-30T16:19:49.299405218Z"
     },
     "api/controllers/master/plan.js": {
       "path": "api/controllers/master/plan.js",
@@ -733,7 +733,7 @@
       "functions": null,
       "constants": null,
       "concepts": [],
-      "analyzed_at": "2026-01-28T20:12:40.099878046Z"
+      "analyzed_at": "2026-01-30T16:19:49.299427177Z"
     },
     "api/controllers/master/test.js": {
       "path": "api/controllers/master/test.js",
@@ -748,7 +748,7 @@
       "functions": null,
       "constants": null,
       "concepts": [],
-      "analyzed_at": "2026-01-28T20:12:40.099890504Z"
+      "analyzed_at": "2026-01-30T16:19:49.299502468Z"
     },
     "api/controllers/project/search.js": {
       "path": "api/controllers/project/search.js",
@@ -763,7 +763,7 @@
       "functions": null,
       "constants": null,
       "concepts": [],
-      "analyzed_at": "2026-01-28T20:12:40.099910713Z"
+      "analyzed_at": "2026-01-30T16:19:49.29952926Z"
     },
     "api/controllers/report/report.js": {
       "path": "api/controllers/report/report.js",
@@ -778,7 +778,7 @@
       "functions": null,
       "constants": null,
       "concepts": [],
-      "analyzed_at": "2026-01-28T20:12:40.099930713Z"
+      "analyzed_at": "2026-01-30T16:19:49.299555093Z"
     },
     "api/controllers/session/stop.js": {
       "path": "api/controllers/session/stop.js",
@@ -793,7 +793,7 @@
       "functions": null,
       "constants": null,
       "concepts": [],
-      "analyzed_at": "2026-01-28T20:12:40.099948338Z"
+      "analyzed_at": "2026-01-30T16:19:49.299652427Z"
     },
     "api/controllers/sse/index.js": {
       "path": "api/controllers/sse/index.js",
@@ -808,7 +808,7 @@
       "functions": null,
       "constants": null,
       "concepts": [],
-      "analyzed_at": "2026-01-28T20:12:40.099962588Z"
+      "analyzed_at": "2026-01-30T16:19:49.299753218Z"
     },
     "api/controllers/sumologic/metric.js": {
       "path": "api/controllers/sumologic/metric.js",
@@ -823,7 +823,7 @@
       "functions": null,
       "constants": null,
       "concepts": [],
-      "analyzed_at": "2026-01-28T20:12:40.099978254Z"
+      "analyzed_at": "2026-01-30T16:19:49.299829718Z"
     },
     "api/controllers/tag/get.js": {
       "path": "api/controllers/tag/get.js",
@@ -838,7 +838,7 @@
       "functions": null,
       "constants": null,
       "concepts": [],
-      "analyzed_at": "2026-01-28T20:12:40.099999254Z"
+      "analyzed_at": "2026-01-30T16:19:49.29988076Z"
     },
     "api/controllers/test-additional-param/get.js": {
       "path": "api/controllers/test-additional-param/get.js",
@@ -853,7 +853,7 @@
       "functions": null,
       "constants": null,
       "concepts": [],
-      "analyzed_at": "2026-01-28T20:12:40.100273754Z"
+      "analyzed_at": "2026-01-30T16:19:49.300915677Z"
     },
     "api/controllers/test/create.js": {
       "path": "api/controllers/test/create.js",
@@ -868,7 +868,7 @@
       "functions": null,
       "constants": null,
       "concepts": [],
-      "analyzed_at": "2026-01-28T20:12:40.100019296Z"
+      "analyzed_at": "2026-01-30T16:19:49.299994927Z"
     },
     "api/controllers/test/delete.js": {
       "path": "api/controllers/test/delete.js",
@@ -883,7 +883,7 @@
       "functions": null,
       "constants": null,
       "concepts": [],
-      "analyzed_at": "2026-01-28T20:12:40.100035421Z"
+      "analyzed_at": "2026-01-30T16:19:49.300036593Z"
     },
     "api/controllers/test/get.js": {
       "path": "api/controllers/test/get.js",
@@ -898,7 +898,7 @@
       "functions": null,
       "constants": null,
       "concepts": [],
-      "analyzed_at": "2026-01-28T20:12:40.100059171Z"
+      "analyzed_at": "2026-01-30T16:19:49.30008551Z"
     },
     "api/controllers/test/interaction.js": {
       "path": "api/controllers/test/interaction.js",
@@ -913,7 +913,7 @@
       "functions": null,
       "constants": null,
       "concepts": [],
-      "analyzed_at": "2026-01-28T20:12:40.100072296Z"
+      "analyzed_at": "2026-01-30T16:19:49.300110552Z"
     },
     "api/controllers/test/multipledelete.js": {
       "path": "api/controllers/test/multipledelete.js",
@@ -928,7 +928,7 @@
       "functions": null,
       "constants": null,
       "concepts": [],
-      "analyzed_at": "2026-01-28T20:12:40.100087921Z"
+      "analyzed_at": "2026-01-30T16:19:49.30026551Z"
     },
     "api/controllers/test/multiplestop.js": {
       "path": "api/controllers/test/multiplestop.js",
@@ -943,7 +943,7 @@
       "functions": null,
       "constants": null,
       "concepts": [],
-      "analyzed_at": "2026-01-28T20:12:40.100115838Z"
+      "analyzed_at": "2026-01-30T16:19:49.300365385Z"
     },
     "api/controllers/test/mute.js": {
       "path": "api/controllers/test/mute.js",
@@ -958,7 +958,7 @@
       "functions": null,
       "constants": null,
       "concepts": [],
-      "analyzed_at": "2026-01-28T20:12:40.100128504Z"
+      "analyzed_at": "2026-01-30T16:19:49.300402343Z"
     },
     "api/controllers/test/orgid.js": {
       "path": "api/controllers/test/orgid.js",
@@ -973,7 +973,7 @@
       "functions": null,
       "constants": null,
       "concepts": [],
-      "analyzed_at": "2026-01-28T20:12:40.100140046Z"
+      "analyzed_at": "2026-01-30T16:19:49.300470593Z"
     },
     "api/controllers/test/pause.js": {
       "path": "api/controllers/test/pause.js",
@@ -988,7 +988,7 @@
       "functions": null,
       "constants": null,
       "concepts": [],
-      "analyzed_at": "2026-01-28T20:12:40.100155171Z"
+      "analyzed_at": "2026-01-30T16:19:49.300522927Z"
     },
     "api/controllers/test/polling.js": {
       "path": "api/controllers/test/polling.js",
@@ -1003,7 +1003,7 @@
       "functions": null,
       "constants": null,
       "concepts": [],
-      "analyzed_at": "2026-01-28T20:12:40.100168421Z"
+      "analyzed_at": "2026-01-30T16:19:49.300560593Z"
     },
     "api/controllers/test/search.js": {
       "path": "api/controllers/test/search.js",
@@ -1018,7 +1018,7 @@
       "functions": null,
       "constants": null,
       "concepts": [],
-      "analyzed_at": "2026-01-28T20:12:40.100188629Z"
+      "analyzed_at": "2026-01-30T16:19:49.300603093Z"
     },
     "api/controllers/test/stop.js": {
       "path": "api/controllers/test/stop.js",
@@ -1033,7 +1033,7 @@
       "functions": null,
       "constants": null,
       "concepts": [],
-      "analyzed_at": "2026-01-28T20:12:40.100206838Z"
+      "analyzed_at": "2026-01-30T16:19:49.300757593Z"
     },
     "api/controllers/test/update-test-name.js": {
       "path": "api/controllers/test/update-test-name.js",
@@ -1048,7 +1048,7 @@
       "functions": null,
       "constants": null,
       "concepts": [],
-      "analyzed_at": "2026-01-28T20:12:40.100219296Z"
+      "analyzed_at": "2026-01-30T16:19:49.300827718Z"
     },
     "api/controllers/test/update.js": {
       "path": "api/controllers/test/update.js",
@@ -1063,7 +1063,7 @@
       "functions": null,
       "constants": null,
       "concepts": [],
-      "analyzed_at": "2026-01-28T20:12:40.100229963Z"
+      "analyzed_at": "2026-01-30T16:19:49.300865385Z"
     },
     "api/controllers/v2/analytics/build.js": {
       "path": "api/controllers/v2/analytics/build.js",
@@ -1078,7 +1078,7 @@
       "functions": null,
       "constants": null,
       "concepts": [],
-      "analyzed_at": "2026-01-28T20:12:40.100302671Z"
+      "analyzed_at": "2026-01-30T16:19:49.300984468Z"
     },
     "api/controllers/v2/analytics/concurrency.js": {
       "path": "api/controllers/v2/analytics/concurrency.js",
@@ -1093,7 +1093,7 @@
       "functions": null,
       "constants": null,
       "concepts": [],
-      "analyzed_at": "2026-01-28T20:12:40.100343088Z"
+      "analyzed_at": "2026-01-30T16:19:49.301090385Z"
     },
     "api/controllers/v2/build/search.js": {
       "path": "api/controllers/v2/build/search.js",
@@ -1108,7 +1108,7 @@
       "functions": null,
       "constants": null,
       "concepts": [],
-      "analyzed_at": "2026-01-28T20:12:40.100396879Z"
+      "analyzed_at": "2026-01-30T16:19:49.30120676Z"
     },
     "api/controllers/v2/concurrency/clear.js": {
       "path": "api/controllers/v2/concurrency/clear.js",
@@ -1123,7 +1123,7 @@
       "functions": null,
       "constants": null,
       "concepts": [],
-      "analyzed_at": "2026-01-28T20:12:40.100413546Z"
+      "analyzed_at": "2026-01-30T16:19:49.301252677Z"
     },
     "api/controllers/v2/master/capability.js": {
       "path": "api/controllers/v2/master/capability.js",
@@ -1138,7 +1138,7 @@
       "functions": null,
       "constants": null,
       "concepts": [],
-      "analyzed_at": "2026-01-28T20:12:40.100461963Z"
+      "analyzed_at": "2026-01-30T16:19:49.301348385Z"
     },
     "api/controllers/v2/rbac/internal.js": {
       "path": "api/controllers/v2/rbac/internal.js",
@@ -1153,7 +1153,7 @@
       "functions": null,
       "constants": null,
       "concepts": [],
-      "analyzed_at": "2026-01-28T20:12:40.100480213Z"
+      "analyzed_at": "2026-01-30T16:19:49.301393385Z"
     },
     "api/controllers/v2/rbac/verify.js": {
       "path": "api/controllers/v2/rbac/verify.js",
@@ -1168,7 +1168,7 @@
       "functions": null,
       "constants": null,
       "concepts": [],
-      "analyzed_at": "2026-01-28T20:12:40.100490838Z"
+      "analyzed_at": "2026-01-30T16:19:49.301412218Z"
     },
     "api/controllers/v2/test/org-details.js": {
       "path": "api/controllers/v2/test/org-details.js",
@@ -1183,7 +1183,7 @@
       "functions": null,
       "constants": null,
       "concepts": [],
-      "analyzed_at": "2026-01-28T20:12:40.100513296Z"
+      "analyzed_at": "2026-01-30T16:19:49.301988052Z"
     },
     "api/controllers/v2/test/search.js": {
       "path": "api/controllers/v2/test/search.js",
@@ -1198,7 +1198,7 @@
       "functions": null,
       "constants": null,
       "concepts": [],
-      "analyzed_at": "2026-01-28T20:12:40.100562921Z"
+      "analyzed_at": "2026-01-30T16:19:49.302433427Z"
     },
     "api/controllers/v2/test/update.js": {
       "path": "api/controllers/v2/test/update.js",
@@ -1213,7 +1213,7 @@
       "functions": null,
       "constants": null,
       "concepts": [],
-      "analyzed_at": "2026-01-28T20:12:40.100574796Z"
+      "analyzed_at": "2026-01-30T16:19:49.302472802Z"
     },
     "api/helpers/build.js": {
       "path": "api/helpers/build.js",
@@ -1228,7 +1228,7 @@
       "functions": null,
       "constants": null,
       "concepts": [],
-      "analyzed_at": "2026-01-28T20:12:40.100592588Z"
+      "analyzed_at": "2026-01-30T16:19:49.302522468Z"
     },
     "api/helpers/capability.js": {
       "path": "api/helpers/capability.js",
@@ -1243,7 +1243,7 @@
       "functions": null,
       "constants": null,
       "concepts": [],
-      "analyzed_at": "2026-01-28T20:12:40.100644629Z"
+      "analyzed_at": "2026-01-30T16:19:49.302586093Z"
     },
     "api/helpers/charts/coverage.js": {
       "path": "api/helpers/charts/coverage.js",
@@ -1258,7 +1258,7 @@
       "functions": null,
       "constants": null,
       "concepts": [],
-      "analyzed_at": "2026-01-28T20:12:40.100669546Z"
+      "analyzed_at": "2026-01-30T16:19:49.302653843Z"
     },
     "api/helpers/charts/defaultChart.js": {
       "path": "api/helpers/charts/defaultChart.js",
@@ -1275,7 +1275,7 @@
       "concepts": [
         "defaultchart.js"
       ],
-      "analyzed_at": "2026-01-28T20:12:40.100689213Z"
+      "analyzed_at": "2026-01-30T16:19:49.302683135Z"
     },
     "api/helpers/charts/minuteConsumed.js": {
       "path": "api/helpers/charts/minuteConsumed.js",
@@ -1292,7 +1292,7 @@
       "concepts": [
         "minuteconsumed.js"
       ],
-      "analyzed_at": "2026-01-28T20:12:40.100719713Z"
+      "analyzed_at": "2026-01-30T16:19:49.30271651Z"
     },
     "api/helpers/charts/passFailRatio.js": {
       "path": "api/helpers/charts/passFailRatio.js",
@@ -1309,7 +1309,7 @@
       "concepts": [
         "passfailratio.js"
       ],
-      "analyzed_at": "2026-01-28T20:12:40.100746629Z"
+      "analyzed_at": "2026-01-30T16:19:49.302749385Z"
     },
     "api/helpers/charts/queueUtilization.js": {
       "path": "api/helpers/charts/queueUtilization.js",
@@ -1326,7 +1326,7 @@
       "concepts": [
         "queueutilization.js"
       ],
-      "analyzed_at": "2026-01-28T20:12:40.100763463Z"
+      "analyzed_at": "2026-01-30T16:19:49.30277026Z"
     },
     "api/helpers/concurrency.js": {
       "path": "api/helpers/concurrency.js",
@@ -1341,7 +1341,7 @@
       "functions": null,
       "constants": null,
       "concepts": [],
-      "analyzed_at": "2026-01-28T20:12:40.100833546Z"
+      "analyzed_at": "2026-01-30T16:19:49.302855218Z"
     },
     "api/helpers/create.js": {
       "path": "api/helpers/create.js",
@@ -1356,7 +1356,7 @@
       "functions": null,
       "constants": null,
       "concepts": [],
-      "analyzed_at": "2026-01-28T20:12:40.100969838Z"
+      "analyzed_at": "2026-01-30T16:19:49.30301751Z"
     },
     "api/helpers/test.js": {
       "path": "api/helpers/test.js",
@@ -1371,7 +1371,7 @@
       "functions": null,
       "constants": null,
       "concepts": [],
-      "analyzed_at": "2026-01-28T20:12:40.101082254Z"
+      "analyzed_at": "2026-01-30T16:19:49.303192552Z"
     },
     "api/models/AppiumConfig.js": {
       "path": "api/models/AppiumConfig.js",
@@ -1388,7 +1388,7 @@
       "concepts": [
         "appiumconfig.js"
       ],
-      "analyzed_at": "2026-01-28T20:12:40.101111504Z"
+      "analyzed_at": "2026-01-30T16:19:49.303252968Z"
     },
     "api/models/AppiumVersionMap.js": {
       "path": "api/models/AppiumVersionMap.js",
@@ -1405,7 +1405,7 @@
       "concepts": [
         "appiumversionmap.js"
       ],
-      "analyzed_at": "2026-01-28T20:12:40.101126004Z"
+      "analyzed_at": "2026-01-30T16:19:49.30326826Z"
     },
     "api/models/Brand.js": {
       "path": "api/models/Brand.js",
@@ -1422,7 +1422,7 @@
       "concepts": [
         "brand.js"
       ],
-      "analyzed_at": "2026-01-28T20:12:40.101135963Z"
+      "analyzed_at": "2026-01-30T16:19:49.303285052Z"
     },
     "api/models/Browser.js": {
       "path": "api/models/Browser.js",
@@ -1439,7 +1439,7 @@
       "concepts": [
         "browser.js"
       ],
-      "analyzed_at": "2026-01-28T20:12:40.101145671Z"
+      "analyzed_at": "2026-01-30T16:19:49.303303927Z"
     },
     "api/models/BrowserOsData.js": {
       "path": "api/models/BrowserOsData.js",
@@ -1456,7 +1456,7 @@
       "concepts": [
         "browserosdata.js"
       ],
-      "analyzed_at": "2026-01-28T20:12:40.101156254Z"
+      "analyzed_at": "2026-01-30T16:19:49.303321052Z"
     },
     "api/models/BrowserVersion.js": {
       "path": "api/models/BrowserVersion.js",
@@ -1473,7 +1473,7 @@
       "concepts": [
         "browserversion.js"
       ],
-      "analyzed_at": "2026-01-28T20:12:40.101166963Z"
+      "analyzed_at": "2026-01-30T16:19:49.303541843Z"
     },
     "api/models/Build.js": {
       "path": "api/models/Build.js",
@@ -1490,7 +1490,7 @@
       "concepts": [
         "build.js"
       ],
-      "analyzed_at": "2026-01-28T20:12:40.101178171Z"
+      "analyzed_at": "2026-01-30T16:19:49.303559427Z"
     },
     "api/models/BuildTag.js": {
       "path": "api/models/BuildTag.js",
@@ -1507,7 +1507,7 @@
       "concepts": [
         "buildtag.js"
       ],
-      "analyzed_at": "2026-01-28T20:12:40.101188379Z"
+      "analyzed_at": "2026-01-30T16:19:49.303572927Z"
     },
     "api/models/BuildTeam.js": {
       "path": "api/models/BuildTeam.js",
@@ -1524,7 +1524,7 @@
       "concepts": [
         "buildteam.js"
       ],
-      "analyzed_at": "2026-01-28T20:12:40.101198379Z"
+      "analyzed_at": "2026-01-30T16:19:49.303587093Z"
     },
     "api/models/CDPConfig.js": {
       "path": "api/models/CDPConfig.js",
@@ -1541,7 +1541,7 @@
       "concepts": [
         "cdpconfig.js"
       ],
-      "analyzed_at": "2026-01-28T20:12:40.101209379Z"
+      "analyzed_at": "2026-01-30T16:19:49.303599552Z"
     },
     "api/models/Config.js": {
       "path": "api/models/Config.js",
@@ -1558,7 +1558,7 @@
       "concepts": [
         "config.js"
       ],
-      "analyzed_at": "2026-01-28T20:12:40.101219671Z"
+      "analyzed_at": "2026-01-30T16:19:49.303611635Z"
     },
     "api/models/CypressConfig.js": {
       "path": "api/models/CypressConfig.js",
@@ -1575,7 +1575,7 @@
       "concepts": [
         "cypressconfig.js"
       ],
-      "analyzed_at": "2026-01-28T20:12:40.101230213Z"
+      "analyzed_at": "2026-01-30T16:19:49.303633718Z"
     },
     "api/models/CypressQueuedTest.js": {
       "path": "api/models/CypressQueuedTest.js",
@@ -1592,7 +1592,7 @@
       "concepts": [
         "cypressqueuedtest.js"
       ],
-      "analyzed_at": "2026-01-28T20:12:40.101249254Z"
+      "analyzed_at": "2026-01-30T16:19:49.303649135Z"
     },
     "api/models/DebugTest.js": {
       "path": "api/models/DebugTest.js",
@@ -1609,7 +1609,7 @@
       "concepts": [
         "debugtest.js"
       ],
-      "analyzed_at": "2026-01-28T20:12:40.101261213Z"
+      "analyzed_at": "2026-01-30T16:19:49.303684552Z"
     },
     "api/models/Device.js": {
       "path": "api/models/Device.js",
@@ -1626,7 +1626,7 @@
       "concepts": [
         "device.js"
       ],
-      "analyzed_at": "2026-01-28T20:12:40.101272046Z"
+      "analyzed_at": "2026-01-30T16:19:49.303698885Z"
     },
     "api/models/DeviceAlias.js": {
       "path": "api/models/DeviceAlias.js",
@@ -1643,7 +1643,7 @@
       "concepts": [
         "devicealias.js"
       ],
-      "analyzed_at": "2026-01-28T20:12:40.101283588Z"
+      "analyzed_at": "2026-01-30T16:19:49.303715385Z"
     },
     "api/models/DeviceBrand.js": {
       "path": "api/models/DeviceBrand.js",
@@ -1660,7 +1660,7 @@
       "concepts": [
         "devicebrand.js"
       ],
-      "analyzed_at": "2026-01-28T20:12:40.101293671Z"
+      "analyzed_at": "2026-01-30T16:19:49.303770218Z"
     },
     "api/models/GeoLocationVendorMap.js": {
       "path": "api/models/GeoLocationVendorMap.js",
@@ -1677,7 +1677,7 @@
       "concepts": [
         "geolocationvendormap.js"
       ],
-      "analyzed_at": "2026-01-28T20:12:40.101304463Z"
+      "analyzed_at": "2026-01-30T16:19:49.303785093Z"
     },
     "api/models/GlobalSeleniumConfig.js": {
       "path": "api/models/GlobalSeleniumConfig.js",
@@ -1694,7 +1694,7 @@
       "concepts": [
         "globalseleniumconfig.js"
       ],
-      "analyzed_at": "2026-01-28T20:12:40.101315629Z"
+      "analyzed_at": "2026-01-30T16:19:49.303798843Z"
     },
     "api/models/OsAlias.js": {
       "path": "api/models/OsAlias.js",
@@ -1711,7 +1711,7 @@
       "concepts": [
         "osalias.js"
       ],
-      "analyzed_at": "2026-01-28T20:12:40.101326129Z"
+      "analyzed_at": "2026-01-30T16:19:49.303823635Z"
     },
     "api/models/OsVersion.js": {
       "path": "api/models/OsVersion.js",
@@ -1728,7 +1728,7 @@
       "concepts": [
         "osversion.js"
       ],
-      "analyzed_at": "2026-01-28T20:12:40.101337546Z"
+      "analyzed_at": "2026-01-30T16:19:49.303840968Z"
     },
     "api/models/Plan.js": {
       "path": "api/models/Plan.js",
@@ -1745,7 +1745,7 @@
       "concepts": [
         "plan.js"
       ],
-      "analyzed_at": "2026-01-28T20:12:40.101347713Z"
+      "analyzed_at": "2026-01-30T16:19:49.303856802Z"
     },
     "api/models/Project.js": {
       "path": "api/models/Project.js",
@@ -1762,7 +1762,7 @@
       "concepts": [
         "project.js"
       ],
-      "analyzed_at": "2026-01-28T20:12:40.101358879Z"
+      "analyzed_at": "2026-01-30T16:19:49.303869552Z"
     },
     "api/models/PwBrowserCompatibility.js": {
       "path": "api/models/PwBrowserCompatibility.js",
@@ -1779,7 +1779,7 @@
       "concepts": [
         "pwbrowsercompatibility.js"
       ],
-      "analyzed_at": "2026-01-28T20:12:40.101369629Z"
+      "analyzed_at": "2026-01-30T16:19:49.303978968Z"
     },
     "api/models/RealDevice.js": {
       "path": "api/models/RealDevice.js",
@@ -1796,7 +1796,7 @@
       "concepts": [
         "realdevice.js"
       ],
-      "analyzed_at": "2026-01-28T20:12:40.101380296Z"
+      "analyzed_at": "2026-01-30T16:19:49.304024052Z"
     },
     "api/models/RealDeviceAlias.js": {
       "path": "api/models/RealDeviceAlias.js",
@@ -1813,7 +1813,7 @@
       "concepts": [
         "realdevicealias.js"
       ],
-      "analyzed_at": "2026-01-28T20:12:40.101390629Z"
+      "analyzed_at": "2026-01-30T16:19:49.304040635Z"
     },
     "api/models/RealtimeOsBrowsers.js": {
       "path": "api/models/RealtimeOsBrowsers.js",
@@ -1830,7 +1830,7 @@
       "concepts": [
         "realtimeosbrowsers.js"
       ],
-      "analyzed_at": "2026-01-28T20:12:40.101401088Z"
+      "analyzed_at": "2026-01-30T16:19:49.304053552Z"
     },
     "api/models/RejectedTest.js": {
       "path": "api/models/RejectedTest.js",
@@ -1847,7 +1847,7 @@
       "concepts": [
         "rejectedtest.js"
       ],
-      "analyzed_at": "2026-01-28T20:12:40.101411338Z"
+      "analyzed_at": "2026-01-30T16:19:49.304066343Z"
     },
     "api/models/SeleniumConfig.js": {
       "path": "api/models/SeleniumConfig.js",
@@ -1864,7 +1864,7 @@
       "concepts": [
         "seleniumconfig.js"
       ],
-      "analyzed_at": "2026-01-28T20:12:40.101422004Z"
+      "analyzed_at": "2026-01-30T16:19:49.304078843Z"
     },
     "api/models/SeleniumConfigBeta.js": {
       "path": "api/models/SeleniumConfigBeta.js",
@@ -1881,7 +1881,7 @@
       "concepts": [
         "seleniumconfigbeta.js"
       ],
-      "analyzed_at": "2026-01-28T20:12:40.101432254Z"
+      "analyzed_at": "2026-01-30T16:19:49.304091593Z"
     },
     "api/models/Tag.js": {
       "path": "api/models/Tag.js",
@@ -1898,7 +1898,7 @@
       "concepts": [
         "tag.js"
       ],
-      "analyzed_at": "2026-01-28T20:12:40.101442338Z"
+      "analyzed_at": "2026-01-30T16:19:49.30424926Z"
     },
     "api/models/TagTest.js": {
       "path": "api/models/TagTest.js",
@@ -1915,7 +1915,7 @@
       "concepts": [
         "tagtest.js"
       ],
-      "analyzed_at": "2026-01-28T20:12:40.101452088Z"
+      "analyzed_at": "2026-01-30T16:19:49.304341552Z"
     },
     "api/models/Test.js": {
       "path": "api/models/Test.js",
@@ -1932,7 +1932,7 @@
       "concepts": [
         "test.js"
       ],
-      "analyzed_at": "2026-01-28T20:12:40.101463921Z"
+      "analyzed_at": "2026-01-30T16:19:49.304401885Z"
     },
     "api/models/TestAdditionalParam.js": {
       "path": "api/models/TestAdditionalParam.js",
@@ -1949,7 +1949,7 @@
       "concepts": [
         "testadditionalparam.js"
       ],
-      "analyzed_at": "2026-01-28T20:12:40.101475129Z"
+      "analyzed_at": "2026-01-30T16:19:49.304428677Z"
     },
     "api/models/TestAggregateDaily.js": {
       "path": "api/models/TestAggregateDaily.js",
@@ -1966,7 +1966,7 @@
       "concepts": [
         "testaggregatedaily.js"
       ],
-      "analyzed_at": "2026-01-28T20:12:40.101485463Z"
+      "analyzed_at": "2026-01-30T16:19:49.304441885Z"
     },
     "api/models/TestAnnotationInfo.js": {
       "path": "api/models/TestAnnotationInfo.js",
@@ -1983,7 +1983,7 @@
       "concepts": [
         "testannotationinfo.js"
       ],
-      "analyzed_at": "2026-01-28T20:12:40.101496463Z"
+      "analyzed_at": "2026-01-30T16:19:49.304504218Z"
     },
     "api/models/TestCapability.js": {
       "path": "api/models/TestCapability.js",
@@ -2000,7 +2000,7 @@
       "concepts": [
         "testcapability.js"
       ],
-      "analyzed_at": "2026-01-28T20:12:40.101506421Z"
+      "analyzed_at": "2026-01-30T16:19:49.304524843Z"
     },
     "api/models/TestConfig.js": {
       "path": "api/models/TestConfig.js",
@@ -2017,7 +2017,7 @@
       "concepts": [
         "testconfig.js"
       ],
-      "analyzed_at": "2026-01-28T20:12:40.101517546Z"
+      "analyzed_at": "2026-01-30T16:19:49.304538635Z"
     },
     "api/models/TestCounters.js": {
       "path": "api/models/TestCounters.js",
@@ -2034,7 +2034,7 @@
       "concepts": [
         "testcounters.js"
       ],
-      "analyzed_at": "2026-01-28T20:12:40.101528004Z"
+      "analyzed_at": "2026-01-30T16:19:49.304550927Z"
     },
     "api/models/TestGeoMapping.js": {
       "path": "api/models/TestGeoMapping.js",
@@ -2051,7 +2051,7 @@
       "concepts": [
         "testgeomapping.js"
       ],
-      "analyzed_at": "2026-01-28T20:12:40.101538171Z"
+      "analyzed_at": "2026-01-30T16:19:49.30472026Z"
     },
     "api/models/VirtualDeviceBrowserConfigs.js": {
       "path": "api/models/VirtualDeviceBrowserConfigs.js",
@@ -2068,7 +2068,7 @@
       "concepts": [
         "virtualdevicebrowserconfigs.js"
       ],
-      "analyzed_at": "2026-01-28T20:12:40.101549713Z"
+      "analyzed_at": "2026-01-30T16:19:49.304754468Z"
     },
     "api/responses/serverError.js": {
       "path": "api/responses/serverError.js",
@@ -2085,7 +2085,7 @@
       "concepts": [
         "servererror.js"
       ],
-      "analyzed_at": "2026-01-28T20:12:40.101565796Z"
+      "analyzed_at": "2026-01-30T16:19:49.304780968Z"
     },
     "api/services/allocationFailure.js": {
       "path": "api/services/allocationFailure.js",
@@ -2102,7 +2102,7 @@
       "concepts": [
         "allocationfailure.js"
       ],
-      "analyzed_at": "2026-01-28T20:12:40.101588546Z"
+      "analyzed_at": "2026-01-30T16:19:49.304829968Z"
     },
     "api/services/annotations.js": {
       "path": "api/services/annotations.js",
@@ -2117,7 +2117,7 @@
       "functions": null,
       "constants": null,
       "concepts": [],
-      "analyzed_at": "2026-01-28T20:12:40.101598213Z"
+      "analyzed_at": "2026-01-30T16:19:49.304843052Z"
     },
     "api/services/auth.js": {
       "path": "api/services/auth.js",
@@ -2132,7 +2132,7 @@
       "functions": null,
       "constants": null,
       "concepts": [],
-      "analyzed_at": "2026-01-28T20:12:40.101609463Z"
+      "analyzed_at": "2026-01-30T16:19:49.304857677Z"
     },
     "api/services/edgeCachingHandler.js": {
       "path": "api/services/edgeCachingHandler.js",
@@ -2149,7 +2149,7 @@
       "concepts": [
         "edgecachinghandler.js"
       ],
-      "analyzed_at": "2026-01-28T20:12:40.101618879Z"
+      "analyzed_at": "2026-01-30T16:19:49.304869968Z"
     },
     "api/services/featureFlags.js": {
       "path": "api/services/featureFlags.js",
@@ -2166,7 +2166,7 @@
       "concepts": [
         "featureflags.js"
       ],
-      "analyzed_at": "2026-01-28T20:12:40.101630213Z"
+      "analyzed_at": "2026-01-30T16:19:49.304903302Z"
     },
     "api/services/graphUtils.js": {
       "path": "api/services/graphUtils.js",
@@ -2183,7 +2183,7 @@
       "concepts": [
         "graphutils.js"
       ],
-      "analyzed_at": "2026-01-28T20:12:40.101642754Z"
+      "analyzed_at": "2026-01-30T16:19:49.304919718Z"
     },
     "api/services/httphandler.js": {
       "path": "api/services/httphandler.js",
@@ -2198,7 +2198,7 @@
       "functions": null,
       "constants": null,
       "concepts": [],
-      "analyzed_at": "2026-01-28T20:12:40.101659754Z"
+      "analyzed_at": "2026-01-30T16:19:49.304938677Z"
     },
     "api/services/jwt.js": {
       "path": "api/services/jwt.js",
@@ -2213,7 +2213,7 @@
       "functions": null,
       "constants": null,
       "concepts": [],
-      "analyzed_at": "2026-01-28T20:12:40.101671671Z"
+      "analyzed_at": "2026-01-30T16:19:49.304976885Z"
     },
     "api/services/kafka.js": {
       "path": "api/services/kafka.js",
@@ -2228,7 +2228,7 @@
       "functions": null,
       "constants": null,
       "concepts": [],
-      "analyzed_at": "2026-01-28T20:12:40.101699213Z"
+      "analyzed_at": "2026-01-30T16:19:49.305009593Z"
     },
     "api/services/logger.js": {
       "path": "api/services/logger.js",
@@ -2243,7 +2243,7 @@
       "functions": null,
       "constants": null,
       "concepts": [],
-      "analyzed_at": "2026-01-28T20:12:40.101710754Z"
+      "analyzed_at": "2026-01-30T16:19:49.305023302Z"
     },
     "api/services/mobilerediscached.js": {
       "path": "api/services/mobilerediscached.js",
@@ -2258,7 +2258,7 @@
       "functions": null,
       "constants": null,
       "concepts": [],
-      "analyzed_at": "2026-01-28T20:12:40.101723254Z"
+      "analyzed_at": "2026-01-30T16:19:49.305037802Z"
     },
     "api/services/notifications.js": {
       "path": "api/services/notifications.js",
@@ -2273,7 +2273,7 @@
       "functions": null,
       "constants": null,
       "concepts": [],
-      "analyzed_at": "2026-01-28T20:12:40.101734296Z"
+      "analyzed_at": "2026-01-30T16:19:49.305051302Z"
     },
     "api/services/plan.js": {
       "path": "api/services/plan.js",
@@ -2288,7 +2288,7 @@
       "functions": null,
       "constants": null,
       "concepts": [],
-      "analyzed_at": "2026-01-28T20:12:40.101747213Z"
+      "analyzed_at": "2026-01-30T16:19:49.305068093Z"
     },
     "api/services/project.js": {
       "path": "api/services/project.js",
@@ -2303,7 +2303,7 @@
       "functions": null,
       "constants": null,
       "concepts": [],
-      "analyzed_at": "2026-01-28T20:12:40.101762879Z"
+      "analyzed_at": "2026-01-30T16:19:49.30508676Z"
     },
     "api/services/rbac.js": {
       "path": "api/services/rbac.js",
@@ -2318,7 +2318,7 @@
       "functions": null,
       "constants": null,
       "concepts": [],
-      "analyzed_at": "2026-01-28T20:12:40.101789463Z"
+      "analyzed_at": "2026-01-30T16:19:49.305116468Z"
     },
     "api/services/redis.js": {
       "path": "api/services/redis.js",
@@ -2333,7 +2333,7 @@
       "functions": null,
       "constants": null,
       "concepts": [],
-      "analyzed_at": "2026-01-28T20:12:40.101808921Z"
+      "analyzed_at": "2026-01-30T16:19:49.305141052Z"
     },
     "api/services/rediscached.js": {
       "path": "api/services/rediscached.js",
@@ -2348,7 +2348,7 @@
       "functions": null,
       "constants": null,
       "concepts": [],
-      "analyzed_at": "2026-01-28T20:12:40.101831213Z"
+      "analyzed_at": "2026-01-30T16:19:49.305167385Z"
     },
     "api/services/retention.js": {
       "path": "api/services/retention.js",
@@ -2363,7 +2363,7 @@
       "functions": null,
       "constants": null,
       "concepts": [],
-      "analyzed_at": "2026-01-28T20:12:40.101840838Z"
+      "analyzed_at": "2026-01-30T16:19:49.305179177Z"
     },
     "api/services/sanctum.js": {
       "path": "api/services/sanctum.js",
@@ -2378,7 +2378,7 @@
       "functions": null,
       "constants": null,
       "concepts": [],
-      "analyzed_at": "2026-01-28T20:12:40.101858588Z"
+      "analyzed_at": "2026-01-30T16:19:49.305235677Z"
     },
     "api/services/scheduler.js": {
       "path": "api/services/scheduler.js",
@@ -2393,7 +2393,7 @@
       "functions": null,
       "constants": null,
       "concepts": [],
-      "analyzed_at": "2026-01-28T20:12:40.101873921Z"
+      "analyzed_at": "2026-01-30T16:19:49.305255427Z"
     },
     "api/services/sequelize.js": {
       "path": "api/services/sequelize.js",
@@ -2408,7 +2408,7 @@
       "functions": null,
       "constants": null,
       "concepts": [],
-      "analyzed_at": "2026-01-28T20:12:40.101884504Z"
+      "analyzed_at": "2026-01-30T16:19:49.30526951Z"
     },
     "api/services/share.js": {
       "path": "api/services/share.js",
@@ -2423,7 +2423,7 @@
       "functions": null,
       "constants": null,
       "concepts": [],
-      "analyzed_at": "2026-01-28T20:12:40.101893879Z"
+      "analyzed_at": "2026-01-30T16:19:49.305281885Z"
     },
     "api/services/slackNotification.js": {
       "path": "api/services/slackNotification.js",
@@ -2440,7 +2440,7 @@
       "concepts": [
         "slacknotification.js"
       ],
-      "analyzed_at": "2026-01-28T20:12:40.101934713Z"
+      "analyzed_at": "2026-01-30T16:19:49.305347427Z"
     },
     "api/services/sse.js": {
       "path": "api/services/sse.js",
@@ -2455,7 +2455,7 @@
       "functions": null,
       "constants": null,
       "concepts": [],
-      "analyzed_at": "2026-01-28T20:12:40.101946671Z"
+      "analyzed_at": "2026-01-30T16:19:49.30536201Z"
     },
     "api/services/stopBuilds.js": {
       "path": "api/services/stopBuilds.js",
@@ -2472,7 +2472,7 @@
       "concepts": [
         "stopbuilds.js"
       ],
-      "analyzed_at": "2026-01-28T20:12:40.101962588Z"
+      "analyzed_at": "2026-01-30T16:19:49.305380885Z"
     },
     "api/services/teams.js": {
       "path": "api/services/teams.js",
@@ -2487,7 +2487,7 @@
       "functions": null,
       "constants": null,
       "concepts": [],
-      "analyzed_at": "2026-01-28T20:12:40.101974254Z"
+      "analyzed_at": "2026-01-30T16:19:49.30541976Z"
     },
     "api/services/teller.js": {
       "path": "api/services/teller.js",
@@ -2502,7 +2502,7 @@
       "functions": null,
       "constants": null,
       "concepts": [],
-      "analyzed_at": "2026-01-28T20:12:40.101988546Z"
+      "analyzed_at": "2026-01-30T16:19:49.305437968Z"
     },
     "api/services/tellerkafka.js": {
       "path": "api/services/tellerkafka.js",
@@ -2517,7 +2517,7 @@
       "functions": null,
       "constants": null,
       "concepts": [],
-      "analyzed_at": "2026-01-28T20:12:40.102003921Z"
+      "analyzed_at": "2026-01-30T16:19:49.305455802Z"
     },
     "api/services/utils.js": {
       "path": "api/services/utils.js",
@@ -2532,7 +2532,7 @@
       "functions": null,
       "constants": null,
       "concepts": [],
-      "analyzed_at": "2026-01-28T20:12:40.102025504Z"
+      "analyzed_at": "2026-01-30T16:19:49.305484427Z"
     },
     "api/services/webHookHandler.js": {
       "path": "api/services/webHookHandler.js",
@@ -2549,7 +2549,7 @@
       "concepts": [
         "webhookhandler.js"
       ],
-      "analyzed_at": "2026-01-28T20:12:40.102041588Z"
+      "analyzed_at": "2026-01-30T16:19:49.305504218Z"
     },
     "api/utils/cacheUtils.js": {
       "path": "api/utils/cacheUtils.js",
@@ -2566,7 +2566,7 @@
       "concepts": [
         "cacheutils.js"
       ],
-      "analyzed_at": "2026-01-28T20:12:40.102057046Z"
+      "analyzed_at": "2026-01-30T16:19:49.305533468Z"
     },
     "app.js": {
       "path": "app.js",
@@ -2581,7 +2581,7 @@
       "functions": null,
       "constants": null,
       "concepts": [],
-      "analyzed_at": "2026-01-28T20:12:40.102068171Z"
+      "analyzed_at": "2026-01-30T16:19:49.305548302Z"
     },
     "config/appConfig/browser_alias.js": {
       "path": "config/appConfig/browser_alias.js",
@@ -2598,7 +2598,7 @@
       "concepts": [
         "appconfig"
       ],
-      "analyzed_at": "2026-01-28T20:12:40.102095254Z"
+      "analyzed_at": "2026-01-30T16:19:49.305583302Z"
     },
     "config/appConfig/config_timedout.js": {
       "path": "config/appConfig/config_timedout.js",
@@ -2615,7 +2615,7 @@
       "concepts": [
         "appconfig"
       ],
-      "analyzed_at": "2026-01-28T20:12:40.102105213Z"
+      "analyzed_at": "2026-01-30T16:19:49.305595635Z"
     },
     "config/appConfig/index.js": {
       "path": "config/appConfig/index.js",
@@ -2632,7 +2632,7 @@
       "concepts": [
         "appconfig"
       ],
-      "analyzed_at": "2026-01-28T20:12:40.102114838Z"
+      "analyzed_at": "2026-01-30T16:19:49.305606552Z"
     },
     "config/appConfig/latest_config.js": {
       "path": "config/appConfig/latest_config.js",
@@ -2649,7 +2649,7 @@
       "concepts": [
         "appconfig"
       ],
-      "analyzed_at": "2026-01-28T20:12:40.102126129Z"
+      "analyzed_at": "2026-01-30T16:19:49.305631968Z"
     },
     "config/appConfig/os_alias.js": {
       "path": "config/appConfig/os_alias.js",
@@ -2666,7 +2666,7 @@
       "concepts": [
         "appconfig"
       ],
-      "analyzed_at": "2026-01-28T20:12:40.102141088Z"
+      "analyzed_at": "2026-01-30T16:19:49.305649343Z"
     },
     "config/appConfig/os_device_alias.js": {
       "path": "config/appConfig/os_device_alias.js",
@@ -2683,7 +2683,7 @@
       "concepts": [
         "appconfig"
       ],
-      "analyzed_at": "2026-01-28T20:12:40.102184754Z"
+      "analyzed_at": "2026-01-30T16:19:49.305701093Z"
     },
     "config/appConfig/os_info.js": {
       "path": "config/appConfig/os_info.js",
@@ -2700,7 +2700,7 @@
       "concepts": [
         "appconfig"
       ],
-      "analyzed_at": "2026-01-28T20:12:40.102196213Z"
+      "analyzed_at": "2026-01-30T16:19:49.305715468Z"
     },
     "config/blueprints.js": {
       "path": "config/blueprints.js",
@@ -2715,7 +2715,7 @@
       "functions": null,
       "constants": null,
       "concepts": [],
-      "analyzed_at": "2026-01-28T20:12:40.102206879Z"
+      "analyzed_at": "2026-01-30T16:19:49.305727635Z"
     },
     "config/bootstrap.js": {
       "path": "config/bootstrap.js",
@@ -2730,7 +2730,7 @@
       "functions": null,
       "constants": null,
       "concepts": [],
-      "analyzed_at": "2026-01-28T20:12:40.102218129Z"
+      "analyzed_at": "2026-01-30T16:19:49.305742427Z"
     },
     "config/connections.js": {
       "path": "config/connections.js",
@@ -2745,7 +2745,7 @@
       "functions": null,
       "constants": null,
       "concepts": [],
-      "analyzed_at": "2026-01-28T20:12:40.102229588Z"
+      "analyzed_at": "2026-01-30T16:19:49.305850093Z"
     },
     "config/constants.js": {
       "path": "config/constants.js",
@@ -2760,7 +2760,7 @@
       "functions": null,
       "constants": null,
       "concepts": [],
-      "analyzed_at": "2026-01-28T20:12:40.102275629Z"
+      "analyzed_at": "2026-01-30T16:19:49.306002927Z"
     },
     "config/custom.js": {
       "path": "config/custom.js",
@@ -2775,7 +2775,7 @@
       "functions": null,
       "constants": null,
       "concepts": [],
-      "analyzed_at": "2026-01-28T20:12:40.102286588Z"
+      "analyzed_at": "2026-01-30T16:19:49.306028635Z"
     },
     "config/demoTests/builds_list.js": {
       "path": "config/demoTests/builds_list.js",
@@ -2792,7 +2792,7 @@
       "concepts": [
         "demotests"
       ],
-      "analyzed_at": "2026-01-28T20:12:40.102307879Z"
+      "analyzed_at": "2026-01-30T16:19:49.306059385Z"
     },
     "config/demoTests/tests_list.js": {
       "path": "config/demoTests/tests_list.js",
@@ -2809,7 +2809,7 @@
       "concepts": [
         "demotests"
       ],
-      "analyzed_at": "2026-01-28T20:12:40.102381713Z"
+      "analyzed_at": "2026-01-30T16:19:49.30615251Z"
     },
     "config/edgeCacheConstants.js": {
       "path": "config/edgeCacheConstants.js",
@@ -2826,7 +2826,7 @@
       "concepts": [
         "edgecacheconstants.js"
       ],
-      "analyzed_at": "2026-01-28T20:12:40.102391754Z"
+      "analyzed_at": "2026-01-30T16:19:49.306204427Z"
     },
     "config/env/production.js": {
       "path": "config/env/production.js",
@@ -2841,7 +2841,7 @@
       "functions": null,
       "constants": null,
       "concepts": [],
-      "analyzed_at": "2026-01-28T20:12:40.102425838Z"
+      "analyzed_at": "2026-01-30T16:19:49.306261635Z"
     },
     "config/globals.js": {
       "path": "config/globals.js",
@@ -2856,7 +2856,7 @@
       "functions": null,
       "constants": null,
       "concepts": [],
-      "analyzed_at": "2026-01-28T20:12:40.102437213Z"
+      "analyzed_at": "2026-01-30T16:19:49.306289927Z"
     },
     "config/http.js": {
       "path": "config/http.js",
@@ -2871,7 +2871,7 @@
       "functions": null,
       "constants": null,
       "concepts": [],
-      "analyzed_at": "2026-01-28T20:12:40.102448171Z"
+      "analyzed_at": "2026-01-30T16:19:49.306309843Z"
     },
     "config/local.js": {
       "path": "config/local.js",
@@ -2886,7 +2886,7 @@
       "functions": null,
       "constants": null,
       "concepts": [],
-      "analyzed_at": "2026-01-28T20:12:40.102458046Z"
+      "analyzed_at": "2026-01-30T16:19:49.306335093Z"
     },
     "config/log.js": {
       "path": "config/log.js",
@@ -2901,7 +2901,7 @@
       "functions": null,
       "constants": null,
       "concepts": [],
-      "analyzed_at": "2026-01-28T20:12:40.102466921Z"
+      "analyzed_at": "2026-01-30T16:19:49.306347218Z"
     },
     "config/models.js": {
       "path": "config/models.js",
@@ -2916,7 +2916,7 @@
       "functions": null,
       "constants": null,
       "concepts": [],
-      "analyzed_at": "2026-01-28T20:12:40.102481754Z"
+      "analyzed_at": "2026-01-30T16:19:49.306365468Z"
     },
     "config/policies.js": {
       "path": "config/policies.js",
@@ -2931,7 +2931,7 @@
       "functions": null,
       "constants": null,
       "concepts": [],
-      "analyzed_at": "2026-01-28T20:12:40.102492129Z"
+      "analyzed_at": "2026-01-30T16:19:49.306377552Z"
     },
     "config/priorityConstants.js": {
       "path": "config/priorityConstants.js",
@@ -2948,7 +2948,7 @@
       "concepts": [
         "priorityconstants.js"
       ],
-      "analyzed_at": "2026-01-28T20:12:40.102528296Z"
+      "analyzed_at": "2026-01-30T16:19:49.306415385Z"
     },
     "config/routes.js": {
       "path": "config/routes.js",
@@ -2963,7 +2963,7 @@
       "functions": null,
       "constants": null,
       "concepts": [],
-      "analyzed_at": "2026-01-28T20:12:40.102542129Z"
+      "analyzed_at": "2026-01-30T16:19:49.306434593Z"
     },
     "config/secrets.js": {
       "path": "config/secrets.js",
@@ -2978,7 +2978,7 @@
       "functions": null,
       "constants": null,
       "concepts": [],
-      "analyzed_at": "2026-01-28T20:12:40.102551046Z"
+      "analyzed_at": "2026-01-30T16:19:49.306459968Z"
     },
     "config/security.js": {
       "path": "config/security.js",
@@ -2993,7 +2993,7 @@
       "functions": null,
       "constants": null,
       "concepts": [],
-      "analyzed_at": "2026-01-28T20:12:40.102561754Z"
+      "analyzed_at": "2026-01-30T16:19:49.30647401Z"
     },
     "config/sequelize.js": {
       "path": "config/sequelize.js",
@@ -3008,7 +3008,7 @@
       "functions": null,
       "constants": null,
       "concepts": [],
-      "analyzed_at": "2026-01-28T20:12:40.102571004Z"
+      "analyzed_at": "2026-01-30T16:19:49.30648576Z"
     },
     "config/session.js": {
       "path": "config/session.js",
@@ -3023,7 +3023,7 @@
       "functions": null,
       "constants": null,
       "concepts": [],
-      "analyzed_at": "2026-01-28T20:12:40.102581296Z"
+      "analyzed_at": "2026-01-30T16:19:49.306499093Z"
     },
     "config/sockets.js": {
       "path": "config/sockets.js",
@@ -3038,7 +3038,7 @@
       "functions": null,
       "constants": null,
       "concepts": [],
-      "analyzed_at": "2026-01-28T20:12:40.102595963Z"
+      "analyzed_at": "2026-01-30T16:19:49.306552218Z"
     },
     "jest.config.js": {
       "path": "jest.config.js",
@@ -3053,7 +3053,7 @@
       "functions": null,
       "constants": null,
       "concepts": [],
-      "analyzed_at": "2026-01-28T20:12:40.102604838Z"
+      "analyzed_at": "2026-01-30T16:19:49.306646093Z"
     },
     "jest.setup.js": {
       "path": "jest.setup.js",
@@ -3068,7 +3068,7 @@
       "functions": null,
       "constants": null,
       "concepts": [],
-      "analyzed_at": "2026-01-28T20:12:40.102613879Z"
+      "analyzed_at": "2026-01-30T16:19:49.306664135Z"
     },
     "migrations/MLE-1247.sql": {
       "path": "migrations/MLE-1247.sql",
@@ -3085,7 +3085,7 @@
       "concepts": [
         "mle-1247.sql"
       ],
-      "analyzed_at": "2026-01-28T20:12:40.102629588Z"
+      "analyzed_at": "2026-01-30T16:19:49.306720302Z"
     },
     "migrations/MLE-1247_rollback.sql": {
       "path": "migrations/MLE-1247_rollback.sql",
@@ -3102,7 +3102,7 @@
       "concepts": [
         "mle-1247_rollback.sql"
       ],
-      "analyzed_at": "2026-01-28T20:12:40.102639504Z"
+      "analyzed_at": "2026-01-30T16:19:49.306732468Z"
     },
     "migrations/MLE-1807.sql": {
       "path": "migrations/MLE-1807.sql",
@@ -3119,7 +3119,7 @@
       "concepts": [
         "mle-1807.sql"
       ],
-      "analyzed_at": "2026-01-28T20:12:40.102648671Z"
+      "analyzed_at": "2026-01-30T16:19:49.306744677Z"
     },
     "migrations/MLE-2891.sql": {
       "path": "migrations/MLE-2891.sql",
@@ -3136,7 +3136,7 @@
       "concepts": [
         "mle-2891.sql"
       ],
-      "analyzed_at": "2026-01-28T20:12:40.102658713Z"
+      "analyzed_at": "2026-01-30T16:19:49.306757802Z"
     },
     "migrations/MLE-3240.sql": {
       "path": "migrations/MLE-3240.sql",
@@ -3153,7 +3153,7 @@
       "concepts": [
         "mle-3240.sql"
       ],
-      "analyzed_at": "2026-01-28T20:12:40.102668963Z"
+      "analyzed_at": "2026-01-30T16:19:49.306770093Z"
     },
     "migrations/MLE-3240_rollback.sql": {
       "path": "migrations/MLE-3240_rollback.sql",
@@ -3170,7 +3170,7 @@
       "concepts": [
         "mle-3240_rollback.sql"
       ],
-      "analyzed_at": "2026-01-28T20:12:40.102678046Z"
+      "analyzed_at": "2026-01-30T16:19:49.30682826Z"
     },
     "newrelic.js": {
       "path": "newrelic.js",
@@ -3185,7 +3185,7 @@
       "functions": null,
       "constants": null,
       "concepts": [],
-      "analyzed_at": "2026-01-28T20:12:40.102690129Z"
+      "analyzed_at": "2026-01-30T16:19:49.306875427Z"
     },
     "package.json": {
       "path": "package.json",
@@ -3200,7 +3200,7 @@
       "functions": null,
       "constants": null,
       "concepts": [],
-      "analyzed_at": "2026-01-28T20:12:40.102700546Z"
+      "analyzed_at": "2026-01-30T16:19:49.306905343Z"
     },
     "scripts/setupTestData.sql": {
       "path": "scripts/setupTestData.sql",
@@ -3217,7 +3217,7 @@
       "concepts": [
         "setuptestdata.sql"
       ],
-      "analyzed_at": "2026-01-28T20:12:40.102750754Z"
+      "analyzed_at": "2026-01-30T16:19:49.306969135Z"
     },
     "sonar-project.properties": {
       "path": "sonar-project.properties",
@@ -3232,7 +3232,7 @@
       "functions": null,
       "constants": null,
       "concepts": [],
-      "analyzed_at": "2026-01-28T20:12:40.102759838Z"
+      "analyzed_at": "2026-01-30T16:19:49.306981677Z"
     },
     "ssh-config": {
       "path": "ssh-config",
@@ -3247,7 +3247,7 @@
       "functions": null,
       "constants": null,
       "concepts": [],
-      "analyzed_at": "2026-01-28T20:12:40.102768129Z"
+      "analyzed_at": "2026-01-30T16:19:49.306992218Z"
     },
     "tracer.js": {
       "path": "tracer.js",
@@ -3262,74 +3262,18 @@
       "functions": null,
       "constants": null,
       "concepts": [],
-      "analyzed_at": "2026-01-28T20:12:40.102778338Z"
+      "analyzed_at": "2026-01-30T16:19:49.307004885Z"
     }
   },
   "architecture": {
     "overview": "Repository with 207 files across 45 modules. 0 public exports, 0 types, 0 functions.",
     "modules": [
       {
-        "path": "api/controllers/browsers",
-        "name": "browsers",
+        "path": "config/demoTests",
+        "name": "demoTests",
         "files": [
-          "api/controllers/browsers/selenium.js",
-          "api/controllers/browsers/update-browser.js",
-          "api/controllers/browsers/latest-browsers.js",
-          "api/controllers/browsers/latest-selenium-versions.js",
-          "api/controllers/browsers/add-browser.js"
-        ],
-        "is_internal": false
-      },
-      {
-        "path": "api/controllers/build",
-        "name": "build",
-        "files": [
-          "api/controllers/build/update-build-name.js",
-          "api/controllers/build/delete.js",
-          "api/controllers/build/search.js",
-          "api/controllers/build/bulk-delete.js"
-        ],
-        "is_internal": false
-      },
-      {
-        "path": "api/controllers/v2/build",
-        "name": "build",
-        "files": [
-          "api/controllers/v2/build/search.js"
-        ],
-        "is_internal": false
-      },
-      {
-        "path": "api/controllers/project",
-        "name": "project",
-        "files": [
-          "api/controllers/project/search.js"
-        ],
-        "is_internal": false
-      },
-      {
-        "path": "config",
-        "name": "config",
-        "files": [
-          "config/session.js",
-          "config/connections.js",
-          "config/policies.js",
-          "config/secrets.js",
-          "config/bootstrap.js",
-          "config/sockets.js",
-          "config/globals.js",
-          "config/routes.js",
-          "config/constants.js",
-          "config/log.js",
-          "config/custom.js",
-          "config/edgeCacheConstants.js",
-          "config/local.js",
-          "config/http.js",
-          "config/security.js",
-          "config/blueprints.js",
-          "config/models.js",
-          "config/priorityConstants.js",
-          "config/sequelize.js"
+          "config/demoTests/tests_list.js",
+          "config/demoTests/builds_list.js"
         ],
         "is_internal": false
       },
@@ -3337,18 +3281,10 @@
         "path": "api/controllers/analytics",
         "name": "analytics",
         "files": [
-          "api/controllers/analytics/build.js",
-          "api/controllers/analytics/test.js",
           "api/controllers/analytics/concurrency.js",
-          "api/controllers/analytics/stats.js"
-        ],
-        "is_internal": false
-      },
-      {
-        "path": "api/controllers/app/middleware",
-        "name": "middleware",
-        "files": [
-          "api/controllers/app/middleware/authorisation.js"
+          "api/controllers/analytics/build.js",
+          "api/controllers/analytics/stats.js",
+          "api/controllers/analytics/test.js"
         ],
         "is_internal": false
       },
@@ -3362,24 +3298,6 @@
         "is_internal": false
       },
       {
-        "path": "api/controllers/v2/analytics",
-        "name": "analytics",
-        "files": [
-          "api/controllers/v2/analytics/concurrency.js",
-          "api/controllers/v2/analytics/build.js"
-        ],
-        "is_internal": false
-      },
-      {
-        "path": "__tests__/__mocks__",
-        "name": "__mocks__",
-        "files": [
-          "__tests__/__mocks__/userInfo.js",
-          "__tests__/__mocks__/testDetails.js"
-        ],
-        "is_internal": false
-      },
-      {
         "path": "__tests__/api/services",
         "name": "services",
         "files": [
@@ -3389,30 +3307,10 @@
         "is_internal": false
       },
       {
-        "path": "api/controllers/v2/concurrency",
-        "name": "concurrency",
+        "path": "api/controllers/report",
+        "name": "report",
         "files": [
-          "api/controllers/v2/concurrency/clear.js"
-        ],
-        "is_internal": false
-      },
-      {
-        "path": "api/utils",
-        "name": "utils",
-        "files": [
-          "api/utils/cacheUtils.js"
-        ],
-        "is_internal": false
-      },
-      {
-        "path": "api/helpers",
-        "name": "helpers",
-        "files": [
-          "api/helpers/create.js",
-          "api/helpers/test.js",
-          "api/helpers/build.js",
-          "api/helpers/capability.js",
-          "api/helpers/concurrency.js"
+          "api/controllers/report/report.js"
         ],
         "is_internal": false
       },
@@ -3420,111 +3318,29 @@
         "path": "root",
         "name": "root",
         "files": [
-          "jest.config.js",
-          "package.json",
-          "ssh-config",
-          "Dockerfile_dev",
-          ".sailsrc",
-          ".eslintrc.js",
-          "newrelic.js",
-          ".editorconfig",
-          "app.js",
-          "sonar-project.properties",
           "tracer.js",
-          "README.md",
-          "Dockerfile",
+          "Dockerfile_dev",
+          ".eslintrc.js",
+          ".editorconfig",
           "jest.setup.js",
-          ".prettierrc"
+          "README.md",
+          ".prettierrc",
+          "sonar-project.properties",
+          "newrelic.js",
+          "Dockerfile",
+          "jest.config.js",
+          ".sailsrc",
+          "app.js",
+          "package.json",
+          "ssh-config"
         ],
         "is_internal": false
       },
       {
-        "path": "config/demoTests",
-        "name": "demoTests",
+        "path": "api/controllers/v2/master",
+        "name": "master",
         "files": [
-          "config/demoTests/builds_list.js",
-          "config/demoTests/tests_list.js"
-        ],
-        "is_internal": false
-      },
-      {
-        "path": "api/controllers/tag",
-        "name": "tag",
-        "files": [
-          "api/controllers/tag/get.js"
-        ],
-        "is_internal": false
-      },
-      {
-        "path": "__tests__/api/controllers/exposed-apis",
-        "name": "exposed-apis",
-        "files": [
-          "__tests__/api/controllers/exposed-apis/geolocation.test.js"
-        ],
-        "is_internal": false
-      },
-      {
-        "path": "api/models",
-        "name": "models",
-        "files": [
-          "api/models/AppiumConfig.js",
-          "api/models/Device.js",
-          "api/models/RejectedTest.js",
-          "api/models/TestConfig.js",
-          "api/models/SeleniumConfig.js",
-          "api/models/VirtualDeviceBrowserConfigs.js",
-          "api/models/Test.js",
-          "api/models/DeviceBrand.js",
-          "api/models/BrowserOsData.js",
-          "api/models/CDPConfig.js",
-          "api/models/TagTest.js",
-          "api/models/PwBrowserCompatibility.js",
-          "api/models/Build.js",
-          "api/models/CypressConfig.js",
-          "api/models/TestCounters.js",
-          "api/models/TestAggregateDaily.js",
-          "api/models/GlobalSeleniumConfig.js",
-          "api/models/OsVersion.js",
-          "api/models/DeviceAlias.js",
-          "api/models/Tag.js",
-          "api/models/DebugTest.js",
-          "api/models/SeleniumConfigBeta.js",
-          "api/models/TestAnnotationInfo.js",
-          "api/models/BuildTag.js",
-          "api/models/RealtimeOsBrowsers.js",
-          "api/models/Brand.js",
-          "api/models/Browser.js",
-          "api/models/GeoLocationVendorMap.js",
-          "api/models/Plan.js",
-          "api/models/AppiumVersionMap.js",
-          "api/models/RealDeviceAlias.js",
-          "api/models/BrowserVersion.js",
-          "api/models/BuildTeam.js",
-          "api/models/Project.js",
-          "api/models/CypressQueuedTest.js",
-          "api/models/OsAlias.js",
-          "api/models/TestGeoMapping.js",
-          "api/models/Config.js",
-          "api/models/RealDevice.js",
-          "api/models/TestAdditionalParam.js",
-          "api/models/TestCapability.js"
-        ],
-        "is_internal": false
-      },
-      {
-        "path": "api/responses",
-        "name": "responses",
-        "files": [
-          "api/responses/serverError.js"
-        ],
-        "is_internal": false
-      },
-      {
-        "path": "api/controllers/app",
-        "name": "app",
-        "files": [
-          "api/controllers/app/update-config.js",
-          "api/controllers/app/config.js"
+          "api/controllers/v2/master/capability.js"
         ],
         "is_internal": false
       },
@@ -3537,10 +3353,15 @@
         "is_internal": false
       },
       {
-        "path": "api/controllers/sumologic",
-        "name": "sumologic",
+        "path": "migrations",
+        "name": "migrations",
         "files": [
-          "api/controllers/sumologic/metric.js"
+          "migrations/MLE-3240_rollback.sql",
+          "migrations/MLE-3240.sql",
+          "migrations/MLE-1247.sql",
+          "migrations/MLE-2891.sql",
+          "migrations/MLE-1247_rollback.sql",
+          "migrations/MLE-1807.sql"
         ],
         "is_internal": false
       },
@@ -3554,38 +3375,90 @@
         "is_internal": false
       },
       {
-        "path": "api/controllers/health",
-        "name": "health",
+        "path": "api/controllers/internal",
+        "name": "internal",
         "files": [
-          "api/controllers/health/api.js"
+          "api/controllers/internal/update-browser-upload-timestamp.js"
         ],
         "is_internal": false
       },
       {
-        "path": "api/helpers/charts",
-        "name": "charts",
+        "path": "api/controllers/exposed-apis",
+        "name": "exposed-apis",
         "files": [
-          "api/helpers/charts/queueUtilization.js",
-          "api/helpers/charts/defaultChart.js",
-          "api/helpers/charts/passFailRatio.js",
-          "api/helpers/charts/coverage.js",
-          "api/helpers/charts/minuteConsumed.js"
+          "api/controllers/exposed-apis/geolocation.js",
+          "api/controllers/exposed-apis/platform.js"
         ],
         "is_internal": false
       },
       {
-        "path": "api/controllers/sse",
-        "name": "sse",
+        "path": "api/controllers/master",
+        "name": "master",
         "files": [
-          "api/controllers/sse/index.js"
+          "api/controllers/master/test.js",
+          "api/controllers/master/org-details.js",
+          "api/controllers/master/capability.js",
+          "api/controllers/master/config.js",
+          "api/controllers/master/browser.js",
+          "api/controllers/master/plan.js",
+          "api/controllers/master/device.js",
+          "api/controllers/master/os.js"
         ],
         "is_internal": false
       },
       {
-        "path": "__tests__/api/controllers/analytics",
-        "name": "analytics",
+        "path": "api/models",
+        "name": "models",
         "files": [
-          "__tests__/api/controllers/analytics/build.test.js"
+          "api/models/TagTest.js",
+          "api/models/AppiumConfig.js",
+          "api/models/CypressConfig.js",
+          "api/models/DebugTest.js",
+          "api/models/Config.js",
+          "api/models/Build.js",
+          "api/models/Browser.js",
+          "api/models/Device.js",
+          "api/models/BuildTag.js",
+          "api/models/RealDeviceAlias.js",
+          "api/models/BrowserOsData.js",
+          "api/models/OsVersion.js",
+          "api/models/DeviceAlias.js",
+          "api/models/SeleniumConfigBeta.js",
+          "api/models/TestAggregateDaily.js",
+          "api/models/TestConfig.js",
+          "api/models/BrowserVersion.js",
+          "api/models/RejectedTest.js",
+          "api/models/Project.js",
+          "api/models/TestCounters.js",
+          "api/models/Test.js",
+          "api/models/TestCapability.js",
+          "api/models/DeviceBrand.js",
+          "api/models/RealDevice.js",
+          "api/models/TestAnnotationInfo.js",
+          "api/models/AppiumVersionMap.js",
+          "api/models/SeleniumConfig.js",
+          "api/models/TestAdditionalParam.js",
+          "api/models/VirtualDeviceBrowserConfigs.js",
+          "api/models/OsAlias.js",
+          "api/models/GlobalSeleniumConfig.js",
+          "api/models/CypressQueuedTest.js",
+          "api/models/RealtimeOsBrowsers.js",
+          "api/models/GeoLocationVendorMap.js",
+          "api/models/Plan.js",
+          "api/models/PwBrowserCompatibility.js",
+          "api/models/Tag.js",
+          "api/models/Brand.js",
+          "api/models/BuildTeam.js",
+          "api/models/CDPConfig.js",
+          "api/models/TestGeoMapping.js"
+        ],
+        "is_internal": false
+      },
+      {
+        "path": "api/controllers/v2/build",
+        "name": "build",
+        "files": [
+          "api/controllers/v2/build/search.js"
         ],
         "is_internal": false
       },
@@ -3598,62 +3471,27 @@
         "is_internal": false
       },
       {
-        "path": "api/controllers/internal",
-        "name": "internal",
+        "path": "__tests__/api/controllers/exposed-apis",
+        "name": "exposed-apis",
         "files": [
-          "api/controllers/internal/update-browser-upload-timestamp.js"
+          "__tests__/api/controllers/exposed-apis/geolocation.test.js"
         ],
         "is_internal": false
       },
       {
-        "path": "api/controllers/test",
-        "name": "test",
+        "path": "__tests__/__mocks__",
+        "name": "__mocks__",
         "files": [
-          "api/controllers/test/multiplestop.js",
-          "api/controllers/test/delete.js",
-          "api/controllers/test/pause.js",
-          "api/controllers/test/stop.js",
-          "api/controllers/test/orgid.js",
-          "api/controllers/test/mute.js",
-          "api/controllers/test/interaction.js",
-          "api/controllers/test/multipledelete.js",
-          "api/controllers/test/get.js",
-          "api/controllers/test/polling.js",
-          "api/controllers/test/create.js",
-          "api/controllers/test/search.js",
-          "api/controllers/test/update-test-name.js",
-          "api/controllers/test/update.js"
+          "__tests__/__mocks__/testDetails.js",
+          "__tests__/__mocks__/userInfo.js"
         ],
         "is_internal": false
       },
       {
-        "path": "migrations",
-        "name": "migrations",
+        "path": "api/controllers/project",
+        "name": "project",
         "files": [
-          "migrations/MLE-1247_rollback.sql",
-          "migrations/MLE-3240_rollback.sql",
-          "migrations/MLE-2891.sql",
-          "migrations/MLE-1247.sql",
-          "migrations/MLE-1807.sql",
-          "migrations/MLE-3240.sql"
-        ],
-        "is_internal": false
-      },
-      {
-        "path": "__tests__/api/controllers/test",
-        "name": "test",
-        "files": [
-          "__tests__/api/controllers/test/concurrency.test.js",
-          "__tests__/api/controllers/test/update.test.js",
-          "__tests__/api/controllers/test/get.test.js"
-        ],
-        "is_internal": false
-      },
-      {
-        "path": "api/controllers/charts",
-        "name": "charts",
-        "files": [
-          "api/controllers/charts/index.js"
+          "api/controllers/project/search.js"
         ],
         "is_internal": false
       },
@@ -3666,26 +3504,108 @@
         "is_internal": false
       },
       {
-        "path": "config/env",
-        "name": "env",
+        "path": "api/controllers/browsers",
+        "name": "browsers",
         "files": [
-          "config/env/production.js"
+          "api/controllers/browsers/update-browser.js",
+          "api/controllers/browsers/latest-browsers.js",
+          "api/controllers/browsers/add-browser.js",
+          "api/controllers/browsers/selenium.js",
+          "api/controllers/browsers/latest-selenium-versions.js"
         ],
         "is_internal": false
       },
       {
-        "path": "api/controllers/v2/master",
-        "name": "master",
+        "path": "api/controllers/test",
+        "name": "test",
         "files": [
-          "api/controllers/v2/master/capability.js"
+          "api/controllers/test/interaction.js",
+          "api/controllers/test/update-test-name.js",
+          "api/controllers/test/multipledelete.js",
+          "api/controllers/test/pause.js",
+          "api/controllers/test/delete.js",
+          "api/controllers/test/update.js",
+          "api/controllers/test/mute.js",
+          "api/controllers/test/polling.js",
+          "api/controllers/test/create.js",
+          "api/controllers/test/get.js",
+          "api/controllers/test/multiplestop.js",
+          "api/controllers/test/orgid.js",
+          "api/controllers/test/stop.js",
+          "api/controllers/test/search.js"
         ],
         "is_internal": false
       },
       {
-        "path": "api/controllers/report",
-        "name": "report",
+        "path": "api/controllers/sumologic",
+        "name": "sumologic",
         "files": [
-          "api/controllers/report/report.js"
+          "api/controllers/sumologic/metric.js"
+        ],
+        "is_internal": false
+      },
+      {
+        "path": "api/controllers/build",
+        "name": "build",
+        "files": [
+          "api/controllers/build/update-build-name.js",
+          "api/controllers/build/search.js",
+          "api/controllers/build/delete.js",
+          "api/controllers/build/bulk-delete.js"
+        ],
+        "is_internal": false
+      },
+      {
+        "path": "api/controllers/sse",
+        "name": "sse",
+        "files": [
+          "api/controllers/sse/index.js"
+        ],
+        "is_internal": false
+      },
+      {
+        "path": "api/utils",
+        "name": "utils",
+        "files": [
+          "api/utils/cacheUtils.js"
+        ],
+        "is_internal": false
+      },
+      {
+        "path": "__tests__/api/controllers/analytics",
+        "name": "analytics",
+        "files": [
+          "__tests__/api/controllers/analytics/build.test.js"
+        ],
+        "is_internal": false
+      },
+      {
+        "path": "api/responses",
+        "name": "responses",
+        "files": [
+          "api/responses/serverError.js"
+        ],
+        "is_internal": false
+      },
+      {
+        "path": "api/controllers/test-additional-param",
+        "name": "test-additional-param",
+        "files": [
+          "api/controllers/test-additional-param/get.js"
+        ],
+        "is_internal": false
+      },
+      {
+        "path": "config/appConfig",
+        "name": "appConfig",
+        "files": [
+          "config/appConfig/os_device_alias.js",
+          "config/appConfig/browser_alias.js",
+          "config/appConfig/os_alias.js",
+          "config/appConfig/os_info.js",
+          "config/appConfig/index.js",
+          "config/appConfig/config_timedout.js",
+          "config/appConfig/latest_config.js"
         ],
         "is_internal": false
       },
@@ -3700,19 +3620,165 @@
         "is_internal": false
       },
       {
-        "path": "api/controllers/test-additional-param",
-        "name": "test-additional-param",
+        "path": "api/helpers/charts",
+        "name": "charts",
         "files": [
-          "api/controllers/test-additional-param/get.js"
+          "api/helpers/charts/passFailRatio.js",
+          "api/helpers/charts/minuteConsumed.js",
+          "api/helpers/charts/defaultChart.js",
+          "api/helpers/charts/queueUtilization.js",
+          "api/helpers/charts/coverage.js"
         ],
         "is_internal": false
       },
       {
-        "path": "api/controllers/exposed-apis",
-        "name": "exposed-apis",
+        "path": "api/controllers/v2/concurrency",
+        "name": "concurrency",
         "files": [
-          "api/controllers/exposed-apis/geolocation.js",
-          "api/controllers/exposed-apis/platform.js"
+          "api/controllers/v2/concurrency/clear.js"
+        ],
+        "is_internal": false
+      },
+      {
+        "path": "__tests__/api/controllers/test",
+        "name": "test",
+        "files": [
+          "__tests__/api/controllers/test/concurrency.test.js",
+          "__tests__/api/controllers/test/get.test.js",
+          "__tests__/api/controllers/test/update.test.js"
+        ],
+        "is_internal": false
+      },
+      {
+        "path": "api/controllers/app",
+        "name": "app",
+        "files": [
+          "api/controllers/app/config.js",
+          "api/controllers/app/update-config.js"
+        ],
+        "is_internal": false
+      },
+      {
+        "path": "api/helpers",
+        "name": "helpers",
+        "files": [
+          "api/helpers/build.js",
+          "api/helpers/concurrency.js",
+          "api/helpers/test.js",
+          "api/helpers/capability.js",
+          "api/helpers/create.js"
+        ],
+        "is_internal": false
+      },
+      {
+        "path": "api/controllers/charts",
+        "name": "charts",
+        "files": [
+          "api/controllers/charts/index.js"
+        ],
+        "is_internal": false
+      },
+      {
+        "path": "api/controllers/health",
+        "name": "health",
+        "files": [
+          "api/controllers/health/api.js"
+        ],
+        "is_internal": false
+      },
+      {
+        "path": "api/controllers/v2/analytics",
+        "name": "analytics",
+        "files": [
+          "api/controllers/v2/analytics/concurrency.js",
+          "api/controllers/v2/analytics/build.js"
+        ],
+        "is_internal": false
+      },
+      {
+        "path": "api/controllers/tag",
+        "name": "tag",
+        "files": [
+          "api/controllers/tag/get.js"
+        ],
+        "is_internal": false
+      },
+      {
+        "path": "api/controllers/app/middleware",
+        "name": "middleware",
+        "files": [
+          "api/controllers/app/middleware/authorisation.js"
+        ],
+        "is_internal": false
+      },
+      {
+        "path": "config",
+        "name": "config",
+        "files": [
+          "config/security.js",
+          "config/priorityConstants.js",
+          "config/globals.js",
+          "config/policies.js",
+          "config/custom.js",
+          "config/bootstrap.js",
+          "config/edgeCacheConstants.js",
+          "config/sockets.js",
+          "config/local.js",
+          "config/constants.js",
+          "config/log.js",
+          "config/routes.js",
+          "config/secrets.js",
+          "config/connections.js",
+          "config/session.js",
+          "config/models.js",
+          "config/http.js",
+          "config/blueprints.js",
+          "config/sequelize.js"
+        ],
+        "is_internal": false
+      },
+      {
+        "path": "api/services",
+        "name": "services",
+        "files": [
+          "api/services/webHookHandler.js",
+          "api/services/redis.js",
+          "api/services/graphUtils.js",
+          "api/services/retention.js",
+          "api/services/featureFlags.js",
+          "api/services/sse.js",
+          "api/services/share.js",
+          "api/services/stopBuilds.js",
+          "api/services/sanctum.js",
+          "api/services/rediscached.js",
+          "api/services/teller.js",
+          "api/services/project.js",
+          "api/services/slackNotification.js",
+          "api/services/mobilerediscached.js",
+          "api/services/auth.js",
+          "api/services/notifications.js",
+          "api/services/tellerkafka.js",
+          "api/services/edgeCachingHandler.js",
+          "api/services/jwt.js",
+          "api/services/kafka.js",
+          "api/services/logger.js",
+          "api/services/sequelize.js",
+          "api/services/annotations.js",
+          "api/services/httphandler.js",
+          "api/services/plan.js",
+          "api/services/scheduler.js",
+          "api/services/teams.js",
+          "api/services/rbac.js",
+          "api/services/allocationFailure.js",
+          "api/services/utils.js"
+        ],
+        "is_internal": false
+      },
+      {
+        "path": "config/env",
+        "name": "env",
+        "files": [
+          "config/env/production.js"
         ],
         "is_internal": false
       },
@@ -3723,164 +3789,12 @@
           "__tests__/api/controllers/v2/analytics/concurrency.test.js"
         ],
         "is_internal": false
-      },
-      {
-        "path": "api/services",
-        "name": "services",
-        "files": [
-          "api/services/edgeCachingHandler.js",
-          "api/services/logger.js",
-          "api/services/retention.js",
-          "api/services/kafka.js",
-          "api/services/webHookHandler.js",
-          "api/services/annotations.js",
-          "api/services/sse.js",
-          "api/services/utils.js",
-          "api/services/auth.js",
-          "api/services/featureFlags.js",
-          "api/services/notifications.js",
-          "api/services/tellerkafka.js",
-          "api/services/redis.js",
-          "api/services/rediscached.js",
-          "api/services/sanctum.js",
-          "api/services/sequelize.js",
-          "api/services/httphandler.js",
-          "api/services/project.js",
-          "api/services/allocationFailure.js",
-          "api/services/share.js",
-          "api/services/teams.js",
-          "api/services/teller.js",
-          "api/services/mobilerediscached.js",
-          "api/services/scheduler.js",
-          "api/services/plan.js",
-          "api/services/slackNotification.js",
-          "api/services/rbac.js",
-          "api/services/graphUtils.js",
-          "api/services/jwt.js",
-          "api/services/stopBuilds.js"
-        ],
-        "is_internal": false
-      },
-      {
-        "path": "api/controllers/master",
-        "name": "master",
-        "files": [
-          "api/controllers/master/capability.js",
-          "api/controllers/master/os.js",
-          "api/controllers/master/device.js",
-          "api/controllers/master/org-details.js",
-          "api/controllers/master/browser.js",
-          "api/controllers/master/plan.js",
-          "api/controllers/master/config.js",
-          "api/controllers/master/test.js"
-        ],
-        "is_internal": false
-      },
-      {
-        "path": "config/appConfig",
-        "name": "appConfig",
-        "files": [
-          "config/appConfig/browser_alias.js",
-          "config/appConfig/os_alias.js",
-          "config/appConfig/os_info.js",
-          "config/appConfig/latest_config.js",
-          "config/appConfig/index.js",
-          "config/appConfig/os_device_alias.js",
-          "config/appConfig/config_timedout.js"
-        ],
-        "is_internal": false
       }
     ],
     "entry_points": null,
     "dependencies": null,
     "build_system": "npm",
-    "main_packages": null,
-    "ai_analysis": {
-      "pattern": "Layered monolith with service-oriented components",
-      "layers": [
-        {
-          "name": "Presentation Layer",
-          "purpose": "Handle external communication and API endpoints",
-          "components": [
-            "exposed-apis",
-            "sse",
-            "middleware",
-            "responses"
-          ]
-        },
-        {
-          "name": "Application Layer",
-          "purpose": "Business logic orchestration and application services",
-          "components": [
-            "services",
-            "app",
-            "v2",
-            "analytics",
-            "rbac"
-          ]
-        },
-        {
-          "name": "Domain Layer",
-          "purpose": "Core business entities and domain models",
-          "components": [
-            "models",
-            "project",
-            "build",
-            "test",
-            "browsers",
-            "tag"
-          ]
-        },
-        {
-          "name": "Infrastructure Layer",
-          "purpose": "External integrations, persistence, and system utilities",
-          "components": [
-            "config",
-            "helpers",
-            "utils",
-            "migrations",
-            "sumologic",
-            "charts"
-          ]
-        },
-        {
-          "name": "Cross-cutting Layer",
-          "purpose": "Shared concerns across all layers",
-          "components": [
-            "middleware",
-            "health",
-            "session",
-            "concurrency",
-            "appConfig"
-          ]
-        }
-      ],
-      "data_flow": "Requests enter through exposed-apis, pass through middleware for authentication/authorization via rbac, are processed by services layer which interacts with models for data operations, with analytics collecting metrics throughout the flow, and responses formatted back through the presentation layer",
-      "strengths": [
-        "Clear separation of concerns with distinct service modules",
-        "Comprehensive testing strategy with dedicated test modules",
-        "Strong configuration management with dedicated config module",
-        "Built-in analytics and monitoring capabilities",
-        "Database migration support for schema evolution"
-      ],
-      "weaknesses": [
-        "Potential monolithic complexity with high coupling between modules",
-        "Multiple analytics modules suggest possible duplication",
-        "Large models directory (41 files) may indicate overly complex data layer",
-        "Unclear module boundaries with some overlapping responsibilities",
-        "Missing clear API versioning strategy despite v2 module presence"
-      ],
-      "recommendations": [
-        "Consider breaking down the large models module into domain-specific sub-modules",
-        "Consolidate analytics modules to reduce duplication and improve maintainability",
-        "Implement clear API versioning strategy across all endpoints",
-        "Extract shared utilities into a common library to reduce coupling",
-        "Consider microservices extraction for loosely coupled domains like analytics and reporting"
-      ],
-      "generated_at": "2026-01-29T13:36:53.743467712Z",
-      "tokens_used": 1257,
-      "provider": "anthropic"
-    }
+    "main_packages": null
   },
   "statistics": {
     "total_files": 207,
@@ -3895,50 +3809,883 @@
     },
     "function_count": 0,
     "type_count": 0,
-    "export_count": 0
+    "export_count": 0,
+    "indexed_concepts": 70
   },
   "version": 1,
-  "ai_summary": {
-    "overview": "This is a comprehensive test management service automation platform built for LambdaTest, providing APIs and services to manage test execution, analytics, and reporting. It appears to be a backend service that handles test orchestration, browser management, and analytics for automated testing workflows.",
-    "purpose": "To provide a centralized test management platform that automates test execution, tracks analytics, manages test builds and projects, and provides reporting capabilities for cross-browser testing services",
-    "key_features": [
-      "Test execution management and automation",
-      "Browser and build management",
-      "Analytics and reporting with charts",
-      "Project and session management",
-      "Role-based access control (RBAC)",
-      "Real-time updates via Server-Sent Events (SSE)",
-      "Concurrency management",
-      "Health monitoring and internal APIs"
-    ],
-    "technology_stack": [
-      "Node.js",
-      "JavaScript",
-      "SQL databases",
-      "Docker",
-      "RESTful APIs",
-      "Server-Sent Events"
-    ],
-    "architecture_style": "MVC (Model-View-Controller) with API-first architecture and versioned endpoints",
-    "main_components": [
-      "API Controllers (v1 and v2)",
-      "Data Models",
-      "Services Layer",
-      "Analytics Engine",
-      "Test Management System",
-      "Browser Management",
-      "Build and Project Management",
-      "Configuration Management"
-    ],
-    "suggestions": [
-      "Consider implementing API rate limiting and caching strategies",
-      "Add more comprehensive test coverage beyond the current test files",
-      "Implement OpenAPI/Swagger documentation for better API documentation",
-      "Consider breaking down large controller files into smaller, more focused modules",
-      "Add monitoring and alerting capabilities for production deployments"
-    ],
-    "generated_at": "2026-01-29T13:36:41.676693304Z",
-    "tokens_used": 1296,
-    "provider": "anthropic"
+  "call_graph": {
+    "nodes": {},
+    "edges": []
+  },
+  "search_index": {
+    "function_names": {},
+    "concepts": {
+      "allocationfailure.js": [
+        {
+          "file": "api/services/allocationFailure.js",
+          "function": "",
+          "line": 0,
+          "summary": "javascript source file"
+        }
+      ],
+      "appconfig": [
+        {
+          "file": "config/appConfig/os_alias.js",
+          "function": "",
+          "line": 0,
+          "summary": "Configuration file"
+        },
+        {
+          "file": "config/appConfig/os_info.js",
+          "function": "",
+          "line": 0,
+          "summary": "Configuration file"
+        },
+        {
+          "file": "config/appConfig/index.js",
+          "function": "",
+          "line": 0,
+          "summary": "Configuration file"
+        },
+        {
+          "file": "config/appConfig/config_timedout.js",
+          "function": "",
+          "line": 0,
+          "summary": "Configuration file"
+        },
+        {
+          "file": "config/appConfig/latest_config.js",
+          "function": "",
+          "line": 0,
+          "summary": "Configuration file"
+        },
+        {
+          "file": "config/appConfig/os_device_alias.js",
+          "function": "",
+          "line": 0,
+          "summary": "Configuration file"
+        },
+        {
+          "file": "config/appConfig/browser_alias.js",
+          "function": "",
+          "line": 0,
+          "summary": "Configuration file"
+        }
+      ],
+      "appiumconfig.js": [
+        {
+          "file": "api/models/AppiumConfig.js",
+          "function": "",
+          "line": 0,
+          "summary": "Configuration file"
+        }
+      ],
+      "appiumversionmap.js": [
+        {
+          "file": "api/models/AppiumVersionMap.js",
+          "function": "",
+          "line": 0,
+          "summary": "javascript source file"
+        }
+      ],
+      "brand.js": [
+        {
+          "file": "api/models/Brand.js",
+          "function": "",
+          "line": 0,
+          "summary": "javascript source file"
+        }
+      ],
+      "browser.js": [
+        {
+          "file": "api/models/Browser.js",
+          "function": "",
+          "line": 0,
+          "summary": "javascript source file"
+        }
+      ],
+      "browserosdata.js": [
+        {
+          "file": "api/models/BrowserOsData.js",
+          "function": "",
+          "line": 0,
+          "summary": "javascript source file"
+        }
+      ],
+      "browserversion.js": [
+        {
+          "file": "api/models/BrowserVersion.js",
+          "function": "",
+          "line": 0,
+          "summary": "javascript source file"
+        }
+      ],
+      "build.js": [
+        {
+          "file": "api/models/Build.js",
+          "function": "",
+          "line": 0,
+          "summary": "javascript source file"
+        }
+      ],
+      "buildtag.js": [
+        {
+          "file": "api/models/BuildTag.js",
+          "function": "",
+          "line": 0,
+          "summary": "javascript source file"
+        }
+      ],
+      "buildteam.js": [
+        {
+          "file": "api/models/BuildTeam.js",
+          "function": "",
+          "line": 0,
+          "summary": "javascript source file"
+        }
+      ],
+      "cacheutils.js": [
+        {
+          "file": "api/utils/cacheUtils.js",
+          "function": "",
+          "line": 0,
+          "summary": "javascript source file"
+        }
+      ],
+      "cdpconfig.js": [
+        {
+          "file": "api/models/CDPConfig.js",
+          "function": "",
+          "line": 0,
+          "summary": "Configuration file"
+        }
+      ],
+      "config.js": [
+        {
+          "file": "api/models/Config.js",
+          "function": "",
+          "line": 0,
+          "summary": "Configuration file"
+        }
+      ],
+      "cypressconfig.js": [
+        {
+          "file": "api/models/CypressConfig.js",
+          "function": "",
+          "line": 0,
+          "summary": "Configuration file"
+        }
+      ],
+      "cypressqueuedtest.js": [
+        {
+          "file": "api/models/CypressQueuedTest.js",
+          "function": "",
+          "line": 0,
+          "summary": "Test file"
+        }
+      ],
+      "debugtest.js": [
+        {
+          "file": "api/models/DebugTest.js",
+          "function": "",
+          "line": 0,
+          "summary": "Test file"
+        }
+      ],
+      "defaultchart.js": [
+        {
+          "file": "api/helpers/charts/defaultChart.js",
+          "function": "",
+          "line": 0,
+          "summary": "javascript source file"
+        }
+      ],
+      "demotests": [
+        {
+          "file": "config/demoTests/builds_list.js",
+          "function": "",
+          "line": 0,
+          "summary": "Configuration file"
+        },
+        {
+          "file": "config/demoTests/tests_list.js",
+          "function": "",
+          "line": 0,
+          "summary": "Configuration file"
+        }
+      ],
+      "device.js": [
+        {
+          "file": "api/models/Device.js",
+          "function": "",
+          "line": 0,
+          "summary": "javascript source file"
+        }
+      ],
+      "devicealias.js": [
+        {
+          "file": "api/models/DeviceAlias.js",
+          "function": "",
+          "line": 0,
+          "summary": "javascript source file"
+        }
+      ],
+      "devicebrand.js": [
+        {
+          "file": "api/models/DeviceBrand.js",
+          "function": "",
+          "line": 0,
+          "summary": "javascript source file"
+        }
+      ],
+      "dockerfile": [
+        {
+          "file": "Dockerfile",
+          "function": "",
+          "line": 0,
+          "summary": "Docker container definition"
+        }
+      ],
+      "dockerfile_dev": [
+        {
+          "file": "Dockerfile_dev",
+          "function": "",
+          "line": 0,
+          "summary": "Docker container definition"
+        }
+      ],
+      "edgecacheconstants.js": [
+        {
+          "file": "config/edgeCacheConstants.js",
+          "function": "",
+          "line": 0,
+          "summary": "Configuration file"
+        }
+      ],
+      "edgecachinghandler.js": [
+        {
+          "file": "api/services/edgeCachingHandler.js",
+          "function": "",
+          "line": 0,
+          "summary": "javascript source file"
+        }
+      ],
+      "featureflags.js": [
+        {
+          "file": "api/services/featureFlags.js",
+          "function": "",
+          "line": 0,
+          "summary": "javascript source file"
+        }
+      ],
+      "geolocationvendormap.js": [
+        {
+          "file": "api/models/GeoLocationVendorMap.js",
+          "function": "",
+          "line": 0,
+          "summary": "javascript source file"
+        }
+      ],
+      "globalseleniumconfig.js": [
+        {
+          "file": "api/models/GlobalSeleniumConfig.js",
+          "function": "",
+          "line": 0,
+          "summary": "Configuration file"
+        }
+      ],
+      "graphutils.js": [
+        {
+          "file": "api/services/graphUtils.js",
+          "function": "",
+          "line": 0,
+          "summary": "javascript source file"
+        }
+      ],
+      "minuteconsumed.js": [
+        {
+          "file": "api/helpers/charts/minuteConsumed.js",
+          "function": "",
+          "line": 0,
+          "summary": "javascript source file"
+        }
+      ],
+      "mle-1247.sql": [
+        {
+          "file": "migrations/MLE-1247.sql",
+          "function": "",
+          "line": 0,
+          "summary": "SQL database script"
+        }
+      ],
+      "mle-1247_rollback.sql": [
+        {
+          "file": "migrations/MLE-1247_rollback.sql",
+          "function": "",
+          "line": 0,
+          "summary": "SQL database script"
+        }
+      ],
+      "mle-1807.sql": [
+        {
+          "file": "migrations/MLE-1807.sql",
+          "function": "",
+          "line": 0,
+          "summary": "SQL database script"
+        }
+      ],
+      "mle-2891.sql": [
+        {
+          "file": "migrations/MLE-2891.sql",
+          "function": "",
+          "line": 0,
+          "summary": "SQL database script"
+        }
+      ],
+      "mle-3240.sql": [
+        {
+          "file": "migrations/MLE-3240.sql",
+          "function": "",
+          "line": 0,
+          "summary": "SQL database script"
+        }
+      ],
+      "mle-3240_rollback.sql": [
+        {
+          "file": "migrations/MLE-3240_rollback.sql",
+          "function": "",
+          "line": 0,
+          "summary": "SQL database script"
+        }
+      ],
+      "osalias.js": [
+        {
+          "file": "api/models/OsAlias.js",
+          "function": "",
+          "line": 0,
+          "summary": "javascript source file"
+        }
+      ],
+      "osversion.js": [
+        {
+          "file": "api/models/OsVersion.js",
+          "function": "",
+          "line": 0,
+          "summary": "javascript source file"
+        }
+      ],
+      "passfailratio.js": [
+        {
+          "file": "api/helpers/charts/passFailRatio.js",
+          "function": "",
+          "line": 0,
+          "summary": "javascript source file"
+        }
+      ],
+      "plan.js": [
+        {
+          "file": "api/models/Plan.js",
+          "function": "",
+          "line": 0,
+          "summary": "javascript source file"
+        }
+      ],
+      "priorityconstants.js": [
+        {
+          "file": "config/priorityConstants.js",
+          "function": "",
+          "line": 0,
+          "summary": "Configuration file"
+        }
+      ],
+      "project.js": [
+        {
+          "file": "api/models/Project.js",
+          "function": "",
+          "line": 0,
+          "summary": "javascript source file"
+        }
+      ],
+      "pwbrowsercompatibility.js": [
+        {
+          "file": "api/models/PwBrowserCompatibility.js",
+          "function": "",
+          "line": 0,
+          "summary": "javascript source file"
+        }
+      ],
+      "queueutilization.js": [
+        {
+          "file": "api/helpers/charts/queueUtilization.js",
+          "function": "",
+          "line": 0,
+          "summary": "javascript source file"
+        }
+      ],
+      "readme.md": [
+        {
+          "file": "README.md",
+          "function": "",
+          "line": 0,
+          "summary": "Project documentation"
+        }
+      ],
+      "realdevice.js": [
+        {
+          "file": "api/models/RealDevice.js",
+          "function": "",
+          "line": 0,
+          "summary": "javascript source file"
+        }
+      ],
+      "realdevicealias.js": [
+        {
+          "file": "api/models/RealDeviceAlias.js",
+          "function": "",
+          "line": 0,
+          "summary": "javascript source file"
+        }
+      ],
+      "realtimeosbrowsers.js": [
+        {
+          "file": "api/models/RealtimeOsBrowsers.js",
+          "function": "",
+          "line": 0,
+          "summary": "javascript source file"
+        }
+      ],
+      "rejectedtest.js": [
+        {
+          "file": "api/models/RejectedTest.js",
+          "function": "",
+          "line": 0,
+          "summary": "Test file"
+        }
+      ],
+      "seleniumconfig.js": [
+        {
+          "file": "api/models/SeleniumConfig.js",
+          "function": "",
+          "line": 0,
+          "summary": "Configuration file"
+        }
+      ],
+      "seleniumconfigbeta.js": [
+        {
+          "file": "api/models/SeleniumConfigBeta.js",
+          "function": "",
+          "line": 0,
+          "summary": "Configuration file"
+        }
+      ],
+      "servererror.js": [
+        {
+          "file": "api/responses/serverError.js",
+          "function": "",
+          "line": 0,
+          "summary": "javascript source file"
+        }
+      ],
+      "setuptestdata.sql": [
+        {
+          "file": "scripts/setupTestData.sql",
+          "function": "",
+          "line": 0,
+          "summary": "Test file"
+        }
+      ],
+      "slacknotification.js": [
+        {
+          "file": "api/services/slackNotification.js",
+          "function": "",
+          "line": 0,
+          "summary": "javascript source file"
+        }
+      ],
+      "stopbuilds.js": [
+        {
+          "file": "api/services/stopBuilds.js",
+          "function": "",
+          "line": 0,
+          "summary": "javascript source file"
+        }
+      ],
+      "tag.js": [
+        {
+          "file": "api/models/Tag.js",
+          "function": "",
+          "line": 0,
+          "summary": "javascript source file"
+        }
+      ],
+      "tagtest.js": [
+        {
+          "file": "api/models/TagTest.js",
+          "function": "",
+          "line": 0,
+          "summary": "Test file"
+        }
+      ],
+      "test.js": [
+        {
+          "file": "api/models/Test.js",
+          "function": "",
+          "line": 0,
+          "summary": "Test file"
+        }
+      ],
+      "testadditionalparam.js": [
+        {
+          "file": "api/models/TestAdditionalParam.js",
+          "function": "",
+          "line": 0,
+          "summary": "Test file"
+        }
+      ],
+      "testaggregatedaily.js": [
+        {
+          "file": "api/models/TestAggregateDaily.js",
+          "function": "",
+          "line": 0,
+          "summary": "Test file"
+        }
+      ],
+      "testannotationinfo.js": [
+        {
+          "file": "api/models/TestAnnotationInfo.js",
+          "function": "",
+          "line": 0,
+          "summary": "Test file"
+        }
+      ],
+      "testcapability.js": [
+        {
+          "file": "api/models/TestCapability.js",
+          "function": "",
+          "line": 0,
+          "summary": "Test file"
+        }
+      ],
+      "testconfig.js": [
+        {
+          "file": "api/models/TestConfig.js",
+          "function": "",
+          "line": 0,
+          "summary": "Configuration file"
+        }
+      ],
+      "testcounters.js": [
+        {
+          "file": "api/models/TestCounters.js",
+          "function": "",
+          "line": 0,
+          "summary": "Test file"
+        }
+      ],
+      "testdetails.js": [
+        {
+          "file": "__tests__/__mocks__/testDetails.js",
+          "function": "",
+          "line": 0,
+          "summary": "Test file"
+        }
+      ],
+      "testgeomapping.js": [
+        {
+          "file": "api/models/TestGeoMapping.js",
+          "function": "",
+          "line": 0,
+          "summary": "Test file"
+        }
+      ],
+      "userinfo.js": [
+        {
+          "file": "__tests__/__mocks__/userInfo.js",
+          "function": "",
+          "line": 0,
+          "summary": "Test file"
+        }
+      ],
+      "virtualdevicebrowserconfigs.js": [
+        {
+          "file": "api/models/VirtualDeviceBrowserConfigs.js",
+          "function": "",
+          "line": 0,
+          "summary": "Configuration file"
+        }
+      ],
+      "webhookhandler.js": [
+        {
+          "file": "api/services/webHookHandler.js",
+          "function": "",
+          "line": 0,
+          "summary": "javascript source file"
+        }
+      ]
+    },
+    "side_effects": {},
+    "type_usage": {},
+    "error_types": {},
+    "routes": {},
+    "packages": {
+      "__mocks__": [
+        "__tests__/__mocks__/testDetails.js",
+        "__tests__/__mocks__/userInfo.js"
+      ],
+      "analytics": [
+        "api/controllers/v2/analytics/build.js",
+        "__tests__/api/controllers/analytics/build.test.js",
+        "api/controllers/analytics/test.js",
+        "api/controllers/analytics/concurrency.js",
+        "api/controllers/analytics/build.js",
+        "api/controllers/analytics/stats.js",
+        "__tests__/api/controllers/v2/analytics/concurrency.test.js",
+        "api/controllers/v2/analytics/concurrency.js"
+      ],
+      "app": [
+        "api/controllers/app/update-config.js",
+        "api/controllers/app/config.js"
+      ],
+      "appConfig": [
+        "config/appConfig/os_alias.js",
+        "config/appConfig/os_info.js",
+        "config/appConfig/index.js",
+        "config/appConfig/config_timedout.js",
+        "config/appConfig/latest_config.js",
+        "config/appConfig/os_device_alias.js",
+        "config/appConfig/browser_alias.js"
+      ],
+      "browsers": [
+        "api/controllers/browsers/selenium.js",
+        "api/controllers/browsers/latest-selenium-versions.js",
+        "api/controllers/browsers/update-browser.js",
+        "api/controllers/browsers/latest-browsers.js",
+        "api/controllers/browsers/add-browser.js"
+      ],
+      "build": [
+        "api/controllers/build/search.js",
+        "api/controllers/build/delete.js",
+        "api/controllers/build/bulk-delete.js",
+        "api/controllers/build/update-build-name.js",
+        "api/controllers/v2/build/search.js"
+      ],
+      "charts": [
+        "api/helpers/charts/minuteConsumed.js",
+        "api/helpers/charts/defaultChart.js",
+        "api/helpers/charts/queueUtilization.js",
+        "api/helpers/charts/coverage.js",
+        "api/helpers/charts/passFailRatio.js",
+        "api/controllers/charts/index.js"
+      ],
+      "concurrency": [
+        "api/controllers/v2/concurrency/clear.js"
+      ],
+      "config": [
+        "config/local.js",
+        "config/constants.js",
+        "config/routes.js",
+        "config/log.js",
+        "config/secrets.js",
+        "config/connections.js",
+        "config/session.js",
+        "config/models.js",
+        "config/http.js",
+        "config/blueprints.js",
+        "config/sequelize.js",
+        "config/security.js",
+        "config/priorityConstants.js",
+        "config/globals.js",
+        "config/policies.js",
+        "config/custom.js",
+        "config/bootstrap.js",
+        "config/edgeCacheConstants.js",
+        "config/sockets.js"
+      ],
+      "demoTests": [
+        "config/demoTests/builds_list.js",
+        "config/demoTests/tests_list.js"
+      ],
+      "env": [
+        "config/env/production.js"
+      ],
+      "exposed-apis": [
+        "api/controllers/exposed-apis/platform.js",
+        "__tests__/api/controllers/exposed-apis/geolocation.test.js",
+        "api/controllers/exposed-apis/geolocation.js"
+      ],
+      "health": [
+        "api/controllers/health/api.js"
+      ],
+      "helpers": [
+        "api/helpers/test.js",
+        "api/helpers/capability.js",
+        "api/helpers/create.js",
+        "api/helpers/build.js",
+        "api/helpers/concurrency.js"
+      ],
+      "internal": [
+        "api/controllers/internal/update-browser-upload-timestamp.js"
+      ],
+      "master": [
+        "api/controllers/master/device.js",
+        "api/controllers/master/os.js",
+        "api/controllers/master/test.js",
+        "api/controllers/master/org-details.js",
+        "api/controllers/master/capability.js",
+        "api/controllers/v2/master/capability.js",
+        "api/controllers/master/config.js",
+        "api/controllers/master/plan.js",
+        "api/controllers/master/browser.js"
+      ],
+      "middleware": [
+        "api/controllers/app/middleware/authorisation.js"
+      ],
+      "migrations": [
+        "migrations/MLE-1247.sql",
+        "migrations/MLE-1247_rollback.sql",
+        "migrations/MLE-2891.sql",
+        "migrations/MLE-1807.sql",
+        "migrations/MLE-3240_rollback.sql",
+        "migrations/MLE-3240.sql"
+      ],
+      "models": [
+        "api/models/Test.js",
+        "api/models/TestCapability.js",
+        "api/models/DeviceBrand.js",
+        "api/models/RealDevice.js",
+        "api/models/TestAnnotationInfo.js",
+        "api/models/SeleniumConfig.js",
+        "api/models/AppiumVersionMap.js",
+        "api/models/OsAlias.js",
+        "api/models/TestAdditionalParam.js",
+        "api/models/VirtualDeviceBrowserConfigs.js",
+        "api/models/CypressQueuedTest.js",
+        "api/models/GlobalSeleniumConfig.js",
+        "api/models/RealtimeOsBrowsers.js",
+        "api/models/GeoLocationVendorMap.js",
+        "api/models/Plan.js",
+        "api/models/PwBrowserCompatibility.js",
+        "api/models/Tag.js",
+        "api/models/Brand.js",
+        "api/models/BuildTeam.js",
+        "api/models/CDPConfig.js",
+        "api/models/TestGeoMapping.js",
+        "api/models/TagTest.js",
+        "api/models/AppiumConfig.js",
+        "api/models/CypressConfig.js",
+        "api/models/DebugTest.js",
+        "api/models/Config.js",
+        "api/models/Build.js",
+        "api/models/Browser.js",
+        "api/models/Device.js",
+        "api/models/RealDeviceAlias.js",
+        "api/models/BuildTag.js",
+        "api/models/BrowserOsData.js",
+        "api/models/OsVersion.js",
+        "api/models/DeviceAlias.js",
+        "api/models/SeleniumConfigBeta.js",
+        "api/models/BrowserVersion.js",
+        "api/models/TestAggregateDaily.js",
+        "api/models/TestConfig.js",
+        "api/models/RejectedTest.js",
+        "api/models/Project.js",
+        "api/models/TestCounters.js"
+      ],
+      "project": [
+        "api/controllers/project/search.js"
+      ],
+      "rbac": [
+        "api/controllers/v2/rbac/internal.js",
+        "api/controllers/v2/rbac/verify.js"
+      ],
+      "report": [
+        "api/controllers/report/report.js"
+      ],
+      "responses": [
+        "api/responses/serverError.js"
+      ],
+      "scripts": [
+        "scripts/setupTestData.sql"
+      ],
+      "services": [
+        "api/services/mobilerediscached.js",
+        "api/services/project.js",
+        "api/services/slackNotification.js",
+        "api/services/auth.js",
+        "api/services/notifications.js",
+        "api/services/tellerkafka.js",
+        "api/services/edgeCachingHandler.js",
+        "api/services/jwt.js",
+        "api/services/kafka.js",
+        "api/services/logger.js",
+        "api/services/sequelize.js",
+        "api/services/annotations.js",
+        "api/services/httphandler.js",
+        "api/services/plan.js",
+        "api/services/scheduler.js",
+        "api/services/teams.js",
+        "api/services/rbac.js",
+        "api/services/allocationFailure.js",
+        "api/services/utils.js",
+        "__tests__/api/services/httphandler.test.js",
+        "__tests__/api/services/utils.test.js",
+        "api/services/webHookHandler.js",
+        "api/services/graphUtils.js",
+        "api/services/redis.js",
+        "api/services/retention.js",
+        "api/services/featureFlags.js",
+        "api/services/share.js",
+        "api/services/sse.js",
+        "api/services/stopBuilds.js",
+        "api/services/sanctum.js",
+        "api/services/rediscached.js",
+        "api/services/teller.js"
+      ],
+      "session": [
+        "api/controllers/session/stop.js"
+      ],
+      "sse": [
+        "api/controllers/sse/index.js"
+      ],
+      "sumologic": [
+        "api/controllers/sumologic/metric.js"
+      ],
+      "tag": [
+        "api/controllers/tag/get.js"
+      ],
+      "test": [
+        "__tests__/api/controllers/test/concurrency.test.js",
+        "api/controllers/test/mute.js",
+        "api/controllers/test/create.js",
+        "api/controllers/test/polling.js",
+        "__tests__/api/controllers/test/get.test.js",
+        "__tests__/api/controllers/test/update.test.js",
+        "api/controllers/test/get.js",
+        "api/controllers/test/multiplestop.js",
+        "__tests__/api/controllers/v2/test/org-details.test.js",
+        "api/controllers/test/orgid.js",
+        "api/controllers/v2/test/update.js",
+        "api/controllers/test/stop.js",
+        "api/controllers/test/search.js",
+        "api/controllers/test/interaction.js",
+        "__tests__/api/controllers/v2/test/update.test.js",
+        "api/controllers/test/update-test-name.js",
+        "api/controllers/test/multipledelete.js",
+        "api/controllers/test/pause.js",
+        "api/controllers/v2/test/search.js",
+        "api/controllers/v2/test/org-details.js",
+        "api/controllers/test/delete.js",
+        "api/controllers/test/update.js"
+      ],
+      "test-additional-param": [
+        "api/controllers/test-additional-param/get.js"
+      ],
+      "utils": [
+        "api/utils/cacheUtils.js"
+      ],
+      "v2": [
+        "api/controllers/analytics/v2/concurrency.js"
+      ]
+    }
   }
 }
