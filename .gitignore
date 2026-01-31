@@ -7,8 +7,6 @@
 data/*.log
 
 # Compiled binaries
-mcp-repo-context
-mcp-server
 
 # IDE
 .idea/
