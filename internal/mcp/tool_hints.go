@@ -272,6 +272,57 @@ func GetToolHints() map[string]*ToolHints {
 			RequiresAI:     false,
 			Idempotent:     true,
 		},
+
+		// NEW: Semantic search tools (using internal/vectors)
+		"semantic_search": {
+			OutputSize:     "medium",
+			CostLevel:      "cheap",
+			UseCases:       []string{"find similar code", "semantic code search", "find conceptually related functions"},
+			Prerequisites:  []string{"index_repository"},
+			ComposableWith: []string{"get_function_context"},
+			RequiresAI:     false,
+			Idempotent:     true,
+		},
+		"index_repository": {
+			OutputSize:     "small",
+			CostLevel:      "cheap",
+			UseCases:       []string{"enable semantic search", "create vector embeddings"},
+			Prerequisites:  []string{"analyze_repo OR analyze_local"},
+			ComposableWith: []string{"semantic_search"},
+			RequiresAI:     false,
+			Idempotent:     false,
+		},
+
+		// NEW: Token-budgeted context (using internal/tokens)
+		"get_context_budgeted": {
+			OutputSize:     "medium",
+			CostLevel:      "free",
+			UseCases:       []string{"get context within token limit", "fit context in prompt", "efficient context retrieval"},
+			Prerequisites:  []string{"analyze_repo OR analyze_local"},
+			ComposableWith: []string{"ask"},
+			RequiresAI:     false,
+			Idempotent:     true,
+		},
+
+		// NEW: Compose pattern tools (using internal/compose)
+		"execute_pattern": {
+			OutputSize:     "large",
+			CostLevel:      "cheap",
+			UseCases:       []string{"automate tool workflows", "chain tool calls", "complex analysis"},
+			Prerequisites:  []string{"analyze_repo OR analyze_local"},
+			ComposableWith: []string{},
+			RequiresAI:     false,
+			Idempotent:     false,
+		},
+		"list_patterns": {
+			OutputSize:     "small",
+			CostLevel:      "free",
+			UseCases:       []string{"see available patterns", "discover workflows"},
+			Prerequisites:  []string{},
+			ComposableWith: []string{"execute_pattern"},
+			RequiresAI:     false,
+			Idempotent:     true,
+		},
 	}
 }
 

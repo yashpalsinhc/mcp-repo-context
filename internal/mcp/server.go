@@ -10,10 +10,13 @@ import (
 	"sync"
 	"time"
 
+	"github.com/yashpalc/mcp-repo-context/internal/analytics"
 	"github.com/yashpalc/mcp-repo-context/internal/comparison"
+	"github.com/yashpalc/mcp-repo-context/internal/compose"
 	"github.com/yashpalc/mcp-repo-context/internal/logging"
 	"github.com/yashpalc/mcp-repo-context/internal/orchestrator"
 	"github.com/yashpalc/mcp-repo-context/internal/skills"
+	"github.com/yashpalc/mcp-repo-context/internal/vectors"
 )
 
 // Server implements the MCP protocol.
@@ -23,6 +26,14 @@ type server struct {
 	skills   *skills.Registry
 	config   *ServerConfig
 	logger   *logging.Logger
+
+	// New integrations for vectors, tokens, compose
+	semanticSearch  *vectors.SemanticSearch
+	patternRegistry *compose.PatternRegistry
+
+	// Usage analytics
+	usageTracker      *analytics.UsageTracker
+	trackingMiddleware *analytics.TrackingMiddleware
 
 	mu        sync.Mutex
 	nextID    int
@@ -34,6 +45,12 @@ type ServerConfig struct {
 	Name        string
 	Version     string
 	GitHubToken string
+
+	// Optional: Enable semantic search with a vector store
+	VectorStore *vectors.SQLiteVectorStore
+
+	// Optional: Usage analytics tracker
+	UsageTracker *analytics.UsageTracker
 }
 
 // Server is the MCP server interface.
@@ -47,13 +64,28 @@ var _ Server = (*server)(nil)
 
 // NewServer creates a new MCP server.
 func NewServer(manager orchestrator.Manager, comparer comparison.Comparer, config *ServerConfig) Server {
-	return &server{
-		manager:  manager,
-		comparer: comparer,
-		skills:   skills.NewRegistry(),
-		config:   config,
-		logger:   logging.InitFromEnv(),
+	s := &server{
+		manager:         manager,
+		comparer:        comparer,
+		skills:          skills.NewRegistry(),
+		config:          config,
+		logger:          logging.InitFromEnv(),
+		patternRegistry: compose.DefaultRegistry(),
 	}
+
+	// Initialize semantic search if vector store is provided
+	if config.VectorStore != nil {
+		embedder := vectors.NewDefaultEmbedder()
+		s.semanticSearch = vectors.NewSemanticSearch(embedder, config.VectorStore)
+	}
+
+	// Initialize usage tracking if tracker is provided
+	if config.UsageTracker != nil {
+		s.usageTracker = config.UsageTracker
+		s.trackingMiddleware = analytics.NewTrackingMiddleware(config.UsageTracker)
+	}
+
+	return s
 }
 
 // log logs a tool call with fields.
@@ -798,6 +830,152 @@ func (s *server) handleListTools(req *jsonRPCRequest) *jsonRPCResponse {
 				"required": []string{"repo_id", "changed_files"},
 			},
 		},
+		// Call graph visualization
+		{
+			Name:        "visualize_call_graph",
+			Description: "Generate a visual representation of function call relationships. Returns either a Mermaid diagram or DOT format (for Graphviz). Shows both callers (what calls this function) and callees (what this function calls) up to the specified depth.",
+			InputSchema: map[string]interface{}{
+				"type": "object",
+				"properties": map[string]interface{}{
+					"repo_id": map[string]interface{}{
+						"type":        "string",
+						"description": "Repository ID to visualize",
+					},
+					"function_name": map[string]interface{}{
+						"type":        "string",
+						"description": "Name of the function to visualize call relationships for",
+					},
+					"format": map[string]interface{}{
+						"type":        "string",
+						"enum":        []string{"mermaid", "dot"},
+						"description": "Output format: 'mermaid' for Mermaid flowchart, 'dot' for Graphviz DOT (default: mermaid)",
+					},
+					"depth": map[string]interface{}{
+						"type":        "integer",
+						"description": "How many levels of callers/callees to include (default: 2, max: 5)",
+					},
+				},
+				"required": []string{"repo_id", "function_name"},
+			},
+		},
+		// NEW: Semantic search tools (using internal/vectors)
+		{
+			Name:        "semantic_search",
+			Description: "Search for code using semantic similarity. Finds functions and types that are conceptually similar to your query, even if they don't contain exact keyword matches. Requires repository to be indexed first with index_repository.",
+			InputSchema: map[string]interface{}{
+				"type": "object",
+				"properties": map[string]interface{}{
+					"query": map[string]interface{}{
+						"type":        "string",
+						"description": "Natural language query describing what you're looking for",
+					},
+					"repo_id": map[string]interface{}{
+						"type":        "string",
+						"description": "Repository ID to search in",
+					},
+					"limit": map[string]interface{}{
+						"type":        "integer",
+						"description": "Maximum number of results (default: 10, max: 50)",
+					},
+					"type": map[string]interface{}{
+						"type":        "string",
+						"enum":        []string{"function", "type", "all"},
+						"description": "Type of items to search (default: all)",
+					},
+				},
+				"required": []string{"query", "repo_id"},
+			},
+		},
+		{
+			Name:        "index_repository",
+			Description: "Index a repository for semantic search. Creates vector embeddings for all functions and types. Required before using semantic_search.",
+			InputSchema: map[string]interface{}{
+				"type": "object",
+				"properties": map[string]interface{}{
+					"repo_id": map[string]interface{}{
+						"type":        "string",
+						"description": "Repository ID to index (must be previously analyzed)",
+					},
+					"force": map[string]interface{}{
+						"type":        "boolean",
+						"description": "Force re-indexing even if already indexed (default: false)",
+					},
+				},
+				"required": []string{"repo_id"},
+			},
+		},
+		// NEW: Token-budgeted context (using internal/tokens)
+		{
+			Name:        "get_context_budgeted",
+			Description: "Get relevant context that fits within a token budget. Automatically selects and prioritizes the most relevant functions based on your query, fitting as much useful context as possible within the budget.",
+			InputSchema: map[string]interface{}{
+				"type": "object",
+				"properties": map[string]interface{}{
+					"repo_id": map[string]interface{}{
+						"type":        "string",
+						"description": "Repository ID to get context from",
+					},
+					"query": map[string]interface{}{
+						"type":        "string",
+						"description": "Query describing what context you need",
+					},
+					"token_budget": map[string]interface{}{
+						"type":        "integer",
+						"description": "Maximum tokens for the context (default: 4000, max: 32000)",
+					},
+				},
+				"required": []string{"repo_id", "query"},
+			},
+		},
+		// NEW: Compose pattern tools (using internal/compose)
+		{
+			Name:        "execute_pattern",
+			Description: "Execute a pre-defined pattern of tool calls. Patterns automate common workflows like searching then expanding details, or analyzing impact of changes.",
+			InputSchema: map[string]interface{}{
+				"type": "object",
+				"properties": map[string]interface{}{
+					"pattern_name": map[string]interface{}{
+						"type":        "string",
+						"description": "Name of the pattern to execute (use list_patterns to see available)",
+					},
+					"params": map[string]interface{}{
+						"type":        "object",
+						"description": "Parameters for the pattern (varies by pattern)",
+					},
+				},
+				"required": []string{"pattern_name"},
+			},
+		},
+		{
+			Name:        "list_patterns",
+			Description: "List available patterns for execute_pattern. Patterns are pre-defined tool chains that automate common workflows.",
+			InputSchema: map[string]interface{}{
+				"type":       "object",
+				"properties": map[string]interface{}{},
+			},
+		},
+		// NEW: Usage analytics tool
+		{
+			Name:        "get_usage_stats",
+			Description: "Get usage statistics for MCP tools including token counts, call counts, and performance metrics. Useful for monitoring and optimizing tool usage.",
+			InputSchema: map[string]interface{}{
+				"type": "object",
+				"properties": map[string]interface{}{
+					"tool": map[string]interface{}{
+						"type":        "string",
+						"description": "Filter stats for a specific tool (optional, shows all if not specified)",
+					},
+					"since_hours": map[string]interface{}{
+						"type":        "integer",
+						"description": "Show stats from the last N hours (optional, shows all time if not specified)",
+					},
+					"limit": map[string]interface{}{
+						"type":        "integer",
+						"description": "Limit recent usage records (default: 10, max: 50)",
+					},
+				},
+			},
+		},
 	}
 
 	return &jsonRPCResponse{
@@ -885,6 +1063,25 @@ func (s *server) handleCallToolWithID(ctx context.Context, req *jsonRPCRequest, 
 		result = s.toolRefreshChanged(ctx, params.Arguments)
 	case "get_pr_context":
 		result = s.toolGetPRContext(ctx, params.Arguments)
+	// Call graph visualization
+	case "visualize_call_graph":
+		result = s.toolVisualizeCallGraph(ctx, params.Arguments)
+	// NEW: Semantic search tools (using internal/vectors)
+	case "semantic_search":
+		result = s.toolSemanticSearch(ctx, params.Arguments)
+	case "index_repository":
+		result = s.toolIndexRepository(ctx, params.Arguments)
+	// NEW: Token-budgeted context (using internal/tokens)
+	case "get_context_budgeted":
+		result = s.toolGetContextBudgeted(ctx, params.Arguments)
+	// NEW: Compose pattern tools (using internal/compose)
+	case "execute_pattern":
+		result = s.toolExecutePattern(ctx, params.Arguments)
+	case "list_patterns":
+		result = s.toolListPatterns(ctx, params.Arguments)
+	// NEW: Usage analytics
+	case "get_usage_stats":
+		result = s.toolGetUsageStats(ctx, params.Arguments)
 	default:
 		logger.Warn("unknown tool requested")
 		return &jsonRPCResponse{

@@ -9,9 +9,12 @@ import (
 	"time"
 
 	"github.com/yashpalc/mcp-repo-context/internal/comparison"
+	"github.com/yashpalc/mcp-repo-context/internal/compose"
 	ctxpkg "github.com/yashpalc/mcp-repo-context/internal/context"
 	"github.com/yashpalc/mcp-repo-context/internal/orchestrator"
 	"github.com/yashpalc/mcp-repo-context/internal/prreview"
+	"github.com/yashpalc/mcp-repo-context/internal/tokens"
+	"github.com/yashpalc/mcp-repo-context/internal/vectors"
 )
 
 // toolAnalyzeRepo handles the analyze_repo tool call.
@@ -2192,4 +2195,791 @@ func (s *server) toolGetPRContext(ctx context.Context, args map[string]any) call
 	return callToolResult{
 		Content: []contentItem{{Type: "text", Text: output}},
 	}
+}
+
+// ============================================================================
+// NEW: Semantic Search Tools (using internal/vectors)
+// ============================================================================
+
+// toolSemanticSearch handles the semantic_search tool call - semantic code search.
+func (s *server) toolSemanticSearch(ctx context.Context, args map[string]any) callToolResult {
+	query, ok := args["query"].(string)
+	if !ok || query == "" {
+		return errorResult("query is required")
+	}
+
+	repoID, ok := args["repo_id"].(string)
+	if !ok || repoID == "" {
+		return errorResult("repo_id is required")
+	}
+
+	// Parse limit (default 10)
+	limit := 10
+	if l, ok := args["limit"].(float64); ok && l > 0 {
+		limit = int(l)
+		if limit > 50 {
+			limit = 50
+		}
+	}
+
+	// Parse type filter (default "all")
+	searchType := "all"
+	if t, ok := args["type"].(string); ok && t != "" {
+		searchType = t
+	}
+
+	// Check if semantic search is available
+	if s.semanticSearch == nil {
+		return errorResult("Semantic search is not enabled. Initialize the server with a vector store.")
+	}
+
+	var sb strings.Builder
+	fmt.Fprintf(&sb, "# Semantic Search Results for \"%s\"\n\n", query)
+	fmt.Fprintf(&sb, "**Repository:** `%s`\n", repoID)
+	fmt.Fprintf(&sb, "**Type filter:** %s\n\n", searchType)
+
+	switch searchType {
+	case "function":
+		results, err := s.semanticSearch.SearchFunctions(ctx, query, repoID, limit)
+		if err != nil {
+			return errorResult(fmt.Sprintf("Search failed: %v", err))
+		}
+
+		if len(results) == 0 {
+			sb.WriteString("No matching functions found.\n")
+		} else {
+			fmt.Fprintf(&sb, "Found %d matching functions:\n\n", len(results))
+			for _, r := range results {
+				fmt.Fprintf(&sb, "## `%s` (%.1f%% similar)\n\n", r.Name, r.Similarity*100)
+				fmt.Fprintf(&sb, "- **File:** `%s`\n", r.FilePath)
+				if r.Signature != "" {
+					fmt.Fprintf(&sb, "- **Signature:** `%s`\n", r.Signature)
+				}
+				if r.Summary != "" {
+					fmt.Fprintf(&sb, "- **Summary:** %s\n", r.Summary)
+				}
+				sb.WriteString("\n")
+			}
+		}
+
+	case "type":
+		results, err := s.semanticSearch.SearchTypes(ctx, query, repoID, limit)
+		if err != nil {
+			return errorResult(fmt.Sprintf("Search failed: %v", err))
+		}
+
+		if len(results) == 0 {
+			sb.WriteString("No matching types found.\n")
+		} else {
+			fmt.Fprintf(&sb, "Found %d matching types:\n\n", len(results))
+			for _, r := range results {
+				fmt.Fprintf(&sb, "## `%s` (%.1f%% similar)\n\n", r.Name, r.Similarity*100)
+				fmt.Fprintf(&sb, "- **File:** `%s`\n", r.FilePath)
+				if r.Kind != "" {
+					fmt.Fprintf(&sb, "- **Kind:** %s\n", r.Kind)
+				}
+				if r.Description != "" {
+					fmt.Fprintf(&sb, "- **Description:** %s\n", r.Description)
+				}
+				sb.WriteString("\n")
+			}
+		}
+
+	default: // "all"
+		results, err := s.semanticSearch.SearchAll(ctx, query, repoID, limit)
+		if err != nil {
+			return errorResult(fmt.Sprintf("Search failed: %v", err))
+		}
+
+		if len(results) == 0 {
+			sb.WriteString("No matching items found.\n")
+		} else {
+			fmt.Fprintf(&sb, "Found %d matching items:\n\n", len(results))
+			for _, r := range results {
+				fmt.Fprintf(&sb, "## %s `%s` (%.1f%% similar)\n\n", r.Record.Type, r.Record.Name, r.Similarity*100)
+				fmt.Fprintf(&sb, "- **File:** `%s`\n", r.Record.FilePath)
+				if sig, ok := r.Record.Metadata["signature"]; ok && sig != "" {
+					fmt.Fprintf(&sb, "- **Signature:** `%s`\n", sig)
+				}
+				if summary, ok := r.Record.Metadata["summary"]; ok && summary != "" {
+					fmt.Fprintf(&sb, "- **Summary:** %s\n", summary)
+				}
+				if desc, ok := r.Record.Metadata["description"]; ok && desc != "" {
+					fmt.Fprintf(&sb, "- **Description:** %s\n", desc)
+				}
+				sb.WriteString("\n")
+			}
+		}
+	}
+
+	return callToolResult{
+		Content: []contentItem{{Type: "text", Text: sb.String()}},
+	}
+}
+
+// ============================================================================
+// NEW: Token-Budgeted Context Tool (using internal/tokens)
+// ============================================================================
+
+// toolGetContextBudgeted handles the get_context_budgeted tool call.
+func (s *server) toolGetContextBudgeted(ctx context.Context, args map[string]any) callToolResult {
+	repoID, ok := args["repo_id"].(string)
+	if !ok || repoID == "" {
+		return errorResult("repo_id is required")
+	}
+
+	query, ok := args["query"].(string)
+	if !ok || query == "" {
+		return errorResult("query is required")
+	}
+
+	// Parse token budget (default 4000)
+	tokenBudget := 4000
+	if tb, ok := args["token_budget"].(float64); ok && tb > 0 {
+		tokenBudget = int(tb)
+		if tokenBudget > 32000 {
+			tokenBudget = 32000 // Cap at 32k tokens
+		}
+	}
+
+	// Get the repository context
+	repoCtx, err := s.manager.GetContext(ctx, repoID)
+	if err != nil {
+		return errorResult(fmt.Sprintf("Failed to get repository context: %v", err))
+	}
+
+	// Create budgeter and counter
+	budgeter := tokens.NewBudgeter()
+	counter := tokens.NewTokenCounter()
+
+	// Extract keywords from query for scoring
+	queryKeywords := extractSearchKeywords(query)
+
+	// Score and collect functions
+	var scoredFunctions []tokens.ScoredItem[ctxpkg.FunctionDef]
+	for _, fileCtx := range repoCtx.Files {
+		for _, fn := range fileCtx.Functions {
+			score := scoreFunctionRelevance(fn, queryKeywords)
+			if score > 0 {
+				cost := counter.CountJSON(fn)
+				scoredFunctions = append(scoredFunctions, tokens.ScoredItem[ctxpkg.FunctionDef]{
+					Item:      fn,
+					Score:     score,
+					TokenCost: cost,
+				})
+			}
+		}
+	}
+
+	// Sort by score and select functions within budget
+	sort.Slice(scoredFunctions, func(i, j int) bool {
+		return scoredFunctions[i].Score > scoredFunctions[j].Score
+	})
+
+	// Reserve 500 tokens for metadata/formatting
+	contextBudget := tokenBudget - 500
+	selectedFunctions := budgeter.BuildFunctionContext(scoredFunctions, contextBudget)
+
+	// Calculate tokens used
+	tokensUsed := 0
+	for _, fn := range selectedFunctions {
+		tokensUsed += counter.CountJSON(fn)
+	}
+
+	// Format output
+	var sb strings.Builder
+	fmt.Fprintf(&sb, "# Context for Query: \"%s\"\n\n", query)
+	fmt.Fprintf(&sb, "**Repository:** `%s`\n", repoID)
+	fmt.Fprintf(&sb, "**Token Budget:** %d\n", tokenBudget)
+	fmt.Fprintf(&sb, "**Tokens Used:** ~%d\n", tokensUsed)
+	fmt.Fprintf(&sb, "**Functions Included:** %d of %d matched\n\n", len(selectedFunctions), len(scoredFunctions))
+
+	if len(selectedFunctions) == 0 {
+		sb.WriteString("No relevant functions found for the query.\n\n")
+		sb.WriteString("Try a different query or use `search_context` for keyword-based search.\n")
+	} else {
+		sb.WriteString("## Relevant Functions\n\n")
+		for _, fn := range selectedFunctions {
+			fmt.Fprintf(&sb, "### `%s`\n\n", fn.Name)
+			fmt.Fprintf(&sb, "```go\n%s\n```\n\n", fn.Signature)
+
+			if fn.Description != "" {
+				fmt.Fprintf(&sb, "**Description:** %s\n\n", fn.Description)
+			}
+
+			if fn.Behavior != nil && fn.Behavior.Summary != "" {
+				fmt.Fprintf(&sb, "**Behavior:** %s\n\n", fn.Behavior.Summary)
+			}
+
+			if len(fn.SideEffects) > 0 {
+				fmt.Fprintf(&sb, "**Side Effects:** %s\n\n", strings.Join(fn.SideEffects, ", "))
+			}
+		}
+	}
+
+	// Add summary stats
+	sb.WriteString("---\n")
+	fmt.Fprintf(&sb, "*Budget efficiency: %.1f%% used*\n", float64(tokensUsed)/float64(tokenBudget)*100)
+
+	return callToolResult{
+		Content: []contentItem{{Type: "text", Text: sb.String()}},
+	}
+}
+
+// scoreFunctionRelevance scores how relevant a function is to the query keywords.
+func scoreFunctionRelevance(fn ctxpkg.FunctionDef, keywords []string) float64 {
+	if len(keywords) == 0 {
+		return 0
+	}
+
+	score := 0.0
+	text := strings.ToLower(fn.Name + " " + fn.Description + " " + fn.Signature)
+	if fn.Behavior != nil {
+		text += " " + strings.ToLower(fn.Behavior.Summary)
+	}
+
+	for _, kw := range keywords {
+		if strings.Contains(text, kw) {
+			score += 1.0
+			// Boost for name matches
+			if strings.Contains(strings.ToLower(fn.Name), kw) {
+				score += 0.5
+			}
+		}
+	}
+
+	// Normalize by keyword count
+	return score / float64(len(keywords))
+}
+
+// ============================================================================
+// NEW: Compose Pattern Execution Tool (using internal/compose)
+// ============================================================================
+
+// toolExecutePattern handles the execute_pattern tool call.
+func (s *server) toolExecutePattern(ctx context.Context, args map[string]any) callToolResult {
+	patternName, ok := args["pattern_name"].(string)
+	if !ok || patternName == "" {
+		return errorResult("pattern_name is required")
+	}
+
+	// Get optional parameters
+	params, _ := args["params"].(map[string]interface{})
+	if params == nil {
+		params = make(map[string]interface{})
+	}
+
+	// Get the pattern from registry
+	if s.patternRegistry == nil {
+		s.patternRegistry = compose.DefaultRegistry()
+	}
+
+	pattern, found := s.patternRegistry.Get(patternName)
+	if !found {
+		// List available patterns
+		availablePatterns := s.patternRegistry.List()
+		var names []string
+		for _, p := range availablePatterns {
+			names = append(names, p.Name)
+		}
+		return errorResult(fmt.Sprintf("Pattern '%s' not found. Available patterns: %s", patternName, strings.Join(names, ", ")))
+	}
+
+	// Create a tool executor that wraps our MCP tools
+	executor := s.createToolExecutor()
+
+	// Execute the pattern
+	chainCtx, err := compose.ExecutePattern(ctx, executor, pattern, params)
+	if err != nil {
+		return errorResult(fmt.Sprintf("Pattern execution failed: %v", err))
+	}
+
+	// Format the results
+	var sb strings.Builder
+	fmt.Fprintf(&sb, "# Pattern Execution: `%s`\n\n", patternName)
+	fmt.Fprintf(&sb, "**Description:** %s\n\n", pattern.Description())
+
+	// Show execution summary
+	summary := chainCtx.Summary()
+	sb.WriteString("## Execution Summary\n\n")
+	fmt.Fprintf(&sb, "- **Total Steps:** %d\n", summary.TotalSteps)
+	fmt.Fprintf(&sb, "- **Successful:** %d\n", summary.SuccessSteps)
+	fmt.Fprintf(&sb, "- **Failed:** %d\n", summary.FailedSteps)
+	fmt.Fprintf(&sb, "- **Duration:** %s\n", summary.TotalDuration)
+	fmt.Fprintf(&sb, "- **Tokens Used:** ~%d\n", summary.TotalTokens)
+	if summary.StopReason != "" {
+		fmt.Fprintf(&sb, "- **Stop Reason:** %s\n", summary.StopReason)
+	}
+	sb.WriteString("\n")
+
+	// Show step results
+	sb.WriteString("## Step Results\n\n")
+	for i, result := range chainCtx.Results {
+		status := "✅"
+		if !result.Success {
+			status = "❌"
+		}
+		fmt.Fprintf(&sb, "### Step %d: %s `%s`\n\n", i+1, status, result.ToolName)
+		fmt.Fprintf(&sb, "- **Duration:** %s\n", result.Duration)
+		if result.TokenCost > 0 {
+			fmt.Fprintf(&sb, "- **Token Cost:** ~%d\n", result.TokenCost)
+		}
+		if result.Error != "" {
+			fmt.Fprintf(&sb, "- **Error:** %s\n", result.Error)
+		}
+		sb.WriteString("\n")
+
+		// Include data preview for successful results
+		if result.Success && result.Data != nil {
+			dataJSON, err := json.MarshalIndent(result.Data, "", "  ")
+			if err == nil {
+				preview := string(dataJSON)
+				if len(preview) > 500 {
+					preview = preview[:500] + "..."
+				}
+				sb.WriteString("**Result Preview:**\n")
+				fmt.Fprintf(&sb, "```json\n%s\n```\n\n", preview)
+			}
+		}
+	}
+
+	// Show collected variables
+	if len(chainCtx.Vars) > 0 {
+		sb.WriteString("## Collected Data\n\n")
+		for key, value := range chainCtx.Vars {
+			valueJSON, _ := json.Marshal(value)
+			preview := string(valueJSON)
+			if len(preview) > 200 {
+				preview = preview[:200] + "..."
+			}
+			fmt.Fprintf(&sb, "- **%s:** `%s`\n", key, preview)
+		}
+	}
+
+	return callToolResult{
+		Content: []contentItem{{Type: "text", Text: sb.String()}},
+	}
+}
+
+// toolListPatterns handles listing available patterns.
+func (s *server) toolListPatterns(ctx context.Context, args map[string]any) callToolResult {
+	if s.patternRegistry == nil {
+		s.patternRegistry = compose.DefaultRegistry()
+	}
+
+	patterns := s.patternRegistry.List()
+
+	var sb strings.Builder
+	sb.WriteString("# Available Patterns\n\n")
+	sb.WriteString("Patterns are pre-defined tool chains that automate common workflows.\n\n")
+
+	if len(patterns) == 0 {
+		sb.WriteString("No patterns registered.\n")
+	} else {
+		sb.WriteString("| Pattern | Description |\n")
+		sb.WriteString("|---------|-------------|\n")
+		for _, p := range patterns {
+			fmt.Fprintf(&sb, "| `%s` | %s |\n", p.Name, p.Description)
+		}
+	}
+
+	sb.WriteString("\n## Usage\n\n")
+	sb.WriteString("Use `execute_pattern` with a pattern name and parameters:\n")
+	sb.WriteString("```\n")
+	sb.WriteString("execute_pattern:\n")
+	sb.WriteString("  pattern_name: \"search_with_context\"\n")
+	sb.WriteString("  params:\n")
+	sb.WriteString("    repo_id: \"github.com/org/repo\"\n")
+	sb.WriteString("    query: \"authentication\"\n")
+	sb.WriteString("```\n")
+
+	return callToolResult{
+		Content: []contentItem{{Type: "text", Text: sb.String()}},
+	}
+}
+
+// createToolExecutor creates a compose.ToolExecutor that wraps MCP tool calls.
+func (s *server) createToolExecutor() compose.ToolExecutor {
+	return compose.NewFuncExecutor(func(chainCtx *compose.ChainContext, call compose.ToolCall) compose.ToolResult {
+		// Convert params to map[string]any
+		args := make(map[string]any)
+		for k, v := range call.Params {
+			args[k] = v
+		}
+
+		start := time.Now()
+
+		// Route to appropriate tool
+		var result callToolResult
+		switch call.Name {
+		case "search_context":
+			result = s.toolSearchContext(chainCtx.Context, args)
+		case "get_function_context":
+			result = s.toolGetFunctionContext(chainCtx.Context, args)
+		case "get_callers":
+			result = s.toolGetCallers(chainCtx.Context, args)
+		case "search_by_concept":
+			result = s.toolSearchByConcept(chainCtx.Context, args)
+		case "search_by_side_effect":
+			result = s.toolSearchBySideEffect(chainCtx.Context, args)
+		case "get_context":
+			result = s.toolGetContext(chainCtx.Context, args)
+		case "smart_query":
+			result = s.toolSmartQuery(chainCtx.Context, args)
+		default:
+			return compose.ToolResult{
+				ToolName: call.Name,
+				Success:  false,
+				Error:    fmt.Sprintf("tool '%s' not supported in patterns", call.Name),
+			}
+		}
+
+		duration := time.Since(start)
+
+		// Convert to compose.ToolResult
+		composeResult := compose.ToolResult{
+			ToolName: call.Name,
+			Success:  !result.IsError,
+			Duration: duration.String(),
+		}
+
+		if result.IsError {
+			if len(result.Content) > 0 {
+				composeResult.Error = result.Content[0].Text
+			}
+		} else {
+			// Extract text content as data
+			if len(result.Content) > 0 {
+				composeResult.Data = result.Content[0].Text
+				composeResult.TokenCost = len(result.Content[0].Text) / 4 // Approximate
+			}
+		}
+
+		return composeResult
+	})
+}
+
+// toolIndexRepository handles indexing a repository for semantic search.
+func (s *server) toolIndexRepository(ctx context.Context, args map[string]any) callToolResult {
+	repoID, ok := args["repo_id"].(string)
+	if !ok || repoID == "" {
+		return errorResult("repo_id is required")
+	}
+
+	if s.semanticSearch == nil {
+		return errorResult("Semantic search is not enabled. Initialize the server with a vector store.")
+	}
+
+	// Get repository context
+	repoCtx, err := s.manager.GetContext(ctx, repoID)
+	if err != nil {
+		return errorResult(fmt.Sprintf("Failed to get repository context: %v", err))
+	}
+
+	// Check if force re-index
+	force, _ := args["force"].(bool)
+
+	// Check existing index count
+	existingCount, _ := s.semanticSearch.Count(ctx, repoID)
+	if existingCount > 0 && !force {
+		return callToolResult{
+			Content: []contentItem{{Type: "text", Text: fmt.Sprintf(
+				"Repository `%s` already indexed with %d items.\n\nUse `force: true` to re-index.",
+				repoID, existingCount,
+			)}},
+		}
+	}
+
+	// Clear existing vectors if re-indexing
+	if force && existingCount > 0 {
+		if err := s.semanticSearch.ClearRepository(ctx, repoID); err != nil {
+			return errorResult(fmt.Sprintf("Failed to clear existing index: %v", err))
+		}
+	}
+
+	// Index the repository
+	start := time.Now()
+	if err := s.semanticSearch.IndexRepository(ctx, repoCtx); err != nil {
+		return errorResult(fmt.Sprintf("Indexing failed: %v", err))
+	}
+	duration := time.Since(start)
+
+	// Get new count
+	newCount, _ := s.semanticSearch.Count(ctx, repoID)
+
+	var sb strings.Builder
+	sb.WriteString("# Repository Indexed for Semantic Search\n\n")
+	fmt.Fprintf(&sb, "**Repository:** `%s`\n", repoID)
+	fmt.Fprintf(&sb, "**Items Indexed:** %d\n", newCount)
+	fmt.Fprintf(&sb, "**Duration:** %s\n\n", duration.Round(time.Millisecond))
+	sb.WriteString("You can now use `semantic_search` to find similar code:\n")
+	fmt.Fprintf(&sb, "```\nsemantic_search:\n  repo_id: \"%s\"\n  query: \"your search query\"\n```\n", repoID)
+
+	return callToolResult{
+		Content: []contentItem{{Type: "text", Text: sb.String()}},
+	}
+}
+
+// Ensure vectors package types are used (to avoid unused import)
+var _ vectors.Embedder = (*vectors.LocalEmbedder)(nil)
+
+// ============================================================================
+// Call Graph Visualization Tool
+// ============================================================================
+
+// toolVisualizeCallGraph generates a visual representation of function call relationships.
+func (s *server) toolVisualizeCallGraph(ctx context.Context, args map[string]any) callToolResult {
+	repoID, ok := args["repo_id"].(string)
+	if !ok || repoID == "" {
+		return errorResult("repo_id is required")
+	}
+
+	funcName, ok := args["function_name"].(string)
+	if !ok || funcName == "" {
+		return errorResult("function_name is required")
+	}
+
+	// Parse format (default "mermaid")
+	format := "mermaid"
+	if f, ok := args["format"].(string); ok && f != "" {
+		format = f
+	}
+
+	// Parse depth (default 2, max 5)
+	depth := 2
+	if d, ok := args["depth"].(float64); ok && d > 0 {
+		depth = int(d)
+		if depth > 5 {
+			depth = 5
+		}
+	}
+
+	// Get repository context
+	repoCtx, err := s.manager.GetContext(ctx, repoID)
+	if err != nil {
+		return errorResult(fmt.Sprintf("Failed to get repository context: %v", err))
+	}
+
+	if repoCtx == nil {
+		return errorResult(fmt.Sprintf("Repository '%s' not found. Use analyze_repo or analyze_local first.", repoID))
+	}
+
+	// Build call graph from context
+	// Find callers and callees for the function
+	type funcNode struct {
+		Name  string
+		File  string
+		Calls []string
+	}
+
+	// Build function map
+	funcMap := make(map[string]*funcNode)
+	for path, fileCtx := range repoCtx.Files {
+		for _, fn := range fileCtx.Functions {
+			node := &funcNode{
+				Name:  fn.Name,
+				File:  path,
+				Calls: make([]string, 0),
+			}
+			for _, call := range fn.Calls {
+				node.Calls = append(node.Calls, call.Function)
+			}
+			funcMap[fn.Name] = node
+		}
+	}
+
+	// Check if function exists
+	if _, found := funcMap[funcName]; !found {
+		return errorResult(fmt.Sprintf("Function '%s' not found in repository", funcName))
+	}
+
+	// BFS to find callers and callees up to depth
+	callers := make(map[string]int)   // function -> depth at which found
+	callees := make(map[string]int)   // function -> depth at which found
+	edges := make(map[string]bool)    // "from->to" -> exists
+
+	// Find callees (what this function calls)
+	queue := []struct {
+		name  string
+		depth int
+	}{{funcName, 0}}
+
+	for len(queue) > 0 {
+		current := queue[0]
+		queue = queue[1:]
+
+		if current.depth >= depth {
+			continue
+		}
+
+		if node, ok := funcMap[current.name]; ok {
+			for _, callee := range node.Calls {
+				edgeKey := current.name + "->" + callee
+				if !edges[edgeKey] {
+					edges[edgeKey] = true
+					if _, found := callees[callee]; !found {
+						callees[callee] = current.depth + 1
+						queue = append(queue, struct {
+							name  string
+							depth int
+						}{callee, current.depth + 1})
+					}
+				}
+			}
+		}
+	}
+
+	// Find callers (what calls this function)
+	for name, node := range funcMap {
+		for _, callee := range node.Calls {
+			if callee == funcName {
+				callers[name] = 1
+				edgeKey := name + "->" + funcName
+				edges[edgeKey] = true
+			}
+		}
+	}
+
+	// Generate output based on format
+	var sb strings.Builder
+
+	if format == "mermaid" {
+		fmt.Fprintf(&sb, "# Call Graph for `%s`\n\n", funcName)
+		fmt.Fprintf(&sb, "**Repository:** `%s`\n", repoID)
+		fmt.Fprintf(&sb, "**Depth:** %d\n\n", depth)
+
+		sb.WriteString("```mermaid\nflowchart TB\n")
+
+		// Style the central node
+		fmt.Fprintf(&sb, "    %s[[\"%s\"]]\n", sanitizeNodeID(funcName), funcName)
+		fmt.Fprintf(&sb, "    style %s fill:#f9f,stroke:#333,stroke-width:4px\n", sanitizeNodeID(funcName))
+
+		// Add caller nodes
+		for caller := range callers {
+			fmt.Fprintf(&sb, "    %s[\"%s\"]\n", sanitizeNodeID(caller), caller)
+			fmt.Fprintf(&sb, "    %s --> %s\n", sanitizeNodeID(caller), sanitizeNodeID(funcName))
+		}
+
+		// Add callee nodes and edges
+		for edge := range edges {
+			parts := strings.Split(edge, "->")
+			if len(parts) == 2 && parts[0] == funcName {
+				fmt.Fprintf(&sb, "    %s[\"%s\"]\n", sanitizeNodeID(parts[1]), parts[1])
+				fmt.Fprintf(&sb, "    %s --> %s\n", sanitizeNodeID(parts[0]), sanitizeNodeID(parts[1]))
+			}
+		}
+
+		sb.WriteString("```\n\n")
+	} else { // DOT format
+		fmt.Fprintf(&sb, "# Call Graph for `%s` (DOT format)\n\n", funcName)
+		fmt.Fprintf(&sb, "**Repository:** `%s`\n", repoID)
+		fmt.Fprintf(&sb, "**Depth:** %d\n\n", depth)
+
+		sb.WriteString("```dot\ndigraph callgraph {\n")
+		sb.WriteString("    rankdir=TB;\n")
+		sb.WriteString("    node [shape=box];\n")
+
+		// Style the central node
+		fmt.Fprintf(&sb, "    \"%s\" [style=filled, fillcolor=pink, penwidth=3];\n", funcName)
+
+		// Add edges
+		for edge := range edges {
+			parts := strings.Split(edge, "->")
+			if len(parts) == 2 {
+				fmt.Fprintf(&sb, "    \"%s\" -> \"%s\";\n", parts[0], parts[1])
+			}
+		}
+
+		sb.WriteString("}\n```\n\n")
+	}
+
+	// Add summary
+	sb.WriteString("## Summary\n\n")
+	fmt.Fprintf(&sb, "- **Direct callers:** %d\n", len(callers))
+	fmt.Fprintf(&sb, "- **Direct/indirect callees:** %d\n", len(callees))
+	fmt.Fprintf(&sb, "- **Total edges:** %d\n", len(edges))
+
+	return callToolResult{
+		Content: []contentItem{{Type: "text", Text: sb.String()}},
+	}
+}
+
+// toolGetUsageStats returns usage statistics for MCP tools.
+func (s *server) toolGetUsageStats(ctx context.Context, args map[string]any) callToolResult {
+	if s.usageTracker == nil {
+		return errorResult("Usage tracking is not enabled")
+	}
+
+	// Check if a specific tool is requested
+	toolName, _ := args["tool"].(string)
+	limit := 100
+	if l, ok := args["limit"].(float64); ok && l > 0 {
+		limit = int(l)
+	}
+
+	var sb strings.Builder
+
+	if toolName != "" {
+		// Get usage for specific tool
+		usage, err := s.usageTracker.GetToolUsage(ctx, toolName, limit)
+		if err != nil {
+			return errorResult(fmt.Sprintf("Failed to get tool usage: %v", err))
+		}
+
+		sb.WriteString(fmt.Sprintf("# Usage Statistics for `%s`\n\n", toolName))
+		sb.WriteString(fmt.Sprintf("Recent %d calls:\n\n", len(usage)))
+		sb.WriteString("| Timestamp | Duration | Input Tokens | Output Tokens | Success |\n")
+		sb.WriteString("|-----------|----------|--------------|---------------|--------|\n")
+
+		for _, u := range usage {
+			status := "✓"
+			if !u.Success {
+				status = "✗"
+			}
+			sb.WriteString(fmt.Sprintf("| %s | %dms | %d | %d | %s |\n",
+				u.Timestamp.Format("2006-01-02 15:04"), u.DurationMs, u.InputTokens, u.OutputTokens, status))
+		}
+	} else {
+		// Get overall stats
+		stats, err := s.usageTracker.GetStats(ctx)
+		if err != nil {
+			return errorResult(fmt.Sprintf("Failed to get usage stats: %v", err))
+		}
+
+		sb.WriteString("# MCP Tool Usage Statistics\n\n")
+		sb.WriteString("## Overview\n\n")
+		sb.WriteString(fmt.Sprintf("- **Total Calls:** %d\n", stats.TotalCalls))
+		sb.WriteString(fmt.Sprintf("- **Total Input Tokens:** %d\n", stats.TotalInputTokens))
+		sb.WriteString(fmt.Sprintf("- **Total Output Tokens:** %d\n", stats.TotalOutputTokens))
+
+		if len(stats.ToolStats) > 0 {
+			sb.WriteString("\n## Per-Tool Statistics\n\n")
+			sb.WriteString("| Tool | Calls | Avg Duration | Avg Input | Avg Output | Success Rate |\n")
+			sb.WriteString("|------|-------|--------------|-----------|------------|-------------|\n")
+
+			for _, ts := range stats.ToolStats {
+				successRate := float64(0)
+				if ts.TotalCalls > 0 {
+					successRate = float64(ts.SuccessfulCalls) / float64(ts.TotalCalls) * 100
+				}
+				sb.WriteString(fmt.Sprintf("| `%s` | %d | %.0fms | %.0f | %.0f | %.1f%% |\n",
+					ts.Tool, ts.TotalCalls, ts.AvgDurationMs, ts.AvgInputTokens, ts.AvgOutputTokens, successRate))
+			}
+		}
+	}
+
+	return callToolResult{
+		Content: []contentItem{{Type: "text", Text: sb.String()}},
+	}
+}
+
+// sanitizeNodeID sanitizes a function name for use as a Mermaid node ID.
+func sanitizeNodeID(name string) string {
+	// Replace special characters that could break Mermaid syntax
+	result := strings.ReplaceAll(name, ".", "_")
+	result = strings.ReplaceAll(result, "-", "_")
+	result = strings.ReplaceAll(result, "(", "_")
+	result = strings.ReplaceAll(result, ")", "_")
+	result = strings.ReplaceAll(result, " ", "_")
+	return result
 }
