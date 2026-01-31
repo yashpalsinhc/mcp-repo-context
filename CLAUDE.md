@@ -19,11 +19,79 @@ Need info about code?
 ├── "Find auth/validation code" ─────► search_by_concept (3k tokens)
 ├── "What calls this function?" ─────► get_callers (2k tokens)
 ├── "Compare these repos" ───────────► compare_repos (10k tokens)
+├── "Find similar code" ─────────────► semantic_search (3k tokens) [NEW]
+├── "Get context within budget" ─────► get_context_budgeted (varies) [NEW]
+├── "Visualize call graph" ──────────► visualize_call_graph (2k tokens) [NEW]
 │
 └── ONLY if MCP can't answer ────────► Explore agent (50k+ tokens)
 ```
 
-## NEW: Local Directory Support
+## NEW Tools (Phase 4 & 5)
+
+### Semantic Search (Vector-Based)
+Find code by meaning, not just keywords:
+```
+# First, index the repository (one-time)
+repo-context index_repository:
+  repo_id: "github.com/org/repo"
+
+# Then search semantically
+repo-context semantic_search:
+  query: "handle user authentication and session management"
+  repo_id: "github.com/org/repo"
+  limit: 10
+  type: "function"  # or "type" or "all"
+```
+
+### Token-Budgeted Context
+Get the most relevant context that fits within a token budget:
+```
+repo-context get_context_budgeted:
+  repo_id: "github.com/org/repo"
+  query: "authentication"
+  token_budget: 4000  # Default: 4000, Max: 32000
+```
+Returns the most relevant functions ranked by score, automatically summarized to fit budget.
+
+### Call Graph Visualization
+Generate visual diagrams of function relationships:
+```
+repo-context visualize_call_graph:
+  repo_id: "github.com/org/repo"
+  function_name: "CreateUser"
+  format: "mermaid"  # or "dot" for Graphviz
+  depth: 2  # How many levels to traverse
+```
+
+### Composable Patterns
+Run pre-defined tool chains for common workflows:
+```
+# List available patterns
+repo-context list_patterns
+
+# Execute a pattern
+repo-context execute_pattern:
+  pattern_name: "search_with_context"
+  params:
+    repo_id: "github.com/org/repo"
+    query: "authentication"
+```
+
+Available patterns:
+- `search_with_context` - Search then get full context for top results
+- `impact_analysis` - Analyze impact of changes to a function
+- `find_and_expand` - Find items then expand details
+
+### Usage Analytics
+Track token usage across tools:
+```
+repo-context get_usage_stats
+repo-context get_usage_stats:
+  tool: "search_context"  # Filter by specific tool
+  limit: 50
+```
+
+## Local Directory Support
 
 ### For ANY Local Codebase (No GitHub Required)
 ```
@@ -63,7 +131,7 @@ repo-context search_context:
   repo_id: "github.com/LambdatestIncPrivate/mobile-management-service"
 ```
 
-### For Deep Function Analysis (NEW - No AI Required)
+### For Deep Function Analysis (No AI Required)
 ```
 repo-context get_function_context:
   repo_id: "github.com/LambdatestIncPrivate/mobile-management-service"
@@ -92,26 +160,22 @@ repo-context get_callers:
   function_name: "ValidateToken"
 ```
 
-## Pre-Analyzed Repositories
-
-- `github.com/LambdatestIncPrivate/mobile-management-service`
-- `github.com/LambdatestIncPrivate/mobile-manual-test-management`
-- `github.com/LambdatestIncPrivate/lambda-test-forge-service`
-- `github.com/LambdatestIncPrivate/lambda-test-management-service`
-- `github.com/LambdatestIncPrivate/lambda-app-upload`
-- `github.com/LambdatestIncPrivate/test-management-service-automation`
-- `github.com/LambdatestIncPrivate/tms-migrator`
-
 ## Token Cost Comparison
 
 | Method | Tokens | When to Use |
 |--------|--------|-------------|
-| `ask` | ~8k | Questions about how code works |
-| `search_context` | ~2k | Find specific functions/types |
+| `smart_query` | ~2-4k | Natural language questions about local code |
+| `search_context` | ~2k | Find specific functions/types by keyword |
+| `semantic_search` | ~3k | Find code by meaning (requires indexing) |
 | `get_function_context` | ~4k | Understand what a function does |
+| `get_context_budgeted` | varies | Get relevant context within token limit |
 | `search_by_side_effect` | ~3k | Find DB/HTTP/file operations |
 | `search_by_concept` | ~3k | Find auth/validation/handler code |
-| Explore agent | ~50k+ | **AVOID - Last resort only** |
+| `get_callers` | ~2k | Call graph analysis |
+| `visualize_call_graph` | ~2k | Generate call graph diagrams |
+| `execute_pattern` | ~5-10k | Run composed tool chains |
+| `ask` | ~8k | AI-powered questions |
+| **Explore agent** | **~50k+** | **AVOID - Last resort only** |
 
 ## What MCP Provides Without AI
 
@@ -125,6 +189,41 @@ The deep context extraction provides (no AI needed):
 - Side effects detection
 - Error handling patterns
 - Struct field details with JSON tags
+- Semantic similarity search (vector-based)
+- Call graph visualizations (Mermaid/DOT)
+
+## When to Use Explore Agent (RARE)
+
+Only use Explore agents when:
+1. Repository is not analyzed and cannot be analyzed
+2. Need exact code implementation (not just structure/behavior)
+3. MCP tools explicitly don't have the answer
+
+## Refactoring Workflow (Incremental Updates)
+
+During refactoring, use **incremental updates** to keep context fresh without full re-analysis:
+
+### After Editing a Single File (~10ms)
+```
+repo-context refresh_file:
+  project_id: "local:/path/to/project"
+  file_path: "pkg/handlers/user.go"
+```
+
+### After Refactoring Session (Refresh All Changed)
+```
+repo-context refresh_changed:
+  project_id: "local:/path/to/project"
+```
+This checks all files and only refreshes those with changed hashes.
+
+### Recommended Refactoring Flow
+
+1. **Before refactoring**: Use `smart_query` or `get_function_context` to understand code
+2. **Make your changes**: Edit the code
+3. **Quick refresh**: Run `refresh_file` on the file you edited
+4. **Continue querying**: Context is now up-to-date
+5. **End of session**: Run `refresh_changed` to catch any missed files
 
 ## PR Review with Rich Context
 
@@ -157,54 +256,3 @@ repo-context get_pr_context:
 1. **First:** Run `get_pr_context` to understand changes without AI
 2. **Then:** Use `review_pr` for AI-powered review (uses the same context)
 3. **Benefit:** AI review is more focused because context is pre-extracted
-
-## When to Use Explore Agent (RARE)
-
-Only use Explore agents when:
-1. Repository is not analyzed and cannot be analyzed
-2. Need exact code implementation (not just structure/behavior)
-3. MCP tools explicitly don't have the answer
-
-## Refreshing Context
-
-To re-analyze repos with latest code:
-```
-repo-context analyze_repo:
-  repo_url: "https://github.com/org/repo"
-  branch: "main"
-  force: true
-```
-
-## Refactoring Workflow (Incremental Updates)
-
-During refactoring, use **incremental updates** to keep context fresh without full re-analysis:
-
-### After Editing a Single File (~10ms)
-```
-repo-context refresh_file:
-  project_id: "local:/path/to/project"
-  file_path: "pkg/handlers/user.go"
-```
-
-### After Refactoring Session (Refresh All Changed)
-```
-repo-context refresh_changed:
-  project_id: "local:/path/to/project"
-```
-This checks all files and only refreshes those with changed hashes.
-
-### Recommended Refactoring Flow
-
-1. **Before refactoring**: Use `smart_query` or `get_function_context` to understand code
-2. **Make your changes**: Edit the code
-3. **Quick refresh**: Run `refresh_file` on the file you edited
-4. **Continue querying**: Context is now up-to-date
-5. **End of session**: Run `refresh_changed` to catch any missed files
-
-### Token Cost Comparison
-
-| Action | Method | Tokens |
-|--------|--------|--------|
-| Full re-analysis | `analyze_local force=true` | ~50k+ |
-| Single file refresh | `refresh_file` | ~1-2k |
-| All changed files | `refresh_changed` | ~2-5k |
