@@ -8,22 +8,40 @@
 
 | Task | Status | Files Created/Modified |
 |------|--------|------------------------|
-| **Phase 1.1: Per-Repo Locking** | DONE | `internal/orchestrator/locks.go`, `manager.go` |
-| **Phase 1.2: Context Cancellation** | DONE | `internal/orchestrator/manager.go` |
-| **Phase 1.3: AI Retry Logic** | DONE | `internal/ai/retry.go`, `anthropic.go` |
-| **Phase 1.4: Metadata Index** | DONE | `internal/storage/metadata_index.go` |
-| **Phase 1.5: Configuration System** | DONE | `internal/config/config.go` |
-| **Phase 2.1: SQLite Storage** | DONE | `internal/storage/sqlite.go`, `sqlite_search.go`, `migrations/` |
-| Phase 2.2: Hybrid Search | DONE | Included in sqlite_search.go |
-| Phase 2.3: Incremental Indexing | NOT STARTED | - |
-| **Phase 3.1: Tool Hints** | DONE | `internal/mcp/tool_hints.go` |
-| **Phase 3.2: MCP Resources** | DONE | `internal/mcp/resources.go` |
-| **Phase 3.3: Progressive Disclosure** | DONE | `internal/mcp/progressive.go` |
-| **Phase 3.4: Output Budgeting** | DONE | Added `max_results` to search tools |
-| Phase 4: Token Intelligence | NOT STARTED | - |
-| Phase 5: Advanced Features | NOT STARTED | - |
+| **Phase 1.1: Per-Repo Locking** | ✅ DONE | `internal/orchestrator/locks.go`, `manager.go` |
+| **Phase 1.2: Context Cancellation** | ✅ DONE | `internal/orchestrator/manager.go` |
+| **Phase 1.3: AI Retry Logic** | ✅ DONE | `internal/ai/retry.go`, `anthropic.go` |
+| **Phase 1.4: Metadata Index** | ✅ DONE | `internal/storage/metadata_index.go` |
+| **Phase 1.5: Configuration System** | ✅ DONE | `internal/config/config.go` |
+| **Phase 2.1: SQLite Storage** | ✅ DONE | `internal/storage/sqlite.go`, `sqlite_search.go`, `migrations/` |
+| **Phase 2.2: Hybrid Search** | ✅ DONE | Included in `sqlite_search.go` |
+| **Phase 2.3: Incremental Indexing** | ✅ DONE | `internal/storage/file_tracker.go`, `migrations/002_file_hashes.sql` |
+| **Phase 3.1: Tool Hints** | ✅ DONE | `internal/mcp/tool_hints.go` |
+| **Phase 3.2: MCP Resources** | ✅ DONE | `internal/mcp/resources.go` |
+| **Phase 3.3: Progressive Disclosure** | ✅ DONE | `internal/mcp/progressive.go` |
+| **Phase 3.4: Output Budgeting** | ✅ DONE | Added `max_results` to search tools |
+| **Phase 3.5: Composable Patterns** | ✅ DONE | `internal/compose/chain.go`, `middleware.go`, `patterns.go`, `builder.go` |
+| **Phase 4.1: Token Counting** | ✅ DONE | `internal/tokens/counter.go` |
+| **Phase 4.2: Token Budgeting** | ✅ DONE | `internal/tokens/budgeter.go` |
+| **Phase 4.3: Context Compression** | ✅ DONE | `internal/tokens/compressor.go` |
+| **Phase 4.4: Usage Analytics** | ✅ DONE | `internal/analytics/tracker.go`, `middleware.go` |
+| **Phase 5.1: Vector Embeddings** | ✅ DONE | `internal/vectors/embedder.go`, `store.go`, `search.go`, `similarity.go` |
+| **Phase 5.2: Call Graph Visualization** | ✅ DONE | `internal/graph/visualizer.go` |
+| **Phase 5.3: MCP Tool Integration** | ✅ DONE | `semantic_search`, `get_context_budgeted`, `execute_pattern`, `visualize_call_graph`, `get_usage_stats` tools |
 
-**Last Updated**: 2026-01-30
+**Last Updated**: 2026-01-31
+
+### New MCP Tools Added
+
+| Tool | Description | Package |
+|------|-------------|---------|
+| `semantic_search` | Vector-based semantic code search | `internal/vectors` |
+| `index_repository` | Index repository for semantic search | `internal/vectors` |
+| `get_context_budgeted` | Token-aware context retrieval | `internal/tokens` |
+| `execute_pattern` | Run composed tool chains | `internal/compose` |
+| `list_patterns` | List available patterns | `internal/compose` |
+| `get_usage_stats` | View tool usage analytics | `internal/analytics` |
+| `visualize_call_graph` | Generate Mermaid/DOT call graphs | `internal/graph` |
 
 ---
 
@@ -560,7 +578,7 @@ func (i *IncrementalIndexer) reindexFile(path string) error {
 
 ---
 
-## Phase 3: Agent-Friendly Design (Week 5-6) - IN PROGRESS
+## Phase 3: Agent-Friendly Design (Week 5-6) - ✅ COMPLETED
 
 ### 3.1 Implement MCP Best Practices
 
@@ -736,7 +754,7 @@ func (s *server) handleListResources(req *jsonRPCRequest) *jsonRPCResponse {
 
 ---
 
-## Phase 4: Token Intelligence (Week 7-8)
+## Phase 4: Token Intelligence (Week 7-8) - ✅ COMPLETED
 
 ### 4.1 Implement Actual Token Counting
 
@@ -893,7 +911,7 @@ func (t *UsageTracker) GetAverages() map[string]TokenStats {
 
 ---
 
-## Phase 5: Advanced Features (Week 9-12)
+## Phase 5: Advanced Features (Week 9-12) - ✅ COMPLETED
 
 ### 5.1 Vector Embeddings for Semantic Search
 
