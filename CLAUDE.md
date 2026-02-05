@@ -1,5 +1,27 @@
 # Claude Code Instructions for This Project
 
+## Running Modes
+
+The MCP server can run in two modes:
+
+### Native Mode (Recommended for local directories)
+Run the server directly on your machine for full filesystem access:
+```bash
+./scripts/use-native.sh
+```
+Then restart Claude Code.
+
+### Docker Mode
+Run in Docker container (requires volume mounts for local directories):
+```bash
+./scripts/use-docker.sh
+```
+Then restart Claude Code.
+
+**Note:** If `analyze_local` fails with "directory not found", you're likely running in Docker mode without proper volume mounts. Switch to native mode or update docker-compose.yml to mount your project directories.
+
+---
+
 ## CRITICAL: Use MCP Server Instead of Explore Agents
 
 This project has an MCP server (`repo-context`) with **deep pre-analyzed context** for repositories.
@@ -12,6 +34,7 @@ This project has an MCP server (`repo-context`) with **deep pre-analyzed context
 Need info about code?
 │
 ├── ANY LOCAL DIRECTORY ─────────────► analyze_local + smart_query
+├── "Structure of X package?" ───────► get_package_structure (3k tokens) [NEW]
 ├── "How does X work?" ──────────────► ask (8k tokens)
 ├── "Find function/type X" ──────────► search_context (2k tokens)
 ├── "What does this function do?" ───► get_function_context (4k tokens)
@@ -19,14 +42,34 @@ Need info about code?
 ├── "Find auth/validation code" ─────► search_by_concept (3k tokens)
 ├── "What calls this function?" ─────► get_callers (2k tokens)
 ├── "Compare these repos" ───────────► compare_repos (10k tokens)
-├── "Find similar code" ─────────────► semantic_search (3k tokens) [NEW]
-├── "Get context within budget" ─────► get_context_budgeted (varies) [NEW]
-├── "Visualize call graph" ──────────► visualize_call_graph (2k tokens) [NEW]
+├── "Find similar code" ─────────────► semantic_search (3k tokens)
+├── "Get context within budget" ─────► get_context_budgeted (varies)
+├── "Visualize call graph" ──────────► visualize_call_graph (2k tokens)
 │
 └── ONLY if MCP can't answer ────────► Explore agent (50k+ tokens)
 ```
 
 ## NEW Tools (Phase 4 & 5)
+
+### Package Structure (NEW)
+Get detailed structure of a package/directory with all files, types, and functions:
+```
+repo-context get_package_structure:
+  project_id: "local:/path/to/project"
+  package_path: "service/test/create"
+```
+Returns:
+- All files in the package with their purposes
+- Types defined in each file (with descriptions)
+- Key functions with behavior summaries
+- Side effects (db_query, http_call, etc.)
+
+Also works via `smart_query`:
+```
+repo-context smart_query:
+  query: "What is the structure of the service/test/create package?"
+  project_id: "local:/path/to/project"
+```
 
 ### Semantic Search (Vector-Based)
 Find code by meaning, not just keywords:

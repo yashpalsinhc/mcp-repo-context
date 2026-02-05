@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"regexp"
+	"sort"
 	"strings"
 
 	ctxpkg "github.com/yashpalc/mcp-repo-context/internal/context"
@@ -13,16 +14,17 @@ import (
 type QueryType string
 
 const (
-	QueryTypeFunction    QueryType = "function"      // Find/describe a function
-	QueryTypeType        QueryType = "type"          // Find/describe a type
-	QueryTypeSideEffect  QueryType = "side_effect"   // Find by side effect
-	QueryTypeConcept     QueryType = "concept"       // Find by concept
-	QueryTypeCallers     QueryType = "callers"       // Who calls this
-	QueryTypeCalls       QueryType = "calls"         // What does this call
-	QueryTypeFlow        QueryType = "flow"          // Trace execution flow
-	QueryTypeFile        QueryType = "file"          // File-level context
-	QueryTypeArchitecture QueryType = "architecture" // Project structure
-	QueryTypeGeneral     QueryType = "general"       // General question (needs AI)
+	QueryTypeFunction     QueryType = "function"      // Find/describe a function
+	QueryTypeType         QueryType = "type"          // Find/describe a type
+	QueryTypeSideEffect   QueryType = "side_effect"   // Find by side effect
+	QueryTypeConcept      QueryType = "concept"       // Find by concept
+	QueryTypeCallers      QueryType = "callers"       // Who calls this
+	QueryTypeCalls        QueryType = "calls"         // What does this call
+	QueryTypeFlow         QueryType = "flow"          // Trace execution flow
+	QueryTypeFile         QueryType = "file"          // File-level context
+	QueryTypePackage      QueryType = "package"       // Package/directory structure
+	QueryTypeArchitecture QueryType = "architecture"  // Project structure
+	QueryTypeGeneral      QueryType = "general"       // General question (needs AI)
 )
 
 // SmartQueryResult contains the result of a smart query.
@@ -101,6 +103,9 @@ func (m *manager) SmartQuery(ctx context.Context, query string, projectID string
 
 	case QueryTypeFile:
 		return m.handleFileQuery(ctx, repoCtx, extracted, result)
+
+	case QueryTypePackage:
+		return m.handlePackageQuery(ctx, repoCtx, extracted, result)
 
 	case QueryTypeArchitecture:
 		return m.handleArchitectureQuery(ctx, repoCtx, result)
@@ -244,10 +249,9 @@ func parseQuery(query string) (QueryType, map[string]string) {
 		return QueryTypeFlow, extracted
 	}
 
-	// File patterns
+	// File patterns (specific file with extension)
 	filePatterns := []string{
-		`what(?:'s| is) in ["\x60]?([^\s"]+)["\x60]?`,
-		`show (?:me )?(?:the )?file ["\x60]?([^\s"]+)["\x60]?`,
+		`show (?:me )?(?:the )?file ["\x60]?([^\s"]+\.[a-z]+)["\x60]?`,
 		`explain ["\x60]?([^\s"]+\.(?:go|js|ts|py))["\x60]?`,
 	}
 	for _, pattern := range filePatterns {
@@ -258,9 +262,43 @@ func parseQuery(query string) (QueryType, map[string]string) {
 		}
 	}
 
-	// Architecture patterns
+	// Package/directory structure patterns - BEFORE architecture patterns
+	// Matches: "structure of X package", "files in X", "what's in X folder", etc.
+	packagePatterns := []string{
+		`structure of (?:the )?["\x60]?([^\s"]+)["\x60]? (?:package|folder|directory|dir)`,
+		`(?:package|folder|directory|dir) structure (?:of |for )?["\x60]?([^\s"]+)["\x60]?`,
+		`what(?:'s| is)(?: the)? (?:structure|layout) (?:of )?(?:the )?["\x60]?([^\s"]+)["\x60]?`,
+		`show (?:me )?(?:all )?files in ["\x60]?([^\s"]+)["\x60]?`,
+		`what(?:'s| is) in (?:the )?["\x60]?([^\s"/]+(?:/[^\s"/]+)+)["\x60]?`, // Match paths like service/test/create
+		`files (?:and|&) (?:their )?purposes? in ["\x60]?([^\s"]+)["\x60]?`,
+		`list files in ["\x60]?([^\s"]+)["\x60]?`,
+		`(?:describe|explain) (?:the )?["\x60]?([^\s"/]+(?:/[^\s"/]+)+)["\x60]? (?:package|folder|directory)`,
+	}
+	for _, pattern := range packagePatterns {
+		re := regexp.MustCompile(pattern)
+		if matches := re.FindStringSubmatch(queryLower); len(matches) > 1 {
+			extracted["package"] = matches[1]
+			return QueryTypePackage, extracted
+		}
+	}
+
+	// Check for path-like queries with structure keywords
+	if (strings.Contains(queryLower, "structure") || strings.Contains(queryLower, "files")) &&
+		strings.Contains(queryLower, "/") {
+		// Extract the path from the query
+		words := strings.Fields(queryLower)
+		for _, word := range words {
+			if strings.Contains(word, "/") {
+				extracted["package"] = strings.Trim(word, `"'\x60?.,`)
+				return QueryTypePackage, extracted
+			}
+		}
+	}
+
+	// Architecture patterns (for whole project, not specific packages)
 	if strings.Contains(queryLower, "architecture") ||
-		strings.Contains(queryLower, "structure") ||
+		strings.Contains(queryLower, "project structure") ||
+		strings.Contains(queryLower, "codebase structure") ||
 		strings.Contains(queryLower, "overview") ||
 		strings.Contains(queryLower, "project layout") {
 		return QueryTypeArchitecture, extracted
@@ -848,6 +886,188 @@ func (m *manager) handleFileQuery(ctx context.Context, repoCtx *ctxpkg.RepoConte
 	result.NeedsAI = false
 
 	return result, nil
+}
+
+// handlePackageQuery handles package/directory structure queries.
+// Shows all files in a package with their purposes, types, and key functions.
+func (m *manager) handlePackageQuery(ctx context.Context, repoCtx *ctxpkg.RepoContext, extracted map[string]string, result *SmartQueryResult) (*SmartQueryResult, error) {
+	packagePath := extracted["package"]
+	if packagePath == "" {
+		result.NeedsAI = true
+		result.Answer = "Could not identify package/directory path in query"
+		return result, nil
+	}
+
+	// Normalize the path (remove leading/trailing slashes)
+	packagePath = strings.Trim(packagePath, "/")
+
+	// Find all files that match this package path
+	type fileInfo struct {
+		path      string
+		context   *ctxpkg.FileContext
+	}
+	var matchingFiles []fileInfo
+
+	for path, fileCtx := range repoCtx.Files {
+		// Match if the file path contains the package path
+		if strings.Contains(path, packagePath) {
+			matchingFiles = append(matchingFiles, fileInfo{path: path, context: fileCtx})
+		}
+	}
+
+	if len(matchingFiles) == 0 {
+		result.Answer = fmt.Sprintf("No files found matching package/directory: `%s`\n\nTry using a more specific path or check available paths with `get_context` tool.", packagePath)
+		result.Confidence = 0.5
+		return result, nil
+	}
+
+	// Sort files by path for consistent output
+	sort.Slice(matchingFiles, func(i, j int) bool {
+		return matchingFiles[i].path < matchingFiles[j].path
+	})
+
+	var sb strings.Builder
+	fmt.Fprintf(&sb, "## Package Structure: `%s`\n\n", packagePath)
+	fmt.Fprintf(&sb, "**Files found:** %d\n\n", len(matchingFiles))
+
+	// Group files by subdirectory for better organization
+	dirFiles := make(map[string][]fileInfo)
+	for _, f := range matchingFiles {
+		// Get the relative path within the package
+		relPath := f.path
+		if idx := strings.Index(relPath, packagePath); idx >= 0 {
+			relPath = relPath[idx:]
+		}
+
+		// Get the immediate subdirectory (or root)
+		parts := strings.Split(relPath, "/")
+		var dir string
+		if len(parts) > 2 {
+			dir = parts[0] + "/" + parts[1]
+		} else {
+			dir = parts[0]
+		}
+		dirFiles[dir] = append(dirFiles[dir], f)
+	}
+
+	// Sort directory keys
+	var dirs []string
+	for dir := range dirFiles {
+		dirs = append(dirs, dir)
+	}
+	sort.Strings(dirs)
+
+	// Output each directory's files
+	for _, dir := range dirs {
+		files := dirFiles[dir]
+
+		// Only show directory header if there are multiple directories
+		if len(dirs) > 1 {
+			fmt.Fprintf(&sb, "### `%s/`\n\n", dir)
+		}
+
+		for _, f := range files {
+			// File header
+			fileName := f.path
+			if lastSlash := strings.LastIndex(fileName, "/"); lastSlash >= 0 {
+				fileName = fileName[lastSlash+1:]
+			}
+			fmt.Fprintf(&sb, "#### `%s`\n\n", fileName)
+			fmt.Fprintf(&sb, "**Path:** `%s`\n", f.path)
+
+			if f.context.Purpose != "" {
+				fmt.Fprintf(&sb, "**Purpose:** %s\n", f.context.Purpose)
+			}
+
+			fmt.Fprintf(&sb, "**Lines:** %d\n", f.context.LineCount)
+
+			// Types summary
+			if len(f.context.Types) > 0 {
+				sb.WriteString("\n**Types:**\n")
+				for _, t := range f.context.Types {
+					if t.IsPublic {
+						desc := ""
+						if t.Description != "" {
+							desc = " - " + truncateString(t.Description, 60)
+						}
+						fmt.Fprintf(&sb, "- `%s` (%s)%s\n", t.Name, t.Kind, desc)
+					}
+				}
+			}
+
+			// Functions summary (show key functions)
+			publicFuncs := []ctxpkg.FunctionDef{}
+			for _, fn := range f.context.Functions {
+				if fn.IsPublic {
+					publicFuncs = append(publicFuncs, fn)
+				}
+			}
+
+			if len(publicFuncs) > 0 {
+				sb.WriteString("\n**Functions:**\n")
+				// Limit to 10 most important functions
+				maxFuncs := 10
+				if len(publicFuncs) < maxFuncs {
+					maxFuncs = len(publicFuncs)
+				}
+				for i := 0; i < maxFuncs; i++ {
+					fn := publicFuncs[i]
+					summary := ""
+					if fn.Behavior != nil && fn.Behavior.Summary != "" {
+						summary = " - " + truncateString(fn.Behavior.Summary, 50)
+					}
+					fmt.Fprintf(&sb, "- `%s`%s\n", fn.Name, summary)
+				}
+				if len(publicFuncs) > maxFuncs {
+					fmt.Fprintf(&sb, "- ... and %d more\n", len(publicFuncs)-maxFuncs)
+				}
+			}
+
+			// Side effects summary
+			sideEffects := make(map[string]bool)
+			for _, fn := range f.context.Functions {
+				for _, se := range fn.SideEffects {
+					sideEffects[se] = true
+				}
+			}
+			if len(sideEffects) > 0 {
+				effects := make([]string, 0, len(sideEffects))
+				for se := range sideEffects {
+					effects = append(effects, se)
+				}
+				sort.Strings(effects)
+				fmt.Fprintf(&sb, "\n**Side Effects:** %s\n", strings.Join(effects, ", "))
+			}
+
+			sb.WriteString("\n---\n\n")
+		}
+	}
+
+	// Add navigation hints
+	sb.WriteString("## Quick Reference\n\n")
+	sb.WriteString("Use these commands for more details:\n")
+	sb.WriteString("- `get_function_context` - Deep dive into a specific function\n")
+	sb.WriteString("- `search_by_concept` - Find code by pattern (auth, validation, handler)\n")
+	sb.WriteString("- `get_callers` - See who calls a function\n")
+
+	result.Answer = sb.String()
+	result.Confidence = 0.95
+	result.NeedsAI = false
+
+	// Collect source files
+	for _, f := range matchingFiles {
+		result.Sources = append(result.Sources, f.path)
+	}
+
+	return result, nil
+}
+
+// truncateString truncates a string to maxLen characters with ellipsis.
+func truncateString(s string, maxLen int) string {
+	if len(s) <= maxLen {
+		return s
+	}
+	return s[:maxLen-3] + "..."
 }
 
 // handleArchitectureQuery handles project structure queries.

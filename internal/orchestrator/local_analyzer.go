@@ -123,8 +123,9 @@ func (m *manager) AnalyzeLocal(ctx context.Context, dirPath string, opts Analyze
 			return nil
 		}
 
-		// Get appropriate analyzer
-		analyzer := m.registry.Get(path)
+		// Get appropriate analyzer based on file extension
+		ext := strings.TrimPrefix(filepath.Ext(path), ".")
+		analyzer := m.registry.Get(ext)
 
 		// Create FileInfo for analyzer
 		fileInfo := repo.FileInfo{
@@ -340,7 +341,7 @@ func isSkippableDir(name string) bool {
 		"node_modules":  true,
 		"vendor":        true,
 		"dist":          true,
-		"build":         true,
+		// "build" removed - conflicts with legitimate Go packages like service/build
 		"target":        true,
 		"__pycache__":   true,
 		".git":          true,

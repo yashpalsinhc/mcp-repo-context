@@ -760,6 +760,25 @@ func (s *server) handleListTools(req *jsonRPCRequest) *jsonRPCResponse {
 				"required": []string{"query", "project_id"},
 			},
 		},
+		// Package structure exploration
+		{
+			Name:        "get_package_structure",
+			Description: "Get detailed structure of a package/directory including all files, their purposes, types, and key functions. Use when you need to understand the layout and contents of a specific package or folder in the codebase.",
+			InputSchema: map[string]interface{}{
+				"type": "object",
+				"properties": map[string]interface{}{
+					"project_id": map[string]interface{}{
+						"type":        "string",
+						"description": "Project ID (repo ID or local:path for local projects)",
+					},
+					"package_path": map[string]interface{}{
+						"type":        "string",
+						"description": "Path to the package/directory (e.g., 'service/test/create', 'pkg/handlers')",
+					},
+				},
+				"required": []string{"project_id", "package_path"},
+			},
+		},
 		// Incremental update tools for refactoring workflows
 		{
 			Name:        "refresh_file",
@@ -1057,6 +1076,8 @@ func (s *server) handleCallToolWithID(ctx context.Context, req *jsonRPCRequest, 
 		result = s.toolAnalyzeLocal(ctx, params.Arguments)
 	case "smart_query":
 		result = s.toolSmartQuery(ctx, params.Arguments)
+	case "get_package_structure":
+		result = s.toolGetPackageStructure(ctx, params.Arguments)
 	case "refresh_file":
 		result = s.toolRefreshFile(ctx, params.Arguments)
 	case "refresh_changed":

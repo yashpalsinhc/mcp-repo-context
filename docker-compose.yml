@@ -1,0 +1,21 @@
+version: "3.8"
+
+services:
+  mcp-repo-context:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: mcp-repo-context
+    restart: always
+    stdin_open: true
+    tty: false
+    environment:
+      - MCP_STORAGE_PATH=/home/mcp/data/contexts
+      - MCP_TEMP_DIR=/home/mcp/tmp
+      - GITHUB_TOKEN=${GITHUB_TOKEN:-}
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY:-}
+    volumes:
+      # Data persistence
+      - ./data:/home/mcp/data
+      # Mount user's home directory for local directory analysis (read-only)
+      - ${HOME:-/Users/yashpalc}:${HOME:-/Users/yashpalc}:ro

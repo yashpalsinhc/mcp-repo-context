@@ -2058,6 +2058,48 @@ func (s *server) toolSmartQuery(ctx context.Context, args map[string]any) callTo
 	}
 }
 
+// toolGetPackageStructure handles the get_package_structure tool call.
+// Returns detailed structure of a package/directory with files, types, and functions.
+func (s *server) toolGetPackageStructure(ctx context.Context, args map[string]any) callToolResult {
+	projectID, ok := args["project_id"].(string)
+	if !ok || projectID == "" {
+		return errorResult("project_id is required")
+	}
+
+	packagePath, ok := args["package_path"].(string)
+	if !ok || packagePath == "" {
+		return errorResult("package_path is required")
+	}
+
+	// Use smart_query with a package structure query
+	query := fmt.Sprintf("structure of %s package", packagePath)
+	result, err := s.manager.SmartQuery(ctx, query, projectID)
+	if err != nil {
+		return errorResult(fmt.Sprintf("Failed to get package structure: %v", err))
+	}
+
+	var sb strings.Builder
+
+	// Show query type detected
+	fmt.Fprintf(&sb, "*Query type: %s (confidence: %.0f%%)*\n\n", result.QueryType, result.Confidence*100)
+
+	// Main answer
+	sb.WriteString(result.Answer)
+
+	// Show sources if available
+	if len(result.Sources) > 0 && len(result.Sources) <= 10 {
+		sb.WriteString("\n\n---\n**Files included:** ")
+		sb.WriteString(strings.Join(result.Sources, ", "))
+	} else if len(result.Sources) > 10 {
+		sb.WriteString("\n\n---\n")
+		fmt.Fprintf(&sb, "**Files included:** %d files (see above for details)", len(result.Sources))
+	}
+
+	return callToolResult{
+		Content: []contentItem{{Type: "text", Text: sb.String()}},
+	}
+}
+
 // ============================================================================
 // Incremental Update Tools (for refactoring workflows)
 // ============================================================================
