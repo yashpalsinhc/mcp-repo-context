@@ -17,3 +17,6 @@ data/*.log
 # OS
 .DS_Store
 Thumbs.db
+
+# Git worktrees (parallel development)
+.worktrees/
