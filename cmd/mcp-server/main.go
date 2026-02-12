@@ -11,6 +11,7 @@ import (
 
 	"github.com/yashpalc/mcp-repo-context/internal/comparison"
 	"github.com/yashpalc/mcp-repo-context/internal/mcp"
+	"github.com/yashpalc/mcp-repo-context/internal/org"
 	"github.com/yashpalc/mcp-repo-context/internal/orchestrator"
 	"github.com/yashpalc/mcp-repo-context/internal/repo"
 	"github.com/yashpalc/mcp-repo-context/internal/storage"
@@ -72,11 +73,19 @@ func main() {
 	// Create comparer for multi-repo analysis
 	comparer := comparison.NewComparer()
 
+	// Create org store and manager for org-level operations
+	orgStore, err := org.NewFilesystemStore(*storagePath)
+	if err != nil {
+		log.Fatalf("Failed to create org store: %v", err)
+	}
+	orgManager := org.NewManager(orgStore)
+
 	// Create MCP server
 	server := mcp.NewServer(manager, comparer, &mcp.ServerConfig{
 		Name:        "mcp-repo-context",
 		Version:     version,
 		GitHubToken: *githubToken,
+		OrgManager:  orgManager,
 	})
 
 	// Setup context with cancellation

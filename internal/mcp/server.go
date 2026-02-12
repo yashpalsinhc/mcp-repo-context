@@ -14,6 +14,7 @@ import (
 	"github.com/yashpalc/mcp-repo-context/internal/comparison"
 	"github.com/yashpalc/mcp-repo-context/internal/compose"
 	"github.com/yashpalc/mcp-repo-context/internal/logging"
+	"github.com/yashpalc/mcp-repo-context/internal/org"
 	"github.com/yashpalc/mcp-repo-context/internal/orchestrator"
 	"github.com/yashpalc/mcp-repo-context/internal/skills"
 	"github.com/yashpalc/mcp-repo-context/internal/vectors"
@@ -51,6 +52,9 @@ type ServerConfig struct {
 
 	// Optional: Usage analytics tracker
 	UsageTracker *analytics.UsageTracker
+
+	// Optional: Org manager for org-level operations
+	OrgManager org.Manager
 }
 
 // Server is the MCP server interface.
@@ -389,6 +393,51 @@ func (s *server) handleListTools(req *jsonRPCRequest) *jsonRPCResponse {
 			InputSchema: map[string]interface{}{
 				"type":       "object",
 				"properties": map[string]interface{}{},
+			},
+		},
+		{
+			Name:        "register_org",
+			Description: "Register an organization with a list of repository IDs. Creates or updates the org for org-level operations.",
+			InputSchema: map[string]interface{}{
+				"type": "object",
+				"properties": map[string]interface{}{
+					"org_id": map[string]interface{}{
+						"type":        "string",
+						"description": "Organization ID (e.g., github.com/LambdatestIncPrivate)",
+					},
+					"repo_ids": map[string]interface{}{
+						"type":        "array",
+						"items":       map[string]interface{}{"type": "string"},
+						"description": "List of repository IDs to add to the org",
+					},
+				},
+				"required": []string{"org_id"},
+			},
+		},
+		{
+			Name:        "list_orgs",
+			Description: "List all registered organizations with their repo counts.",
+			InputSchema: map[string]interface{}{
+				"type":       "object",
+				"properties": map[string]interface{}{},
+			},
+		},
+		{
+			Name:        "analyze_org",
+			Description: "Analyze all repositories in an organization. Triggers analyze_repo for each repo in the org.",
+			InputSchema: map[string]interface{}{
+				"type": "object",
+				"properties": map[string]interface{}{
+					"org_id": map[string]interface{}{
+						"type":        "string",
+						"description": "Organization ID",
+					},
+					"force": map[string]interface{}{
+						"type":        "boolean",
+						"description": "Force re-analysis even if cached context exists (default: false)",
+					},
+				},
+				"required": []string{"org_id"},
 			},
 		},
 		{
@@ -1038,6 +1087,12 @@ func (s *server) handleCallToolWithID(ctx context.Context, req *jsonRPCRequest, 
 		result = s.toolGetContext(ctx, params.Arguments)
 	case "list_repos":
 		result = s.toolListRepos(ctx, params.Arguments)
+	case "register_org":
+		result = s.toolRegisterOrg(ctx, params.Arguments)
+	case "list_orgs":
+		result = s.toolListOrgs(ctx, params.Arguments)
+	case "analyze_org":
+		result = s.toolAnalyzeOrg(ctx, params.Arguments)
 	case "search_context":
 		result = s.toolSearchContext(ctx, params.Arguments)
 	case "compare_repos":

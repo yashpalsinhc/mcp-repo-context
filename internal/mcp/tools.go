@@ -298,6 +298,123 @@ func (s *server) getFileContext(ctx context.Context, repoID, filePath string) ca
 	}
 }
 
+// toolRegisterOrg handles the register_org tool call.
+func (s *server) toolRegisterOrg(ctx context.Context, args map[string]any) callToolResult {
+	if s.config.OrgManager == nil {
+		return errorResult("org support not configured (OrgManager is nil)")
+	}
+	orgID, ok := args["org_id"].(string)
+	if !ok || orgID == "" {
+		return errorResult("org_id is required")
+	}
+	var repoIDs []string
+	if rids, ok := args["repo_ids"].([]interface{}); ok {
+		for _, r := range rids {
+			if s, ok := r.(string); ok && s != "" {
+				repoIDs = append(repoIDs, s)
+			}
+		}
+	}
+	o, err := s.config.OrgManager.Register(ctx, orgID, repoIDs, nil)
+	if err != nil {
+		return errorResult(fmt.Sprintf("Failed to register org: %v", err))
+	}
+	var sb strings.Builder
+	fmt.Fprintf(&sb, "Registered org **%s** with %d repo(s)\n\n", o.ID, len(o.Repos))
+	for _, r := range o.Repos {
+		fmt.Fprintf(&sb, "- %s\n", r)
+	}
+	return callToolResult{
+		Content: []contentItem{{Type: "text", Text: sb.String()}},
+	}
+}
+
+// toolListOrgs handles the list_orgs tool call.
+func (s *server) toolListOrgs(ctx context.Context, args map[string]any) callToolResult {
+	if s.config.OrgManager == nil {
+		return errorResult("org support not configured (OrgManager is nil)")
+	}
+	orgs, err := s.config.OrgManager.List(ctx)
+	if err != nil {
+		return errorResult(fmt.Sprintf("Failed to list orgs: %v", err))
+	}
+	if len(orgs) == 0 {
+		return callToolResult{
+			Content: []contentItem{{Type: "text", Text: "No organizations registered. Use `register_org` to create one."}},
+		}
+	}
+	var sb strings.Builder
+	sb.WriteString("# Organizations\n\n")
+	for _, o := range orgs {
+		fmt.Fprintf(&sb, "## %s\n", o.ID)
+		fmt.Fprintf(&sb, "- **Repos:** %d\n\n", o.RepoCount)
+	}
+	return callToolResult{
+		Content: []contentItem{{Type: "text", Text: sb.String()}},
+	}
+}
+
+// toolAnalyzeOrg handles the analyze_org tool call.
+func (s *server) toolAnalyzeOrg(ctx context.Context, args map[string]any) callToolResult {
+	if s.config.OrgManager == nil {
+		return errorResult("org support not configured (OrgManager is nil)")
+	}
+	orgID, ok := args["org_id"].(string)
+	if !ok || orgID == "" {
+		return errorResult("org_id is required")
+	}
+	force, _ := args["force"].(bool)
+
+	o, err := s.config.OrgManager.Get(ctx, orgID)
+	if err != nil {
+		return errorResult(fmt.Sprintf("Org not found: %v", err))
+	}
+
+	opts := orchestrator.AnalyzeOptions{
+		Force:       force,
+		GitHubToken: s.config.GitHubToken,
+		MaxAge:      24 * time.Hour,
+	}
+
+	var sb strings.Builder
+	fmt.Fprintf(&sb, "Analyzing %d repo(s) in org **%s**\n\n", len(o.Repos), orgID)
+
+	for _, repoID := range o.Repos {
+		// Convert repo ID to URL: github.com/owner/repo -> https://github.com/owner/repo
+		// local:path stays as path for analyze_local
+		if strings.HasPrefix(repoID, "local:") {
+			path := strings.TrimPrefix(repoID, "local:")
+			localResult, localErr := s.manager.AnalyzeLocal(ctx, path, orchestrator.AnalyzeLocalOptions{Force: force})
+			if localErr != nil {
+				fmt.Fprintf(&sb, "- **%s**: ❌ %v\n", repoID, localErr)
+				continue
+			}
+			fmt.Fprintf(&sb, "- **%s**: ✅ %d files\n", localResult.ProjectID, localResult.FileCount)
+			for _, w := range localResult.Warnings {
+				fmt.Fprintf(&sb, "  - %s\n", w)
+			}
+		} else {
+			repoURL := repoID
+			if !strings.HasPrefix(repoID, "http") {
+				repoURL = "https://" + repoID
+			}
+			result, analyzeErr := s.manager.AnalyzeRepo(ctx, repoURL, opts)
+			if analyzeErr != nil {
+				fmt.Fprintf(&sb, "- **%s**: ❌ %v\n", repoID, analyzeErr)
+				continue
+			}
+			fmt.Fprintf(&sb, "- **%s**: ✅ %d files\n", result.RepoID, result.FileCount)
+			for _, w := range result.Warnings {
+				fmt.Fprintf(&sb, "  - %s\n", w)
+			}
+		}
+	}
+
+	return callToolResult{
+		Content: []contentItem{{Type: "text", Text: sb.String()}},
+	}
+}
+
 // toolListRepos handles the list_repos tool call.
 func (s *server) toolListRepos(ctx context.Context, args map[string]any) callToolResult {
 	repos, err := s.manager.ListRepos(ctx)
