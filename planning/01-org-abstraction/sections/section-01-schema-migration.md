@@ -9,91 +9,70 @@ Create SQLite migration `003_org_tables.sql` to add organization tables to the e
 - Familiarity with existing migration files: `001_initial_schema.sql`, `002_file_hashes.sql`
 - Existing `internal/storage/sqlite.go` migration pattern (go:embed + method call chain)
 
-## What to Build
+## What Was Built
 
 ### 1. Migration SQL File
 
-Create `internal/storage/migrations/003_org_tables.sql` (or embed location matching existing pattern):
+Created `internal/storage/migrations/003_org_tables.sql`:
 
-**`orgs` table:**
-- `id` TEXT PRIMARY KEY — organization identifier (e.g., `github.com/LambdatestIncPrivate`)
-- `config_json` TEXT — JSON-serialized OrgConfig (ExcludePatterns, MaxFileSize)
-- `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP
-- `updated_at` DATETIME DEFAULT CURRENT_TIMESTAMP
-
-**`org_repos` junction table:**
-- `org_id` TEXT NOT NULL — FK referencing orgs(id) ON DELETE CASCADE
-- `repo_id` TEXT NOT NULL — repo identifier string
-- `config_override_json` TEXT — nullable, per-repo config override (JSON)
-- `added_at` DATETIME DEFAULT CURRENT_TIMESTAMP
-- PRIMARY KEY (org_id, repo_id)
-- CREATE INDEX idx_org_repos_repo_id ON org_repos(repo_id) — for reverse lookups
-
-**SQLite trigger for automatic `updated_at`:**
-```sql
-CREATE TRIGGER IF NOT EXISTS update_orgs_timestamp
-AFTER UPDATE ON orgs
-BEGIN
-    UPDATE orgs SET updated_at = CURRENT_TIMESTAMP WHERE id = NEW.id;
-END;
-```
-
-**Schema migration tracking:**
-- INSERT INTO schema_migrations (version) to mark migration as applied
-- Check existence before running (idempotent)
+**`orgs` table:** id (TEXT PK), config_json, created_at, updated_at
+**`org_repos` junction table:** org_id (FK CASCADE), repo_id, config_override_json, added_at, PK(org_id, repo_id)
+**Index:** idx_org_repos_repo_id for reverse lookups
+**Trigger:** `update_orgs_timestamp` with `WHEN NEW.updated_at = OLD.updated_at` guard to prevent infinite recursion
 
 ### 2. Embed and Wire Migration
 
-In `internal/storage/sqlite.go` (or the appropriate file):
-
-1. Add `//go:embed` directive for the new SQL file
-2. Create `migrateOrgTables()` method on SQLiteStore
-3. Add call to `migrateOrgTables()` in the `migrate()` method chain, after existing migrations
-4. Check `schema_migrations` table — only run if version 3 not present
+In `internal/storage/sqlite.go`:
+- Added `//go:embed migrations/003_org_tables.sql` → `orgTablesMigration`
+- Created `migrateOrgTables()` with `COALESCE(MAX(version), 0)` version check
+- Added to `migrate()` chain after `migrateFileHashes()`
 
 ### 3. Storage Package Constructor Change
 
-Add a new constructor to `internal/storage/` that accepts a pre-opened `*sql.DB`:
+Added `NewSQLiteStoreWithDB(db *sql.DB) (*SQLiteStore, error)`:
+- Validates db is non-nil
+- Defensively runs `PRAGMA foreign_keys = ON`
+- Runs all migrations
+- `NewSQLiteStore(path)` now delegates to `NewSQLiteStoreWithDB` after opening DB
 
-```go
-func NewSQLiteStoreWithDB(db *sql.DB) (*SQLiteStore, error)
-```
+### Deviations from Original Plan
 
-This enables sharing the same database connection between the main storage and the org storage. The existing `NewSQLiteStore(path string)` can delegate to this new constructor after opening the DB.
+1. **Trigger guard clause:** Added `WHEN NEW.updated_at = OLD.updated_at` to prevent infinite recursion (code review finding)
+2. **PRAGMA foreign_keys:** `NewSQLiteStoreWithDB` defensively enables foreign keys regardless of DSN
+3. **Nil check:** Added nil check for db parameter
+4. **COALESCE:** Used `COALESCE(MAX(version), 0)` instead of bare `MAX(version)` for robustness
+5. **Delegation:** `NewSQLiteStore` delegates to `NewSQLiteStoreWithDB` (single migration path)
+6. **DB() method removed:** Was not in plan, created ownership ambiguity
+7. **Tests in `org_migration_test.go`:** Used dedicated file instead of modifying `sqlite_test.go`
 
-## Tests to Write First
+## Tests (10 total)
 
-**In store_test.go or a dedicated migration_test.go:**
+| Test | Status |
+|------|--------|
+| TestOrgMigration_CreatesOrgsTable | PASS |
+| TestOrgMigration_CreatesOrgReposTable | PASS |
+| TestOrgMigration_CreatesRepoIdIndex | PASS |
+| TestOrgMigration_CreatesUpdatedAtTrigger (existence + behavior) | PASS |
+| TestNewSQLiteStoreWithDB_NilDB | PASS |
+| TestOrgMigration_IsIdempotent | PASS |
+| TestOrgMigration_RecordsVersion3 | PASS |
+| TestOrgMigration_CascadeDelete | PASS |
+| TestOrgMigration_ForeignKeyConstraint | PASS |
+| TestNewSQLiteStoreWithDB | PASS |
 
-```go
-// Test: RunMigrations creates orgs table with correct columns (id, config_json, created_at, updated_at)
-// Test: RunMigrations creates org_repos table with correct columns (org_id, repo_id, config_override_json, added_at)
-// Test: RunMigrations creates repo_id index on org_repos
-// Test: RunMigrations creates updated_at trigger on orgs
-// Test: RunMigrations is idempotent — running twice produces no error
-// Test: RunMigrations records version 3 in schema_migrations
-// Test: CASCADE delete — deleting from orgs removes corresponding org_repos rows
-// Test: Foreign key constraint — inserting into org_repos with non-existent org_id fails
-```
-
-**Test setup pattern:**
-- Use `sql.Open("sqlite3", ":memory:?_foreign_keys=ON")`
-- Run all migrations (001, 002, 003) to get a complete schema
-- Each test gets a fresh in-memory database
-
-## Files to Create/Modify
+## Files Created/Modified
 
 | File | Action | Purpose |
 |------|--------|---------|
-| `internal/storage/migrations/003_org_tables.sql` | Create | SQL migration |
-| `internal/storage/sqlite.go` | Modify | Add embed, migrateOrgTables(), NewSQLiteStoreWithDB() |
-| `internal/storage/sqlite_test.go` | Modify | Add migration tests |
+| `internal/storage/migrations/003_org_tables.sql` | Created | SQL migration |
+| `internal/storage/sqlite.go` | Modified | Add embed, migrateOrgTables(), NewSQLiteStoreWithDB(), refactored NewSQLiteStore |
+| `internal/storage/org_migration_test.go` | Created | Migration tests |
 
 ## Acceptance Criteria
 
-- [ ] `003_org_tables.sql` creates both tables with correct schema
-- [ ] Migration is idempotent (safe to run multiple times)
-- [ ] CASCADE delete works on org_repos when org is deleted
-- [ ] `updated_at` trigger fires on org UPDATE
-- [ ] `NewSQLiteStoreWithDB(db)` constructor works with pre-opened *sql.DB
-- [ ] All migration tests pass with `:memory:` SQLite
+- [x] `003_org_tables.sql` creates both tables with correct schema
+- [x] Migration is idempotent (safe to run multiple times)
+- [x] CASCADE delete works on org_repos when org is deleted
+- [x] `updated_at` trigger fires on org UPDATE (with recursion guard)
+- [x] `NewSQLiteStoreWithDB(db)` constructor works with pre-opened *sql.DB
+- [x] All migration tests pass with `:memory:` SQLite

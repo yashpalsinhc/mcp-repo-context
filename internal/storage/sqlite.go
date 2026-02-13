@@ -18,6 +18,9 @@ import (
 //go:embed migrations/001_initial_schema.sql
 var initialSchema string
 
+//go:embed migrations/003_org_tables.sql
+var orgTablesMigration string
+
 // Ensure SQLiteStore implements ContextStore interface.
 var _ ContextStore = (*SQLiteStore)(nil)
 
@@ -43,16 +46,36 @@ func NewSQLiteStore(path string) (*SQLiteStore, error) {
 	}
 
 	// Set connection pool settings
-	// Allow more connections for reading while preventing write contention
 	db.SetMaxOpenConns(10)
 	db.SetMaxIdleConns(5)
-	db.SetConnMaxLifetime(0) // Keep connection alive
+	db.SetConnMaxLifetime(0)
 
-	store := &SQLiteStore{db: db, path: path}
-
-	// Run migrations
-	if err := store.migrate(); err != nil {
+	store, err := NewSQLiteStoreWithDB(db)
+	if err != nil {
 		db.Close()
+		return nil, err
+	}
+	store.path = path
+
+	return store, nil
+}
+
+// NewSQLiteStoreWithDB creates a store using a pre-opened *sql.DB.
+// This enables sharing the same database connection between stores.
+// The caller retains ownership of db and is responsible for closing it.
+func NewSQLiteStoreWithDB(db *sql.DB) (*SQLiteStore, error) {
+	if db == nil {
+		return nil, fmt.Errorf("db must not be nil")
+	}
+
+	// Ensure foreign keys are enabled regardless of how the DB was opened
+	if _, err := db.Exec("PRAGMA foreign_keys = ON"); err != nil {
+		return nil, fmt.Errorf("failed to enable foreign keys: %w", err)
+	}
+
+	store := &SQLiteStore{db: db}
+
+	if err := store.migrate(); err != nil {
 		return nil, fmt.Errorf("failed to run migrations: %w", err)
 	}
 
@@ -70,6 +93,31 @@ func (s *SQLiteStore) migrate() error {
 	// Run file hashes migration (for incremental indexing support)
 	if err := s.migrateFileHashes(); err != nil {
 		return fmt.Errorf("failed to apply file hashes migration: %w", err)
+	}
+
+	// Run org tables migration
+	if err := s.migrateOrgTables(); err != nil {
+		return fmt.Errorf("failed to apply org tables migration: %w", err)
+	}
+
+	return nil
+}
+
+// migrateOrgTables applies the org tables migration.
+func (s *SQLiteStore) migrateOrgTables() error {
+	var version int
+	err := s.db.QueryRow("SELECT COALESCE(MAX(version), 0) FROM schema_migrations").Scan(&version)
+	if err != nil {
+		return fmt.Errorf("failed to check schema version: %w", err)
+	}
+
+	if version >= 3 {
+		return nil // Already migrated
+	}
+
+	_, err = s.db.Exec(orgTablesMigration)
+	if err != nil {
+		return fmt.Errorf("failed to run org tables migration: %w", err)
 	}
 
 	return nil
