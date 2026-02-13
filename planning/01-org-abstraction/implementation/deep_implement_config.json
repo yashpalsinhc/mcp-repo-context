@@ -23,6 +23,10 @@
     "section-02-config-inheritance": {
       "status": "complete",
       "commit_hash": "018a8a8"
+    },
+    "section-03-store-interface-sqlite": {
+      "status": "complete",
+      "commit_hash": "7646eec"
     }
   },
   "pre_commit": {

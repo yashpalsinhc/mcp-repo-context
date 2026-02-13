@@ -108,6 +108,10 @@ func (m *mockManager) GetPRContext(ctx context.Context, repoID string, changedFi
 	return nil, nil
 }
 
+func (m *mockManager) DeleteRepoContext(ctx context.Context, repoID string) error {
+	return nil
+}
+
 func newTestServer() *server {
 	mockMgr := &mockManager{
 		repos: map[string]*ctxpkg.RepoContext{

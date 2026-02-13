@@ -606,7 +606,7 @@ func TestConcurrent_ReadsAndWrites(t *testing.T) {
 func TestManager_GetEffectiveConfig(t *testing.T) {
 	store := newTestStore(t)
 	ctx := context.Background()
-	mgr := NewManager(store)
+	mgr := NewManager(store, newMockOrch())
 
 	// Register org with config
 	_, err := mgr.Register(ctx, "org-1", []string{"repo-a"}, &OrgConfig{
@@ -651,7 +651,7 @@ func TestManager_GetEffectiveConfig(t *testing.T) {
 func TestManager_DelegatesAtomicOps(t *testing.T) {
 	store := newTestStore(t)
 	ctx := context.Background()
-	mgr := NewManager(store)
+	mgr := NewManager(store, newMockOrch())
 
 	mgr.Register(ctx, "org-1", []string{"repo-a"}, nil)
 

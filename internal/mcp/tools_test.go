@@ -110,6 +110,10 @@ func (m *testManager) GetPRContext(ctx context.Context, repoID string, changedFi
 	return nil, nil
 }
 
+func (m *testManager) DeleteRepoContext(ctx context.Context, repoID string) error {
+	return nil
+}
+
 func newToolsTestServer() *server {
 	testMgr := &testManager{
 		repos: map[string]*ctxpkg.RepoContext{

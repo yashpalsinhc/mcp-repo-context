@@ -79,7 +79,7 @@ func main() {
 	if err != nil {
 		log.Fatalf("Failed to create org store: %v", err)
 	}
-	orgManager := org.NewManager(orgStore)
+	orgManager := org.NewManager(orgStore, manager)
 
 	// Create vector store for semantic search (index_repo, index_org)
 	vectorStorePath := getEnvOrDefault("MCP_VECTOR_STORE_PATH", *storagePath+"/vectors.db")

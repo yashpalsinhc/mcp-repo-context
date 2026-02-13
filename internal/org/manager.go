@@ -4,6 +4,8 @@ import (
 	"context"
 	"fmt"
 	"time"
+
+	"github.com/yashpalc/mcp-repo-context/internal/orchestrator"
 )
 
 // Manager manages organizations.
@@ -16,16 +18,20 @@ type Manager interface {
 	Delete(ctx context.Context, orgID string) error
 	GetEffectiveConfig(ctx context.Context, orgID, repoID string) (*OrgConfig, error)
 	SetRepoConfigOverride(ctx context.Context, orgID, repoID string, config *OrgConfig) error
+	AnalyzeOrg(ctx context.Context, orgID string, force bool, concurrency int) (*AnalysisResult, error)
 }
 
 // manager implements Manager.
 type manager struct {
-	store Store
+	store    Store
+	analyzer *Analyzer
 }
 
 // NewManager creates a new OrgManager.
-func NewManager(store Store) Manager {
-	return &manager{store: store}
+func NewManager(store Store, orch orchestrator.Manager) Manager {
+	m := &manager{store: store}
+	m.analyzer = NewAnalyzer(m, orch)
+	return m
 }
 
 func (m *manager) Register(ctx context.Context, orgID string, repoIDs []string, config *OrgConfig) (*Org, error) {
@@ -82,6 +88,10 @@ func (m *manager) GetEffectiveConfig(ctx context.Context, orgID, repoID string) 
 
 func (m *manager) SetRepoConfigOverride(ctx context.Context, orgID, repoID string, config *OrgConfig) error {
 	return m.store.SetRepoConfigOverride(ctx, orgID, repoID, config)
+}
+
+func (m *manager) AnalyzeOrg(ctx context.Context, orgID string, force bool, concurrency int) (*AnalysisResult, error) {
+	return m.analyzer.AnalyzeOrg(ctx, orgID, force, concurrency)
 }
 
 func uniqueStrings(ss []string) []string {

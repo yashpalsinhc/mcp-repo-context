@@ -26,3 +26,20 @@ type OrgWithCount struct {
 	Org
 	RepoCount int `json:"repo_count"`
 }
+
+// AnalysisResult holds the outcome of analyzing all repos in an org.
+type AnalysisResult struct {
+	OrgID     string        `json:"org_id"`
+	Total     int           `json:"total"`
+	Succeeded int           `json:"succeeded"`
+	Failed    int           `json:"failed"`
+	Skipped   int           `json:"skipped"`
+	Errors    []RepoError   `json:"errors,omitempty"`
+	Duration  time.Duration `json:"duration"`
+}
+
+// RepoError records a per-repo analysis failure.
+type RepoError struct {
+	RepoID string `json:"repo_id"`
+	Error  string `json:"error"`
+}

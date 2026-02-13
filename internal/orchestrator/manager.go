@@ -900,3 +900,8 @@ func (m *manager) ReviewPR(ctx context.Context, prURL string, opts prreview.Revi
 
 	return result, nil
 }
+
+// DeleteRepoContext removes all stored context for a repository.
+func (m *manager) DeleteRepoContext(ctx context.Context, repoID string) error {
+	return m.store.DeleteContext(ctx, repoID)
+}

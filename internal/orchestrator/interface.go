@@ -76,6 +76,9 @@ type Manager interface {
 
 	// GetPRContext extracts rich context for PR changes (no AI required).
 	GetPRContext(ctx context.Context, repoID string, changedFiles []ChangedFile) (*PRContextResult, error)
+
+	// DeleteRepoContext removes all stored context for a repository.
+	DeleteRepoContext(ctx context.Context, repoID string) error
 }
 
 // RefreshResult contains results of refreshing AI context.

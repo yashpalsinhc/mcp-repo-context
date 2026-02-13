@@ -107,6 +107,10 @@ func (m *mockManager) GetPRContext(ctx context.Context, repoID string, changedFi
 	return nil, nil
 }
 
+func (m *mockManager) DeleteRepoContext(ctx context.Context, repoID string) error {
+	return nil
+}
+
 // createTestRepoContext creates a mock repository context for testing.
 func createTestRepoContext() *ctxpkg.RepoContext {
 	return &ctxpkg.RepoContext{

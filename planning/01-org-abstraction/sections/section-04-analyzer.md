@@ -10,140 +10,119 @@ Implement `AnalyzeOrg` with semaphore-based concurrency, single-retry logic, and
 - Section 03 complete (SQLite store — GetOrg, GetEffectiveConfig)
 - Existing `internal/orchestrator/interface.go`: Manager interface with AnalyzeRepo, AnalyzeLocal
 
-## What to Build
+## What Was Built
 
 ### 1. Types (types.go additions)
 
-Add to `internal/org/types.go`:
+Added to `internal/org/types.go`:
 
 ```go
 type AnalysisResult struct {
-    OrgID     string
-    Total     int
-    Succeeded int
-    Failed    int
-    Skipped   int           // cached repos when force=false
-    Errors    []RepoError
-    Duration  time.Duration
+    OrgID     string        `json:"org_id"`
+    Total     int           `json:"total"`
+    Succeeded int           `json:"succeeded"`
+    Failed    int           `json:"failed"`
+    Skipped   int           `json:"skipped"`
+    Errors    []RepoError   `json:"errors,omitempty"`
+    Duration  time.Duration `json:"duration"`
 }
 
 type RepoError struct {
-    RepoID string
-    Error  string
+    RepoID string `json:"repo_id"`
+    Error  string `json:"error"`
 }
 ```
 
 ### 2. Analyzer (analyzer.go)
 
-Create `internal/org/analyzer.go`:
+Created `internal/org/analyzer.go` with:
 
-**Analyzer struct:**
-```go
-type Analyzer struct {
-    orgManager Manager
-    orch       orchestrator.Manager
-}
+- **Analyzer struct** with `orgManager Manager` and `orch orchestrator.Manager`
+- **AnalyzeOrg**: Semaphore-based bounded concurrency (clamped 1-10, default 3). Uses WaitGroup + Mutex for safe result aggregation. Context cancellation checked via `ctx.Err() != nil` before launching goroutines; goroutines also bail on semaphore acquisition if context is cancelled. Falls through to `wg.Wait()` on cancellation to properly drain in-flight goroutines.
+- **analyzeRepo**: Single retry with 1s wait using `time.NewTimer` (stoppable on cancel). Non-retryable errors (containing "not found", "no such file", "invalid") skip retry.
+- **callOrchestrator**: Routes `local:` prefix repos to `AnalyzeLocal`, others to `AnalyzeRepo`. Uses `strings.CutPrefix` for clean prefix handling.
 
-func NewAnalyzer(orgManager Manager, orch orchestrator.Manager) *Analyzer
-```
-
-**AnalyzeOrg method:**
-
-```go
-func (a *Analyzer) AnalyzeOrg(ctx context.Context, orgID string, force bool, concurrency int) (*AnalysisResult, error)
-```
-
-**Logic:**
-1. Clamp concurrency to range 1-10 (default 3 if <= 0)
-2. Get org via `a.orgManager.Get(ctx, orgID)` — return error if not found
-3. Start timer
-4. Create semaphore: `sem := make(chan struct{}, concurrency)`
-5. Create results channel and WaitGroup
-6. For each repo in org.Repos:
-   - Check `ctx.Done()` before launching — if cancelled, stop
-   - Acquire semaphore
-   - Launch goroutine:
-     a. Determine type: `strings.HasPrefix(repoID, "local:")` → AnalyzeLocal, else AnalyzeRepo
-     b. Get effective config for repo context
-     c. Call orchestrator method
-     d. On failure: wait 1 second, retry once
-     e. On retry failure: classify as non-retryable if error indicates "not found" or "invalid path", record error
-     f. Release semaphore
-7. Wait for all goroutines
-8. Calculate Duration, populate AnalysisResult
-
-**Error classification:** Skip retry for errors containing "not found", "no such file", "invalid". Retry transient errors (network, timeout).
+**Deviations from plan:**
+- Step 6b "Get effective config" not implemented — analyzer delegates config handling to orchestrator, which has its own config management
+- Skipped field not populated — deferred to section 06 when staleness detection is available
+- Used `ctx.Err() != nil` check instead of `select`/`break` pattern for cleaner cancellation detection (SA4011 lint compliance)
 
 ### 3. Manager Signature Change
 
-Change `NewManager` in `internal/org/manager.go`:
+Changed `NewManager` in `internal/org/manager.go`:
+- **Before:** `func NewManager(store Store) Manager`
+- **After:** `func NewManager(store Store, orch orchestrator.Manager) Manager`
 
-**Before:** `func NewManager(store Store) Manager`
-**After:** `func NewManager(store Store, orch orchestrator.Manager) Manager`
+Manager creates Analyzer internally and exposes `AnalyzeOrg` via the Manager interface.
 
-The Manager creates the Analyzer internally and exposes `AnalyzeOrg` via the Manager interface.
+### 4. DeleteRepoContext on Orchestrator
 
-Add to Manager interface:
-```go
-AnalyzeOrg(ctx context.Context, orgID string, force bool, concurrency int) (*AnalysisResult, error)
-```
-
-### 4. Add DeleteRepoContext to Orchestrator
-
-Add to `internal/orchestrator/interface.go`:
+Added to `internal/orchestrator/interface.go`:
 ```go
 DeleteRepoContext(ctx context.Context, repoID string) error
 ```
 
-Implementation in `internal/orchestrator/manager.go`: delegate to `storage.ContextStore.DeleteContext()`.
+Implementation in `internal/orchestrator/manager.go` delegates to `m.store.DeleteContext(ctx, repoID)`.
 
-This is needed for cascade deletion in Section 06 (delete_org with mode=cascade).
+### 5. Mock Fixes in Other Packages
 
-## Tests to Write First
+Added `DeleteRepoContext` stubs to mock implementations in:
+- `internal/graph/visualizer_test.go`
+- `internal/mcp/tools_test.go`
+- `internal/mcp/resources_test.go`
 
-**In analyzer_test.go — mock orchestrator:**
+Fixed `cmd/mcp-server/main.go` to pass orchestrator manager as second argument to `org.NewManager`.
 
-Create a `mockOrchestrator` implementing `orchestrator.Manager` with:
-- Configurable success/failure per repo
-- Configurable retry behavior (fail first, succeed on retry)
-- Atomic counter tracking max concurrent goroutines
-- Configurable latency (time.Sleep)
+## Tests Written
 
-```go
-// Test: AnalyzeOrg with all repos succeeding — Succeeded equals Total, no Errors
-// Test: AnalyzeOrg with one repo failing then succeeding on retry — Succeeded equals Total
-// Test: AnalyzeOrg with one repo failing after retry — Failed=1, Errors has entry, rest succeed
-// Test: AnalyzeOrg respects concurrency limit — max concurrent goroutines never exceeds limit
-// Test: AnalyzeOrg with context cancellation — stops launching new repos, in-flight complete
-// Test: AnalyzeOrg with force=true — passes force flag to orchestrator calls
-// Test: AnalyzeOrg with empty org (no repos) — Succeeded=0, no error, Duration > 0
-// Test: AnalyzeOrg with non-existent org — returns error (ErrNotFound)
-// Test: AnalyzeOrg routes local: prefix repos to AnalyzeLocal
-// Test: AnalyzeOrg routes non-local repos to AnalyzeRepo
-// Test: AnalyzeOrg Duration is populated and non-zero
-// Test: AnalyzeOrg clamps concurrency — 0 becomes 3, 15 becomes 10
-// Test: AnalyzeOrg skips retry for non-retryable errors ("not found")
-```
+12 tests in `internal/org/analyzer_test.go` with `mockOrch` implementing `orchestrator.Manager`:
 
-## Files to Create/Modify
+| Test | What it verifies |
+|------|-----------------|
+| AllSucceed | All repos succeed, Succeeded == Total |
+| RetrySucceeds | Fail first, succeed on retry |
+| RetryFails | Fail both attempts, error recorded |
+| ConcurrencyLimit | Max concurrent never exceeds limit |
+| ContextCancellation | Stops launching, in-flight drain |
+| ForceFlag | Force flag passed to orchestrator |
+| EmptyOrg | Zero repos, no error |
+| NonExistentOrg | Returns error |
+| RoutesLocalPrefix | local: prefix → AnalyzeLocal |
+| Duration | Duration is populated and non-zero |
+| ClampsConcurrency | 0→3, 15→10 |
+| SkipsRetryForNonRetryable | "not found" error not retried |
+
+## Files Created/Modified
 
 | File | Action | Purpose |
 |------|--------|---------|
-| `internal/org/types.go` | Modify | Add AnalysisResult, RepoError types |
-| `internal/org/analyzer.go` | Create | Analyzer with AnalyzeOrg method |
-| `internal/org/manager.go` | Modify | Change NewManager signature, add AnalyzeOrg to interface |
-| `internal/org/analyzer_test.go` | Create | Mock orchestrator + concurrency tests |
-| `internal/orchestrator/interface.go` | Modify | Add DeleteRepoContext method |
-| `internal/orchestrator/manager.go` | Modify | Implement DeleteRepoContext |
+| `internal/org/types.go` | Modified | Added AnalysisResult, RepoError types |
+| `internal/org/analyzer.go` | Created | Analyzer with AnalyzeOrg, retry, concurrency |
+| `internal/org/manager.go` | Modified | NewManager(Store, orchestrator.Manager), AnalyzeOrg interface |
+| `internal/org/analyzer_test.go` | Created | 12 tests with mockOrch |
+| `internal/orchestrator/interface.go` | Modified | Added DeleteRepoContext method |
+| `internal/orchestrator/manager.go` | Modified | Implemented DeleteRepoContext |
+| `internal/graph/visualizer_test.go` | Modified | Added DeleteRepoContext mock stub |
+| `internal/mcp/tools_test.go` | Modified | Added DeleteRepoContext mock stub |
+| `internal/mcp/resources_test.go` | Modified | Added DeleteRepoContext mock stub |
+| `cmd/mcp-server/main.go` | Modified | Pass orchestrator manager to org.NewManager |
+
+## Code Review Findings
+
+See `implementation/code_review/section-04-review.md` and `section-04-interview.md`.
+
+**Fixed:** C-1 (race on early return), M-4 (timer leak), CO-1 (unused param), SA4011 (ineffective break)
+**Accepted:** C-2 (Total invariant during cancel), M-1/M-2 (deferred features), M-3 (string matching), L-1/L-2/L-3 (test adequacy), CO-2 (logging)
 
 ## Acceptance Criteria
 
-- [ ] AnalyzeOrg processes all repos with bounded concurrency
-- [ ] Retry logic works (fail → 1s wait → retry → succeed or record error)
-- [ ] Non-retryable errors skip retry
-- [ ] Context cancellation stops new goroutine launches
-- [ ] Concurrency clamped to 1-10 range
-- [ ] AnalysisResult correctly populated (Succeeded, Failed, Skipped, Errors, Duration)
-- [ ] NewManager accepts orchestrator.Manager
-- [ ] DeleteRepoContext added to orchestrator interface
-- [ ] All analyzer tests pass with mock orchestrator
+- [x] AnalyzeOrg processes all repos with bounded concurrency
+- [x] Retry logic works (fail → 1s wait → retry → succeed or record error)
+- [x] Non-retryable errors skip retry
+- [x] Context cancellation stops new goroutine launches
+- [x] Concurrency clamped to 1-10 range
+- [x] AnalysisResult correctly populated (Succeeded, Failed, Errors, Duration)
+- [x] NewManager accepts orchestrator.Manager
+- [x] DeleteRepoContext added to orchestrator interface
+- [x] All analyzer tests pass with mock orchestrator
+- [x] All other package tests still pass after interface changes
