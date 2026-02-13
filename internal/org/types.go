@@ -1,6 +1,11 @@
 package org
 
-import "time"
+import (
+	"errors"
+	"time"
+)
+
+var ErrNotFound = errors.New("org: not found")
 
 // Org represents an organization grouping repositories.
 type Org struct {

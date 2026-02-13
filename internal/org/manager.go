@@ -14,6 +14,8 @@ type Manager interface {
 	AddRepos(ctx context.Context, orgID string, repoIDs []string) error
 	RemoveRepos(ctx context.Context, orgID string, repoIDs []string) error
 	Delete(ctx context.Context, orgID string) error
+	GetEffectiveConfig(ctx context.Context, orgID, repoID string) (*OrgConfig, error)
+	SetRepoConfigOverride(ctx context.Context, orgID, repoID string, config *OrgConfig) error
 }
 
 // manager implements Manager.
@@ -40,58 +42,46 @@ func (m *manager) Register(ctx context.Context, orgID string, repoIDs []string, 
 		Config:  cfg,
 		Created: time.Now(),
 	}
-	if err := m.store.Save(ctx, o); err != nil {
+	if err := m.store.SaveOrg(ctx, o); err != nil {
 		return nil, err
 	}
 	return o, nil
 }
 
 func (m *manager) List(ctx context.Context) ([]OrgWithCount, error) {
-	orgs, err := m.store.List(ctx)
-	if err != nil {
-		return nil, err
-	}
-	result := make([]OrgWithCount, len(orgs))
-	for i, o := range orgs {
-		result[i] = OrgWithCount{Org: o, RepoCount: len(o.Repos)}
-	}
-	return result, nil
+	return m.store.ListOrgs(ctx)
 }
 
 func (m *manager) Get(ctx context.Context, orgID string) (*Org, error) {
-	return m.store.Get(ctx, orgID)
+	return m.store.GetOrg(ctx, orgID)
 }
 
 func (m *manager) AddRepos(ctx context.Context, orgID string, repoIDs []string) error {
-	o, err := m.store.Get(ctx, orgID)
-	if err != nil {
-		return err
-	}
-	o.Repos = uniqueStrings(append(o.Repos, repoIDs...))
-	return m.store.Save(ctx, o)
+	return m.store.AddRepos(ctx, orgID, repoIDs)
 }
 
 func (m *manager) RemoveRepos(ctx context.Context, orgID string, repoIDs []string) error {
-	o, err := m.store.Get(ctx, orgID)
-	if err != nil {
-		return err
-	}
-	removeSet := make(map[string]bool)
-	for _, r := range repoIDs {
-		removeSet[r] = true
-	}
-	var kept []string
-	for _, r := range o.Repos {
-		if !removeSet[r] {
-			kept = append(kept, r)
-		}
-	}
-	o.Repos = kept
-	return m.store.Save(ctx, o)
+	return m.store.RemoveRepos(ctx, orgID, repoIDs)
 }
 
 func (m *manager) Delete(ctx context.Context, orgID string) error {
-	return m.store.Delete(ctx, orgID)
+	return m.store.DeleteOrg(ctx, orgID)
+}
+
+func (m *manager) GetEffectiveConfig(ctx context.Context, orgID, repoID string) (*OrgConfig, error) {
+	o, err := m.store.GetOrg(ctx, orgID)
+	if err != nil {
+		return nil, err
+	}
+	override, err := m.store.GetRepoConfigOverride(ctx, orgID, repoID)
+	if err != nil {
+		return nil, err
+	}
+	return MergeConfigs(&o.Config, override), nil
+}
+
+func (m *manager) SetRepoConfigOverride(ctx context.Context, orgID, repoID string, config *OrgConfig) error {
+	return m.store.SetRepoConfigOverride(ctx, orgID, repoID, config)
 }
 
 func uniqueStrings(ss []string) []string {
