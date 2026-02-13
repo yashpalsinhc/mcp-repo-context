@@ -227,3 +227,90 @@ func (s *SemanticSearch) ClearRepository(ctx context.Context, repoID string) err
 func (s *SemanticSearch) Count(ctx context.Context, repoID string) (int, error) {
 	return s.store.Count(ctx, repoID)
 }
+
+// IndexRepositoryWithOrg indexes a repository and tags all vectors with org_id.
+func (s *SemanticSearch) IndexRepositoryWithOrg(ctx context.Context, repo *ctxpkg.RepoContext, orgID string) error {
+	if repo == nil {
+		return fmt.Errorf("repository context is nil")
+	}
+
+	var documents []string
+	for _, fc := range repo.Files {
+		for _, fn := range fc.Functions {
+			documents = append(documents, buildFunctionDocument(fn, fc.Path))
+		}
+		for _, t := range fc.Types {
+			documents = append(documents, buildTypeDocument(t, fc.Path))
+		}
+	}
+
+	if localEmb, ok := s.embedder.(*LocalEmbedder); ok {
+		localEmb.BuildVocabulary(documents)
+	}
+
+	var records []VectorRecord
+
+	for path, fc := range repo.Files {
+		for _, fn := range fc.Functions {
+			doc := buildFunctionDocument(fn, path)
+			vec := s.embedder.Embed(doc)
+
+			record := VectorRecord{
+				ID:       fmt.Sprintf("%s:func:%s:%s", repo.ID, path, fn.Name),
+				RepoID:   repo.ID,
+				OrgID:    orgID,
+				Type:     "function",
+				Name:     fn.Name,
+				FilePath: path,
+				Vector:   vec,
+				Metadata: map[string]string{
+					"signature":   fn.Signature,
+					"description": fn.Description,
+					"is_public":   fmt.Sprintf("%v", fn.IsPublic),
+				},
+			}
+			if fn.Behavior != nil && fn.Behavior.Summary != "" {
+				record.Metadata["summary"] = fn.Behavior.Summary
+			}
+			records = append(records, record)
+		}
+
+		for _, t := range fc.Types {
+			doc := buildTypeDocument(t, path)
+			vec := s.embedder.Embed(doc)
+			record := VectorRecord{
+				ID:       fmt.Sprintf("%s:type:%s:%s", repo.ID, path, t.Name),
+				RepoID:   repo.ID,
+				OrgID:    orgID,
+				Type:     "type",
+				Name:     t.Name,
+				FilePath: path,
+				Vector:   vec,
+				Metadata: map[string]string{
+					"kind":        t.Kind,
+					"description": t.Description,
+					"is_public":   fmt.Sprintf("%v", t.IsPublic),
+				},
+			}
+			records = append(records, record)
+		}
+	}
+
+	return s.store.StoreBatch(ctx, records)
+}
+
+// SearchByOrg searches across all repos in an org.
+func (s *SemanticSearch) SearchByOrg(ctx context.Context, query string, orgID string, limit int) ([]SearchResult, error) {
+	queryVec := s.embedder.Embed(query)
+	return s.store.SearchByOrg(ctx, queryVec, orgID, limit)
+}
+
+// CountByOrg returns the number of indexed items for an org.
+func (s *SemanticSearch) CountByOrg(ctx context.Context, orgID string) (int, error) {
+	return s.store.CountByOrg(ctx, orgID)
+}
+
+// ClearOrg removes all vectors for an org.
+func (s *SemanticSearch) ClearOrg(ctx context.Context, orgID string) error {
+	return s.store.DeleteByOrg(ctx, orgID)
+}

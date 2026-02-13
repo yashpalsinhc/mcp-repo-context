@@ -12,7 +12,8 @@ import (
 type VectorRecord struct {
 	ID       string    `json:"id"`
 	RepoID   string    `json:"repo_id"`
-	Type     string    `json:"type"` // "function", "type", "file"
+	OrgID    string    `json:"org_id,omitempty"` // org ID when indexed via index_org
+	Type     string    `json:"type"`             // "function", "type", "file"
 	Name     string    `json:"name"`
 	FilePath string    `json:"file_path,omitempty"`
 	Vector   []float64 `json:"vector"`
@@ -96,6 +97,7 @@ func (s *SQLiteVectorStore) initSchema() error {
 	CREATE TABLE IF NOT EXISTS vectors (
 		id TEXT PRIMARY KEY,
 		repo_id TEXT NOT NULL,
+		org_id TEXT NOT NULL DEFAULT '',
 		type TEXT NOT NULL,
 		name TEXT NOT NULL,
 		file_path TEXT,
@@ -105,12 +107,21 @@ func (s *SQLiteVectorStore) initSchema() error {
 	);
 
 	CREATE INDEX IF NOT EXISTS idx_vectors_repo ON vectors(repo_id);
+	CREATE INDEX IF NOT EXISTS idx_vectors_org ON vectors(org_id);
 	CREATE INDEX IF NOT EXISTS idx_vectors_type ON vectors(type);
 	CREATE INDEX IF NOT EXISTS idx_vectors_name ON vectors(name);
 	`
 
-	_, err := s.db.Exec(schema)
-	return err
+	if _, err := s.db.Exec(schema); err != nil {
+		return err
+	}
+
+	// Migration: add org_id if missing (existing DBs)
+	if _, err := s.db.Exec("SELECT org_id FROM vectors LIMIT 1"); err != nil {
+		s.db.Exec("ALTER TABLE vectors ADD COLUMN org_id TEXT NOT NULL DEFAULT ''")
+		s.db.Exec("CREATE INDEX IF NOT EXISTS idx_vectors_org ON vectors(org_id)")
+	}
+	return nil
 }
 
 // Store saves a vector record.
@@ -128,14 +139,19 @@ func (s *SQLiteVectorStore) Store(ctx context.Context, record VectorRecord) erro
 		return fmt.Errorf("failed to marshal metadata: %w", err)
 	}
 
+	orgID := record.OrgID
+	if orgID == "" {
+		orgID = ""
+	}
 	query := `
-	INSERT OR REPLACE INTO vectors (id, repo_id, type, name, file_path, vector, metadata)
-	VALUES (?, ?, ?, ?, ?, ?, ?)
+	INSERT OR REPLACE INTO vectors (id, repo_id, org_id, type, name, file_path, vector, metadata)
+	VALUES (?, ?, ?, ?, ?, ?, ?, ?)
 	`
 
 	_, err = s.db.ExecContext(ctx, query,
 		record.ID,
 		record.RepoID,
+		orgID,
 		record.Type,
 		record.Name,
 		record.FilePath,
@@ -158,8 +174,8 @@ func (s *SQLiteVectorStore) StoreBatch(ctx context.Context, records []VectorReco
 	defer tx.Rollback()
 
 	stmt, err := tx.PrepareContext(ctx, `
-		INSERT OR REPLACE INTO vectors (id, repo_id, type, name, file_path, vector, metadata)
-		VALUES (?, ?, ?, ?, ?, ?, ?)
+		INSERT OR REPLACE INTO vectors (id, repo_id, org_id, type, name, file_path, vector, metadata)
+		VALUES (?, ?, ?, ?, ?, ?, ?, ?)
 	`)
 	if err != nil {
 		return err
@@ -177,9 +193,11 @@ func (s *SQLiteVectorStore) StoreBatch(ctx context.Context, records []VectorReco
 			return fmt.Errorf("failed to marshal metadata: %w", err)
 		}
 
+		orgID := record.OrgID
 		_, err = stmt.ExecContext(ctx,
 			record.ID,
 			record.RepoID,
+			orgID,
 			record.Type,
 			record.Name,
 			record.FilePath,
@@ -199,7 +217,7 @@ func (s *SQLiteVectorStore) Get(ctx context.Context, id string) (*VectorRecord, 
 	s.mu.RLock()
 	defer s.mu.RUnlock()
 
-	query := `SELECT id, repo_id, type, name, file_path, vector, metadata FROM vectors WHERE id = ?`
+	query := `SELECT id, repo_id, org_id, type, name, file_path, vector, metadata FROM vectors WHERE id = ?`
 
 	var record VectorRecord
 	var vectorBytes, metadataBytes []byte
@@ -208,6 +226,7 @@ func (s *SQLiteVectorStore) Get(ctx context.Context, id string) (*VectorRecord, 
 	err := s.db.QueryRowContext(ctx, query, id).Scan(
 		&record.ID,
 		&record.RepoID,
+		&record.OrgID,
 		&record.Type,
 		&record.Name,
 		&filePath,
@@ -267,7 +286,7 @@ func (s *SQLiteVectorStore) Search(ctx context.Context, query []float64, repoID 
 	}
 
 	// Load all vectors for the repo (brute force)
-	sqlQuery := `SELECT id, repo_id, type, name, file_path, vector, metadata FROM vectors WHERE repo_id = ?`
+	sqlQuery := `SELECT id, repo_id, org_id, type, name, file_path, vector, metadata FROM vectors WHERE repo_id = ?`
 
 	rows, err := s.db.QueryContext(ctx, sqlQuery, repoID)
 	if err != nil {
@@ -285,6 +304,7 @@ func (s *SQLiteVectorStore) Search(ctx context.Context, query []float64, repoID 
 		err := rows.Scan(
 			&record.ID,
 			&record.RepoID,
+			&record.OrgID,
 			&record.Type,
 			&record.Name,
 			&filePath,
@@ -337,7 +357,7 @@ func (s *SQLiteVectorStore) SearchByType(ctx context.Context, query []float64, r
 		limit = 10
 	}
 
-	sqlQuery := `SELECT id, repo_id, type, name, file_path, vector, metadata FROM vectors WHERE repo_id = ? AND type = ?`
+	sqlQuery := `SELECT id, repo_id, org_id, type, name, file_path, vector, metadata FROM vectors WHERE repo_id = ? AND type = ?`
 
 	rows, err := s.db.QueryContext(ctx, sqlQuery, repoID, vectorType)
 	if err != nil {
@@ -355,6 +375,7 @@ func (s *SQLiteVectorStore) SearchByType(ctx context.Context, query []float64, r
 		err := rows.Scan(
 			&record.ID,
 			&record.RepoID,
+			&record.OrgID,
 			&record.Type,
 			&record.Name,
 			&filePath,
@@ -393,6 +414,93 @@ func (s *SQLiteVectorStore) SearchByType(ctx context.Context, query []float64, r
 	}
 
 	return results, nil
+}
+
+// SearchByOrg finds similar vectors across all repos in an org.
+func (s *SQLiteVectorStore) SearchByOrg(ctx context.Context, query []float64, orgID string, limit int) ([]SearchResult, error) {
+	s.mu.RLock()
+	defer s.mu.RUnlock()
+
+	if limit <= 0 {
+		limit = 10
+	}
+
+	sqlQuery := `SELECT id, repo_id, org_id, type, name, file_path, vector, metadata FROM vectors WHERE org_id = ?`
+
+	rows, err := s.db.QueryContext(ctx, sqlQuery, orgID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var results []SearchResult
+
+	for rows.Next() {
+		var record VectorRecord
+		var vectorBytes, metadataBytes []byte
+		var filePath sql.NullString
+
+		err := rows.Scan(
+			&record.ID,
+			&record.RepoID,
+			&record.OrgID,
+			&record.Type,
+			&record.Name,
+			&filePath,
+			&vectorBytes,
+			&metadataBytes,
+		)
+		if err != nil {
+			return nil, err
+		}
+
+		if filePath.Valid {
+			record.FilePath = filePath.String
+		}
+
+		if err := json.Unmarshal(vectorBytes, &record.Vector); err != nil {
+			continue
+		}
+
+		if len(metadataBytes) > 0 {
+			json.Unmarshal(metadataBytes, &record.Metadata)
+		}
+
+		similarity := CosineSimilarity(query, record.Vector)
+		if similarity > 0 {
+			results = append(results, SearchResult{
+				Record:     record,
+				Similarity: similarity,
+			})
+		}
+	}
+
+	sortBySimilarity(results)
+
+	if len(results) > limit {
+		results = results[:limit]
+	}
+
+	return results, nil
+}
+
+// DeleteByOrg removes all vectors for an org.
+func (s *SQLiteVectorStore) DeleteByOrg(ctx context.Context, orgID string) error {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+
+	_, err := s.db.ExecContext(ctx, "DELETE FROM vectors WHERE org_id = ?", orgID)
+	return err
+}
+
+// CountByOrg returns the number of vectors for an org.
+func (s *SQLiteVectorStore) CountByOrg(ctx context.Context, orgID string) (int, error) {
+	s.mu.RLock()
+	defer s.mu.RUnlock()
+
+	var count int
+	err := s.db.QueryRowContext(ctx, "SELECT COUNT(*) FROM vectors WHERE org_id = ?", orgID).Scan(&count)
+	return count, err
 }
 
 // Count returns the number of vectors for a repository.

@@ -15,6 +15,7 @@ import (
 	"github.com/yashpalc/mcp-repo-context/internal/orchestrator"
 	"github.com/yashpalc/mcp-repo-context/internal/repo"
 	"github.com/yashpalc/mcp-repo-context/internal/storage"
+	"github.com/yashpalc/mcp-repo-context/internal/vectors"
 )
 
 var (
@@ -80,13 +81,26 @@ func main() {
 	}
 	orgManager := org.NewManager(orgStore)
 
+	// Create vector store for semantic search (index_repo, index_org)
+	vectorStorePath := getEnvOrDefault("MCP_VECTOR_STORE_PATH", *storagePath+"/vectors.db")
+	vectorStore, err := vectors.NewSQLiteVectorStore(vectorStorePath, 384)
+	if err != nil {
+		log.Printf("Warning: Vector store not available (semantic search disabled): %v", err)
+	} else {
+		defer vectorStore.Close()
+	}
+
 	// Create MCP server
-	server := mcp.NewServer(manager, comparer, &mcp.ServerConfig{
+	serverConfig := &mcp.ServerConfig{
 		Name:        "mcp-repo-context",
 		Version:     version,
 		GitHubToken: *githubToken,
 		OrgManager:  orgManager,
-	})
+	}
+	if vectorStore != nil {
+		serverConfig.VectorStore = vectorStore
+	}
+	server := mcp.NewServer(manager, comparer, serverConfig)
 
 	// Setup context with cancellation
 	ctx, cancel := context.WithCancel(context.Background())
