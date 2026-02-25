@@ -958,6 +958,30 @@ func (m *manager) handleFileQuery(ctx context.Context, repoCtx *ctxpkg.RepoConte
 	return result, nil
 }
 
+// classifyFilePurpose returns the purpose category for a file based on its name/extension.
+func classifyFilePurpose(filename string) string {
+	base := filename
+	if idx := strings.LastIndex(filename, "/"); idx >= 0 {
+		base = filename[idx+1:]
+	}
+
+	switch {
+	case strings.HasSuffix(base, "_test.go"):
+		return "Tests"
+	case strings.HasSuffix(base, ".go"):
+		return "Source Code"
+	case strings.HasSuffix(base, ".md"):
+		return "Documentation"
+	case strings.HasSuffix(base, ".mod") || strings.HasSuffix(base, ".sum") ||
+		strings.HasSuffix(base, ".yml") || strings.HasSuffix(base, ".yaml") ||
+		strings.HasSuffix(base, ".json") || strings.HasSuffix(base, ".toml") ||
+		base == "Makefile" || base == "Dockerfile":
+		return "Configuration"
+	default:
+		return "Other"
+	}
+}
+
 // handlePackageQuery handles package/directory structure queries.
 // Shows all files in a package with their purposes, types, and key functions.
 func (m *manager) handlePackageQuery(ctx context.Context, repoCtx *ctxpkg.RepoContext, extracted map[string]string, result *SmartQueryResult) (*SmartQueryResult, error) {
@@ -973,8 +997,8 @@ func (m *manager) handlePackageQuery(ctx context.Context, repoCtx *ctxpkg.RepoCo
 
 	// Find all files that match this package path
 	type fileInfo struct {
-		path      string
-		context   *ctxpkg.FileContext
+		path    string
+		context *ctxpkg.FileContext
 	}
 	var matchingFiles []fileInfo
 
@@ -999,116 +1023,119 @@ func (m *manager) handlePackageQuery(ctx context.Context, repoCtx *ctxpkg.RepoCo
 	fmt.Fprintf(&sb, "## Package Structure: `%s`\n\n", packagePath)
 	fmt.Fprintf(&sb, "**Files found:** %d\n\n", len(matchingFiles))
 
-	// Group files by subdirectory for better organization
-	dirFiles := make(map[string][]fileInfo)
+	// Determine if files span multiple directories
+	dirSet := make(map[string]bool)
 	for _, f := range matchingFiles {
-		// Get the relative path within the package
 		relPath := f.path
 		if idx := strings.Index(relPath, packagePath); idx >= 0 {
-			relPath = relPath[idx:]
+			relPath = relPath[idx+len(packagePath):]
+			relPath = strings.TrimPrefix(relPath, "/")
 		}
-
-		// Get the immediate subdirectory (or root)
-		parts := strings.Split(relPath, "/")
-		var dir string
-		if len(parts) > 2 {
-			dir = parts[0] + "/" + parts[1]
-		} else {
-			dir = parts[0]
+		dir := ""
+		if slashIdx := strings.Index(relPath, "/"); slashIdx >= 0 {
+			dir = relPath[:slashIdx]
 		}
-		dirFiles[dir] = append(dirFiles[dir], f)
+		dirSet[dir] = true
 	}
 
-	// Sort directory keys
-	var dirs []string
-	for dir := range dirFiles {
-		dirs = append(dirs, dir)
-	}
-	sort.Strings(dirs)
+	isFlat := len(dirSet) <= 1
 
-	// Output each directory's files
-	for _, dir := range dirs {
-		files := dirFiles[dir]
-
-		// Only show directory header if there are multiple directories
-		if len(dirs) > 1 {
-			fmt.Fprintf(&sb, "### `%s/`\n\n", dir)
+	if isFlat {
+		// Flat package: group by purpose only
+		purposeFiles := make(map[string][]fileInfo)
+		for _, f := range matchingFiles {
+			purpose := classifyFilePurpose(f.path)
+			purposeFiles[purpose] = append(purposeFiles[purpose], f)
 		}
 
-		for _, f := range files {
-			// File header
-			fileName := f.path
-			if lastSlash := strings.LastIndex(fileName, "/"); lastSlash >= 0 {
-				fileName = fileName[lastSlash+1:]
+		// Count non-empty purpose categories
+		nonEmpty := 0
+		for _, files := range purposeFiles {
+			if len(files) > 0 {
+				nonEmpty++
 			}
-			fmt.Fprintf(&sb, "#### `%s`\n\n", fileName)
-			fmt.Fprintf(&sb, "**Path:** `%s`\n", f.path)
+		}
 
-			if f.context.Purpose != "" {
-				fmt.Fprintf(&sb, "**Purpose:** %s\n", f.context.Purpose)
+		purposeOrder := []string{"Source Code", "Tests", "Documentation", "Configuration", "Other"}
+		for _, purpose := range purposeOrder {
+			files := purposeFiles[purpose]
+			if len(files) == 0 {
+				continue
+			}
+			// Show purpose header if multiple categories
+			if nonEmpty > 1 {
+				fmt.Fprintf(&sb, "### %s\n\n", purpose)
+			}
+			for _, f := range files {
+				m.writeFileDetail(&sb, f.path, f.context)
+			}
+		}
+	} else {
+		// Multi-directory: group by directory (2-level collapse), then purpose
+		type dirGroup struct {
+			dir   string
+			files []fileInfo
+		}
+		dirFilesMap := make(map[string][]fileInfo)
+		for _, f := range matchingFiles {
+			relPath := f.path
+			if idx := strings.Index(relPath, packagePath); idx >= 0 {
+				relPath = relPath[idx+len(packagePath):]
+				relPath = strings.TrimPrefix(relPath, "/")
+			}
+			// Collapse to at most 2 directory levels
+			parts := strings.Split(relPath, "/")
+			var dir string
+			if len(parts) <= 1 {
+				dir = "" // file directly in package root
+			} else if len(parts) <= 3 {
+				dir = strings.Join(parts[:len(parts)-1], "/")
+			} else {
+				dir = parts[0] + "/" + parts[1]
+			}
+			dirFilesMap[dir] = append(dirFilesMap[dir], f)
+		}
+
+		// Sort directory keys
+		var dirs []string
+		for dir := range dirFilesMap {
+			dirs = append(dirs, dir)
+		}
+		sort.Strings(dirs)
+
+		for _, dir := range dirs {
+			files := dirFilesMap[dir]
+			if dir != "" {
+				fmt.Fprintf(&sb, "### `%s/`\n\n", dir)
 			}
 
-			fmt.Fprintf(&sb, "**Lines:** %d\n", f.context.LineCount)
+			// Group by purpose within directory
+			purposeFiles := make(map[string][]fileInfo)
+			for _, f := range files {
+				purpose := classifyFilePurpose(f.path)
+				purposeFiles[purpose] = append(purposeFiles[purpose], f)
+			}
 
-			// Types summary
-			if len(f.context.Types) > 0 {
-				sb.WriteString("\n**Types:**\n")
-				for _, t := range f.context.Types {
-					if t.IsPublic {
-						desc := ""
-						if t.Description != "" {
-							desc = " - " + truncateString(t.Description, 60)
-						}
-						fmt.Fprintf(&sb, "- `%s` (%s)%s\n", t.Name, t.Kind, desc)
-					}
+			purposeOrder := []string{"Source Code", "Tests", "Documentation", "Configuration", "Other"}
+			nonEmpty := 0
+			for _, pf := range purposeFiles {
+				if len(pf) > 0 {
+					nonEmpty++
 				}
 			}
 
-			// Functions summary (show key functions)
-			publicFuncs := []ctxpkg.FunctionDef{}
-			for _, fn := range f.context.Functions {
-				if fn.IsPublic {
-					publicFuncs = append(publicFuncs, fn)
+			for _, purpose := range purposeOrder {
+				pFiles := purposeFiles[purpose]
+				if len(pFiles) == 0 {
+					continue
+				}
+				if nonEmpty > 1 {
+					fmt.Fprintf(&sb, "**%s:**\n\n", purpose)
+				}
+				for _, f := range pFiles {
+					m.writeFileDetail(&sb, f.path, f.context)
 				}
 			}
-
-			if len(publicFuncs) > 0 {
-				sb.WriteString("\n**Functions:**\n")
-				// Limit to 10 most important functions
-				maxFuncs := 10
-				if len(publicFuncs) < maxFuncs {
-					maxFuncs = len(publicFuncs)
-				}
-				for i := 0; i < maxFuncs; i++ {
-					fn := publicFuncs[i]
-					summary := ""
-					if fn.Behavior != nil && fn.Behavior.Summary != "" {
-						summary = " - " + truncateString(fn.Behavior.Summary, 50)
-					}
-					fmt.Fprintf(&sb, "- `%s`%s\n", fn.Name, summary)
-				}
-				if len(publicFuncs) > maxFuncs {
-					fmt.Fprintf(&sb, "- ... and %d more\n", len(publicFuncs)-maxFuncs)
-				}
-			}
-
-			// Side effects summary
-			sideEffects := make(map[string]bool)
-			for _, fn := range f.context.Functions {
-				for _, se := range fn.SideEffects {
-					sideEffects[se] = true
-				}
-			}
-			if len(sideEffects) > 0 {
-				effects := make([]string, 0, len(sideEffects))
-				for se := range sideEffects {
-					effects = append(effects, se)
-				}
-				sort.Strings(effects)
-				fmt.Fprintf(&sb, "\n**Side Effects:** %s\n", strings.Join(effects, ", "))
-			}
-
-			sb.WriteString("\n---\n\n")
 		}
 	}
 
@@ -1129,6 +1156,81 @@ func (m *manager) handlePackageQuery(ctx context.Context, repoCtx *ctxpkg.RepoCo
 	}
 
 	return result, nil
+}
+
+// writeFileDetail writes the detail block for a single file.
+func (m *manager) writeFileDetail(sb *strings.Builder, filePath string, fc *ctxpkg.FileContext) {
+	fileName := filePath
+	if lastSlash := strings.LastIndex(fileName, "/"); lastSlash >= 0 {
+		fileName = fileName[lastSlash+1:]
+	}
+	fmt.Fprintf(sb, "#### `%s`\n\n", fileName)
+	fmt.Fprintf(sb, "**Path:** `%s`\n", filePath)
+
+	if fc.Purpose != "" {
+		fmt.Fprintf(sb, "**Purpose:** %s\n", fc.Purpose)
+	}
+
+	fmt.Fprintf(sb, "**Lines:** %d\n", fc.LineCount)
+
+	// Types summary
+	if len(fc.Types) > 0 {
+		sb.WriteString("\n**Types:**\n")
+		for _, t := range fc.Types {
+			if t.IsPublic {
+				desc := ""
+				if t.Description != "" {
+					desc = " - " + truncateString(t.Description, 60)
+				}
+				fmt.Fprintf(sb, "- `%s` (%s)%s\n", t.Name, t.Kind, desc)
+			}
+		}
+	}
+
+	// Functions summary (show key functions)
+	publicFuncs := []ctxpkg.FunctionDef{}
+	for _, fn := range fc.Functions {
+		if fn.IsPublic {
+			publicFuncs = append(publicFuncs, fn)
+		}
+	}
+
+	if len(publicFuncs) > 0 {
+		sb.WriteString("\n**Functions:**\n")
+		maxFuncs := 10
+		if len(publicFuncs) < maxFuncs {
+			maxFuncs = len(publicFuncs)
+		}
+		for i := 0; i < maxFuncs; i++ {
+			fn := publicFuncs[i]
+			summary := ""
+			if fn.Behavior != nil && fn.Behavior.Summary != "" {
+				summary = " - " + truncateString(fn.Behavior.Summary, 50)
+			}
+			fmt.Fprintf(sb, "- `%s`%s\n", fn.Name, summary)
+		}
+		if len(publicFuncs) > maxFuncs {
+			fmt.Fprintf(sb, "- ... and %d more\n", len(publicFuncs)-maxFuncs)
+		}
+	}
+
+	// Side effects summary
+	sideEffects := make(map[string]bool)
+	for _, fn := range fc.Functions {
+		for _, se := range fn.SideEffects {
+			sideEffects[se] = true
+		}
+	}
+	if len(sideEffects) > 0 {
+		effects := make([]string, 0, len(sideEffects))
+		for se := range sideEffects {
+			effects = append(effects, se)
+		}
+		sort.Strings(effects)
+		fmt.Fprintf(sb, "\n**Side Effects:** %s\n", strings.Join(effects, ", "))
+	}
+
+	sb.WriteString("\n---\n\n")
 }
 
 // truncateString truncates a string to maxLen characters with ellipsis.

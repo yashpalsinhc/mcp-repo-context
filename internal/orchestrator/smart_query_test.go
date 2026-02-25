@@ -1,7 +1,10 @@
 package orchestrator
 
 import (
+	"strings"
 	"testing"
+
+	ctxpkg "github.com/yashpalc/mcp-repo-context/internal/context"
 )
 
 // --- parseQuery tests ---
@@ -151,4 +154,158 @@ func TestMatchesFileName_NoFalsePositive(t *testing.T) {
 	if matchesFileName("pkg/myrouter.go", "router.go") {
 		t.Error("matchesFileName should not match myrouter.go for router.go")
 	}
+}
+
+// --- classifyFilePurpose tests ---
+
+func TestClassifyFilePurpose(t *testing.T) {
+	tests := []struct {
+		filename string
+		want     string
+	}{
+		{"router.go", "Source Code"},
+		{"router_test.go", "Tests"},
+		{"README.md", "Documentation"},
+		{"config.yaml", "Configuration"},
+		{"config.yml", "Configuration"},
+		{"config.json", "Configuration"},
+		{"config.toml", "Configuration"},
+		{"go.mod", "Configuration"},
+		{"go.sum", "Configuration"},
+		{"Makefile", "Configuration"},
+		{"Dockerfile", "Configuration"},
+		{"script.sh", "Other"},
+		{"pkg/handler_test.go", "Tests"},
+		{"pkg/handler.go", "Source Code"},
+	}
+	for _, tt := range tests {
+		got := classifyFilePurpose(tt.filename)
+		if got != tt.want {
+			t.Errorf("classifyFilePurpose(%q) = %q, want %q", tt.filename, got, tt.want)
+		}
+	}
+}
+
+// --- handlePackageQuery grouping tests ---
+
+func TestPackageStructure_FlatPackage_NoDotGoGrouping(t *testing.T) {
+	// A flat package should NOT produce headers like ".go/"
+	result := buildPackageQueryOutput(t, "mux", map[string]*fileInfoForTest{
+		"mux/router.go":   {purpose: "Source Code"},
+		"mux/route.go":    {purpose: "Source Code"},
+		"mux/mux.go":      {purpose: "Source Code"},
+	})
+
+	if containsString(result, ".go/") {
+		t.Errorf("flat package should not contain '.go/' grouping\n%s", result)
+	}
+}
+
+func TestPackageStructure_FlatPackage_GroupsByPurpose(t *testing.T) {
+	result := buildPackageQueryOutput(t, "pkg", map[string]*fileInfoForTest{
+		"pkg/router.go":      {purpose: "Source Code"},
+		"pkg/router_test.go": {purpose: "Tests"},
+		"pkg/README.md":      {purpose: "Documentation"},
+		"pkg/config.yaml":    {purpose: "Configuration"},
+	})
+
+	if !containsString(result, "### Source Code") {
+		t.Errorf("expected 'Source Code' header\n%s", result)
+	}
+	if !containsString(result, "### Tests") {
+		t.Errorf("expected 'Tests' header\n%s", result)
+	}
+	if !containsString(result, "### Documentation") {
+		t.Errorf("expected 'Documentation' header\n%s", result)
+	}
+	if !containsString(result, "### Configuration") {
+		t.Errorf("expected 'Configuration' header\n%s", result)
+	}
+}
+
+func TestPackageStructure_MultiDirectory_GroupsByDir(t *testing.T) {
+	result := buildPackageQueryOutput(t, "pkg", map[string]*fileInfoForTest{
+		"pkg/handlers/auth.go":      {purpose: "Source Code"},
+		"pkg/handlers/auth_test.go": {purpose: "Tests"},
+		"pkg/models/user.go":        {purpose: "Source Code"},
+	})
+
+	if !containsString(result, "### `handlers/`") {
+		t.Errorf("expected 'handlers/' directory header\n%s", result)
+	}
+	if !containsString(result, "### `models/`") {
+		t.Errorf("expected 'models/' directory header\n%s", result)
+	}
+}
+
+func TestPackageStructure_NoExtensionGrouping(t *testing.T) {
+	result := buildPackageQueryOutput(t, "pkg", map[string]*fileInfoForTest{
+		"pkg/router.go":  {purpose: "Source Code"},
+		"pkg/README.md":  {purpose: "Documentation"},
+		"pkg/go.mod":     {purpose: "Configuration"},
+	})
+
+	if containsString(result, ".go/") || containsString(result, ".md/") || containsString(result, ".mod/") {
+		t.Errorf("should not contain extension-based grouping\n%s", result)
+	}
+}
+
+func TestPackageStructure_DeepNesting_CollapsesTo2Levels(t *testing.T) {
+	result := buildPackageQueryOutput(t, "pkg", map[string]*fileInfoForTest{
+		"pkg/a/b/c/deep.go":    {purpose: "Source Code"},
+		"pkg/a/b/shallow.go":   {purpose: "Source Code"},
+		"pkg/a/top.go":         {purpose: "Source Code"},
+	})
+
+	// Deep files should be collapsed into 2-level groups
+	if containsString(result, "### `a/b/c/`") {
+		t.Errorf("should collapse a/b/c/ to a/b/\n%s", result)
+	}
+}
+
+func TestPackageStructure_SingleFile(t *testing.T) {
+	result := buildPackageQueryOutput(t, "pkg", map[string]*fileInfoForTest{
+		"pkg/main.go": {purpose: "Source Code"},
+	})
+
+	if !containsString(result, "main.go") {
+		t.Errorf("single file should still appear\n%s", result)
+	}
+}
+
+// --- helpers for package structure tests ---
+
+type fileInfoForTest struct {
+	purpose string
+}
+
+func buildPackageQueryOutput(t *testing.T, packagePath string, files map[string]*fileInfoForTest) string {
+	t.Helper()
+	// Build mock RepoContext
+	ctxFiles := make(map[string]*ctxpkg.FileContext)
+	for path := range files {
+		ctxFiles[path] = &ctxpkg.FileContext{
+			Path:     path,
+			Language: "go",
+		}
+	}
+
+	repoCtx := &ctxpkg.RepoContext{
+		ID:    "test-repo",
+		Files: ctxFiles,
+	}
+
+	mgr := &manager{}
+	result := &SmartQueryResult{}
+	extracted := map[string]string{"package": packagePath}
+
+	out, err := mgr.handlePackageQuery(nil, repoCtx, extracted, result)
+	if err != nil {
+		t.Fatalf("handlePackageQuery error: %v", err)
+	}
+	return out.Answer
+}
+
+func containsString(s, substr string) bool {
+	return strings.Contains(s, substr)
 }

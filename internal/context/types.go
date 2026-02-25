@@ -204,9 +204,10 @@ type FunctionBehavior struct {
 type CallRef struct {
 	Function string `json:"function"`
 	Package  string `json:"package,omitempty"`
+	Receiver string `json:"receiver,omitempty"` // Receiver type for method calls
 	File     string `json:"file,omitempty"`
 	Line     int    `json:"line,omitempty"`
-	Type     string `json:"type,omitempty"` // internal, stdlib, external
+	Type     string `json:"type,omitempty"` // internal, stdlib, external, method
 }
 
 // ErrorHandling describes how a function handles errors.
