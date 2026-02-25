@@ -36,6 +36,269 @@ func (s *SQLiteStore) SearchFunctions(ctx context.Context, repoID, query string)
 	return scanFunctionRefs(rows)
 }
 
+// sanitizeFTSQuery sanitizes a query for FTS5 MATCH to prevent operator injection.
+// Returns a query safe for FTS5 with prefix matching enabled.
+func sanitizeFTSQuery(query string) string {
+	// Strip double quotes and special FTS5 characters
+	query = strings.ReplaceAll(query, `"`, "")
+	query = strings.TrimSpace(query)
+	if query == "" {
+		return ""
+	}
+	// Split into words, quote each, and add prefix wildcard for substring-like matching
+	words := strings.Fields(query)
+	parts := make([]string, 0, len(words))
+	for _, w := range words {
+		// Strip any remaining special chars that could be FTS5 operators
+		w = strings.TrimSpace(w)
+		if w == "" || w == "AND" || w == "OR" || w == "NOT" || w == "NEAR" {
+			// Treat operators as literal by quoting
+			parts = append(parts, `"`+w+`"`)
+		} else {
+			// Use prefix matching with * for substring-like behavior
+			parts = append(parts, `"`+w+`"*`)
+		}
+	}
+	return strings.Join(parts, " ")
+}
+
+// SearchFunctionsFTS searches functions using FTS5 full-text search, scoped to an org.
+// Falls back to LIKE-based search if FTS5 is not available.
+func (s *SQLiteStore) SearchFunctionsFTS(ctx context.Context, orgID string, query string, limit int) ([]ctxpkg.FunctionRef, error) {
+	if strings.TrimSpace(query) == "" {
+		return nil, nil
+	}
+
+	if limit <= 0 {
+		limit = 50
+	}
+
+	// Try FTS5 first
+	if s.hasFTS5() {
+		sanitized := sanitizeFTSQuery(query)
+		if sanitized == "" {
+			return nil, nil
+		}
+
+		rows, err := s.db.QueryContext(ctx, `
+			SELECT f.name, f.signature, fi.path, f.line_start,
+			       CASE WHEN f.behavior_json IS NOT NULL
+			            THEN json_extract(f.behavior_json, '$.summary')
+			            ELSE '' END as summary,
+			       fi.repo_id,
+			       rank
+			FROM functions_fts fts
+			JOIN functions f ON f.id = fts.rowid
+			JOIN files fi ON f.file_id = fi.id
+			WHERE functions_fts MATCH ?
+			AND fi.repo_id IN (SELECT repo_id FROM org_repos WHERE org_id = ?)
+			ORDER BY rank
+			LIMIT ?`, sanitized, orgID, limit)
+
+		if err != nil {
+			return nil, fmt.Errorf("FTS search failed: %w", err)
+		}
+		defer rows.Close()
+
+		return scanOrgFunctionRefs(rows)
+	}
+
+	// Fallback: LIKE-based search across org repos
+	searchPattern := "%" + strings.ToLower(query) + "%"
+	rows, err := s.db.QueryContext(ctx, `
+		SELECT f.name, f.signature, fi.path, f.line_start,
+		       CASE WHEN f.behavior_json IS NOT NULL
+		            THEN json_extract(f.behavior_json, '$.summary')
+		            ELSE '' END as summary,
+		       fi.repo_id
+		FROM functions f
+		JOIN files fi ON fi.id = f.file_id
+		WHERE fi.repo_id IN (SELECT repo_id FROM org_repos WHERE org_id = ?)
+		AND (f.name_lower LIKE ? OR f.signature LIKE ? OR f.description LIKE ?)
+		ORDER BY CASE WHEN f.name_lower LIKE ? THEN 0 ELSE 1 END, f.name_lower
+		LIMIT ?`, orgID, searchPattern, searchPattern, searchPattern, searchPattern, limit)
+
+	if err != nil {
+		return nil, fmt.Errorf("LIKE search failed: %w", err)
+	}
+	defer rows.Close()
+
+	return scanOrgFunctionRefsNoRank(rows)
+}
+
+// scanOrgFunctionRefs scans rows into FunctionRef with RepoID populated.
+func scanOrgFunctionRefs(rows *sql.Rows) ([]ctxpkg.FunctionRef, error) {
+	var results []ctxpkg.FunctionRef
+	for rows.Next() {
+		var ref ctxpkg.FunctionRef
+		var summary sql.NullString
+		var rank sql.NullFloat64
+		if err := rows.Scan(&ref.Function, &ref.Signature, &ref.File, &ref.Line, &summary, &ref.RepoID, &rank); err != nil {
+			return nil, err
+		}
+		if summary.Valid {
+			ref.Summary = summary.String
+		}
+		results = append(results, ref)
+	}
+	return results, nil
+}
+
+// scanOrgFunctionRefsNoRank scans rows into FunctionRef with RepoID but no rank column.
+func scanOrgFunctionRefsNoRank(rows *sql.Rows) ([]ctxpkg.FunctionRef, error) {
+	var results []ctxpkg.FunctionRef
+	for rows.Next() {
+		var ref ctxpkg.FunctionRef
+		var summary sql.NullString
+		if err := rows.Scan(&ref.Function, &ref.Signature, &ref.File, &ref.Line, &summary, &ref.RepoID); err != nil {
+			return nil, err
+		}
+		if summary.Valid {
+			ref.Summary = summary.String
+		}
+		results = append(results, ref)
+	}
+	return results, nil
+}
+
+// OrgSearcher provides org-scoped search methods.
+type OrgSearcher interface {
+	SearchFunctionsOrg(ctx context.Context, orgID string, query string, limit int) ([]ctxpkg.FunctionRef, error)
+	SearchByConceptOrg(ctx context.Context, orgID string, concept string, limit int) ([]ctxpkg.FunctionRef, error)
+	HybridSearchOrg(ctx context.Context, orgID string, query string, limit int) ([]ctxpkg.FunctionRef, error)
+}
+
+// Ensure SQLiteStore implements OrgSearcher.
+var _ OrgSearcher = (*SQLiteStore)(nil)
+
+// SearchFunctionsOrg searches functions across all repos in an org.
+// Uses LIKE-based search for reliable substring matching (FTS5 doesn't handle camelCase substrings).
+func (s *SQLiteStore) SearchFunctionsOrg(ctx context.Context, orgID string, query string, limit int) ([]ctxpkg.FunctionRef, error) {
+	if strings.TrimSpace(query) == "" {
+		return nil, nil
+	}
+
+	if limit <= 0 {
+		limit = 50
+	}
+
+	searchPattern := "%" + strings.ToLower(query) + "%"
+	rows, err := s.db.QueryContext(ctx, `
+		SELECT f.name, f.signature, fi.path, f.line_start,
+		       CASE WHEN f.behavior_json IS NOT NULL
+		            THEN json_extract(f.behavior_json, '$.summary')
+		            ELSE '' END as summary,
+		       fi.repo_id
+		FROM functions f
+		JOIN files fi ON fi.id = f.file_id
+		WHERE fi.repo_id IN (SELECT repo_id FROM org_repos WHERE org_id = ?)
+		AND (f.name_lower LIKE ? OR f.signature LIKE ? OR f.description LIKE ?)
+		ORDER BY CASE WHEN f.name_lower LIKE ? THEN 0 ELSE 1 END, f.name_lower
+		LIMIT ?`, orgID, searchPattern, searchPattern, searchPattern, searchPattern, limit)
+
+	if err != nil {
+		return nil, fmt.Errorf("org search failed: %w", err)
+	}
+	defer rows.Close()
+
+	return scanOrgFunctionRefsNoRank(rows)
+}
+
+// SearchByConceptOrg finds functions related to a concept, scoped to an org.
+func (s *SQLiteStore) SearchByConceptOrg(ctx context.Context, orgID string, concept string, limit int) ([]ctxpkg.FunctionRef, error) {
+	if limit <= 0 {
+		limit = 100
+	}
+
+	searchConcept := strings.ToLower(concept)
+	conceptMapping := map[string]string{
+		"auth":     "authentication",
+		"login":    "authentication",
+		"validate": "validation",
+		"db":       "database",
+		"sql":      "database",
+		"api":      "handler",
+		"endpoint": "handler",
+		"route":    "handler",
+	}
+	if mapped, ok := conceptMapping[searchConcept]; ok {
+		searchConcept = mapped
+	}
+
+	rows, err := s.db.QueryContext(ctx, `
+		SELECT f.name, f.signature, fi.path, f.line_start,
+		       CASE WHEN f.behavior_json IS NOT NULL
+		            THEN json_extract(f.behavior_json, '$.summary')
+		            ELSE '' END as summary,
+		       fi.repo_id
+		FROM concepts c
+		JOIN functions f ON f.id = c.function_id
+		JOIN files fi ON fi.id = f.file_id
+		WHERE c.concept = ?
+		AND fi.repo_id IN (SELECT repo_id FROM org_repos WHERE org_id = ?)
+		ORDER BY fi.path, f.line_start
+		LIMIT ?`, searchConcept, orgID, limit)
+
+	if err != nil {
+		return nil, fmt.Errorf("concept search failed: %w", err)
+	}
+	defer rows.Close()
+
+	return scanOrgFunctionRefsNoRank(rows)
+}
+
+// HybridSearchOrg combines FTS5 keyword search and concept search for an org.
+func (s *SQLiteStore) HybridSearchOrg(ctx context.Context, orgID string, query string, limit int) ([]ctxpkg.FunctionRef, error) {
+	if limit <= 0 {
+		limit = 50
+	}
+
+	// Keyword search
+	keywordResults, err := s.SearchFunctionsOrg(ctx, orgID, query, limit)
+	if err != nil {
+		keywordResults = nil // non-fatal
+	}
+
+	// Concept search
+	concepts := extractQueryConcepts(query)
+	var conceptResults []ctxpkg.FunctionRef
+	for _, concept := range concepts {
+		results, err := s.SearchByConceptOrg(ctx, orgID, concept, limit)
+		if err != nil {
+			continue
+		}
+		conceptResults = append(conceptResults, results...)
+	}
+
+	// Merge with dedup
+	return mergeOrgResults(keywordResults, conceptResults, limit), nil
+}
+
+func mergeOrgResults(primary, secondary []ctxpkg.FunctionRef, limit int) []ctxpkg.FunctionRef {
+	seen := make(map[string]bool)
+	var merged []ctxpkg.FunctionRef
+
+	for _, ref := range primary {
+		key := ref.RepoID + ":" + ref.File + ":" + ref.Function
+		if !seen[key] {
+			seen[key] = true
+			merged = append(merged, ref)
+		}
+	}
+	for _, ref := range secondary {
+		key := ref.RepoID + ":" + ref.File + ":" + ref.Function
+		if !seen[key] {
+			seen[key] = true
+			merged = append(merged, ref)
+		}
+	}
+
+	if len(merged) > limit {
+		merged = merged[:limit]
+	}
+	return merged
+}
+
 // SearchBySideEffect finds functions with specific side effects.
 func (s *SQLiteStore) SearchBySideEffect(ctx context.Context, repoID, effect string) ([]ctxpkg.FunctionRef, error) {
 	rows, err := s.db.QueryContext(ctx, `

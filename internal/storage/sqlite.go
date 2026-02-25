@@ -21,6 +21,15 @@ var initialSchema string
 //go:embed migrations/003_org_tables.sql
 var orgTablesMigration string
 
+//go:embed migrations/005_function_hashes.sql
+var functionHashesMigration string
+
+//go:embed migrations/006_org_vocabulary.sql
+var orgVocabularyMigration string
+
+//go:embed migrations/007_fts5_tables.sql
+var fts5Migration string
+
 // Ensure SQLiteStore implements ContextStore interface.
 var _ ContextStore = (*SQLiteStore)(nil)
 
@@ -105,6 +114,41 @@ func (s *SQLiteStore) migrate() error {
 		return fmt.Errorf("failed to apply dependency graph migration: %w", err)
 	}
 
+	// Run function hashes migration
+	if err := s.migrateFunctionHashes(); err != nil {
+		return fmt.Errorf("failed to apply function hashes migration: %w", err)
+	}
+
+	// Run org vocabulary migration
+	if err := s.migrateOrgVocabulary(); err != nil {
+		return fmt.Errorf("failed to apply org vocabulary migration: %w", err)
+	}
+
+	// Run FTS5 tables migration
+	if err := s.migrateFTS5(); err != nil {
+		return fmt.Errorf("failed to apply FTS5 migration: %w", err)
+	}
+
+	return nil
+}
+
+// migrateFunctionHashes applies migration 005 for function-level hash tracking.
+func (s *SQLiteStore) migrateFunctionHashes() error {
+	var version int
+	err := s.db.QueryRow("SELECT COALESCE(MAX(version), 0) FROM schema_migrations").Scan(&version)
+	if err != nil {
+		return fmt.Errorf("failed to check schema version: %w", err)
+	}
+
+	if version >= 5 {
+		return nil
+	}
+
+	_, err = s.db.Exec(functionHashesMigration)
+	if err != nil {
+		return fmt.Errorf("failed to run function hashes migration: %w", err)
+	}
+
 	return nil
 }
 
@@ -128,6 +172,43 @@ func (s *SQLiteStore) migrateOrgTables() error {
 	return nil
 }
 
+// migrateFTS5 applies migration 007 for FTS5 full-text search tables.
+// FTS5 is optional — if the SQLite build doesn't support it, we skip silently.
+func (s *SQLiteStore) migrateFTS5() error {
+	var version int
+	err := s.db.QueryRow("SELECT COALESCE(MAX(version), 0) FROM schema_migrations").Scan(&version)
+	if err != nil {
+		return fmt.Errorf("failed to check schema version: %w", err)
+	}
+
+	if version >= 7 {
+		return nil
+	}
+
+	_, err = s.db.Exec(fts5Migration)
+	if err != nil {
+		// FTS5 module not available — skip gracefully
+		if strings.Contains(err.Error(), "no such module") {
+			return nil
+		}
+		return fmt.Errorf("failed to run FTS5 migration: %w", err)
+	}
+
+	_, err = s.db.Exec("INSERT OR IGNORE INTO schema_migrations (version) VALUES (7)")
+	if err != nil {
+		return fmt.Errorf("failed to record FTS5 migration: %w", err)
+	}
+
+	return nil
+}
+
+// hasFTS5 checks if the FTS5 functions_fts table exists.
+func (s *SQLiteStore) hasFTS5() bool {
+	var name string
+	err := s.db.QueryRow("SELECT name FROM sqlite_master WHERE type='table' AND name='functions_fts'").Scan(&name)
+	return err == nil && name == "functions_fts"
+}
+
 // Close closes the database connection.
 func (s *SQLiteStore) Close() error {
 	return s.db.Close()
@@ -140,6 +221,17 @@ func (s *SQLiteStore) StoreRepoContext(ctx context.Context, repoID string, repoC
 		return fmt.Errorf("failed to begin transaction: %w", err)
 	}
 	defer tx.Rollback()
+
+	// Clean FTS index BEFORE cascade delete (triggers don't fire for cascaded deletes)
+	if _, err := tx.ExecContext(ctx, `
+		DELETE FROM functions_fts WHERE rowid IN (
+			SELECT f.id FROM functions f
+			JOIN files fi ON f.file_id = fi.id
+			WHERE fi.repo_id = ?
+		)`, repoID); err != nil {
+		// FTS5 table may not exist yet; ignore errors
+		_ = err
+	}
 
 	// Delete existing repo data (cascade will delete related records)
 	if _, err := tx.ExecContext(ctx, "DELETE FROM repos WHERE id = ?", repoID); err != nil {

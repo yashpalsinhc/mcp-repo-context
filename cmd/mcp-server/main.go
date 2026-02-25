@@ -122,6 +122,7 @@ func main() {
 		Version:     version,
 		GitHubToken: *githubToken,
 		OrgManager:  orgManager,
+		OrgSearcher: store,
 	}
 	if vectorStore != nil {
 		serverConfig.VectorStore = vectorStore

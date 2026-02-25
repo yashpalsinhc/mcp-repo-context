@@ -55,6 +55,9 @@ type ServerConfig struct {
 
 	// Optional: Org manager for org-level operations
 	OrgManager org.Manager
+
+	// Optional: Org-scoped search (keyword, concept, hybrid)
+	OrgSearcher OrgSearcher
 }
 
 // Server is the MCP server interface.
@@ -442,6 +445,64 @@ func (s *server) handleListTools(req *jsonRPCRequest) *jsonRPCResponse {
 					},
 				},
 				"required": []string{"org_id"},
+			},
+		},
+		{
+			Name:        "index_org",
+			Description: "Index all repositories in an organization for semantic search. Builds org-wide vocabulary and indexes all repos with bounded concurrency.",
+			InputSchema: map[string]interface{}{
+				"type": "object",
+				"properties": map[string]interface{}{
+					"org_id": map[string]interface{}{
+						"type":        "string",
+						"description": "Organization ID to index",
+					},
+					"force": map[string]interface{}{
+						"type":        "boolean",
+						"description": "Force re-index even if already indexed (default: false)",
+					},
+					"concurrency": map[string]interface{}{
+						"type":        "integer",
+						"description": "Max concurrent repo indexing (default: 3, max: 10)",
+					},
+				},
+				"required": []string{"org_id"},
+			},
+		},
+		{
+			Name:        "search_org",
+			Description: "Search across all repositories in an organization. Supports keyword, semantic, and hybrid (RRF-merged) search modes with optional repo filtering and token budgeting.",
+			InputSchema: map[string]interface{}{
+				"type": "object",
+				"properties": map[string]interface{}{
+					"org_id": map[string]interface{}{
+						"type":        "string",
+						"description": "Organization identifier",
+					},
+					"query": map[string]interface{}{
+						"type":        "string",
+						"description": "Search query",
+					},
+					"search_type": map[string]interface{}{
+						"type":        "string",
+						"enum":        []string{"keyword", "semantic", "hybrid"},
+						"description": "Search mode (default: hybrid)",
+					},
+					"repo_ids": map[string]interface{}{
+						"type":        "array",
+						"items":       map[string]interface{}{"type": "string"},
+						"description": "Filter to specific repos within the org",
+					},
+					"max_results": map[string]interface{}{
+						"type":        "integer",
+						"description": "Maximum number of results (default: 20)",
+					},
+					"token_budget": map[string]interface{}{
+						"type":        "integer",
+						"description": "Maximum tokens in response (default: 4000)",
+					},
+				},
+				"required": []string{"org_id", "query"},
 			},
 		},
 		{
@@ -1092,6 +1153,10 @@ func (s *server) handleListTools(req *jsonRPCRequest) *jsonRPCResponse {
 						"type":        "boolean",
 						"description": "Force re-indexing even if already indexed (default: false)",
 					},
+					"org_id": map[string]interface{}{
+						"type":        "string",
+						"description": "Optional organization ID. When provided, uses org-wide vocabulary for embeddings",
+					},
 				},
 				"required": []string{"repo_id"},
 			},
@@ -1217,6 +1282,8 @@ func (s *server) handleCallToolWithID(ctx context.Context, req *jsonRPCRequest, 
 		result = s.toolListOrgs(ctx, params.Arguments)
 	case "analyze_org":
 		result = s.toolAnalyzeOrg(ctx, params.Arguments)
+	case "index_org":
+		result = s.toolIndexOrg(ctx, params.Arguments)
 	case "get_org":
 		result = s.toolGetOrg(ctx, params.Arguments)
 	case "delete_org":
@@ -1291,6 +1358,9 @@ func (s *server) handleCallToolWithID(ctx context.Context, req *jsonRPCRequest, 
 		result = s.toolExecutePattern(ctx, params.Arguments)
 	case "list_patterns":
 		result = s.toolListPatterns(ctx, params.Arguments)
+	// NEW: Org-scoped search
+	case "search_org":
+		result = s.toolSearchOrg(ctx, params.Arguments)
 	// NEW: Usage analytics
 	case "get_usage_stats":
 		result = s.toolGetUsageStats(ctx, params.Arguments)

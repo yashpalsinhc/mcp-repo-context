@@ -86,6 +86,7 @@ type FunctionRef struct {
 	Line      int    `json:"line"`
 	Signature string `json:"signature,omitempty"`
 	Summary   string `json:"summary,omitempty"` // Brief behavior summary
+	RepoID    string `json:"repo_id,omitempty"` // Populated by org-scoped search methods
 }
 
 // RouteRef references an HTTP route.
