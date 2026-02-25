@@ -2,10 +2,12 @@ package comparison
 
 import (
 	"context"
+	"fmt"
 	"sort"
 	"strings"
 
 	ctxpkg "github.com/yashpalc/mcp-repo-context/internal/context"
+	"github.com/yashpalc/mcp-repo-context/internal/nlp"
 )
 
 // comparer implements the Comparer interface.
@@ -126,6 +128,7 @@ func (c *comparer) Compare(ctx context.Context, repoContexts []*ctxpkg.RepoConte
 
 // FindDuplicates identifies duplicate or similar implementations across repos.
 func (c *comparer) FindDuplicates(ctx context.Context, repoContexts []*ctxpkg.RepoContext) ([]DuplicateGroup, error) {
+	ensureMigrated(repoContexts)
 	var duplicates []DuplicateGroup
 
 	// Find function duplicates
@@ -161,7 +164,7 @@ func (c *comparer) FindDuplicates(ctx context.Context, repoContexts []*ctxpkg.Re
 	for _, rc := range repoContexts {
 		for filePath, fc := range rc.Files {
 			for _, td := range fc.Types {
-				key := c.normalizeTypeKey(&td)
+				key := c.normalizeTypeKey(&td, fc.Package)
 				typeMap[key] = append(typeMap[key], DuplicateInstance{
 					RepoID:   rc.ID,
 					FilePath: filePath,
@@ -198,14 +201,15 @@ func (c *comparer) FindConflicts(ctx context.Context, sourceContexts []*ctxpkg.R
 	if targetContext == nil {
 		return conflicts, nil
 	}
+	ensureMigrated(append(sourceContexts, targetContext))
 
-	// Build target function map
+	// Build target function map using receiver-aware keys
 	targetFuncs := make(map[string]*ctxpkg.FunctionDef)
 	targetFuncFiles := make(map[string]string)
 	for filePath, fc := range targetContext.Files {
 		for i := range fc.Functions {
 			fn := &fc.Functions[i]
-			key := fn.Name
+			key := c.normalizeFunctionKey(fn)
 			targetFuncs[key] = fn
 			targetFuncFiles[key] = filePath
 		}
@@ -215,12 +219,13 @@ func (c *comparer) FindConflicts(ctx context.Context, sourceContexts []*ctxpkg.R
 	for _, srcCtx := range sourceContexts {
 		for filePath, fc := range srcCtx.Files {
 			for _, fn := range fc.Functions {
-				if targetFn, exists := targetFuncs[fn.Name]; exists {
+				srcKey := c.normalizeFunctionKey(&fn)
+				if targetFn, exists := targetFuncs[srcKey]; exists {
 					// Check for signature mismatch
 					if fn.Signature != targetFn.Signature {
 						conflicts = append(conflicts, Conflict{
 							Type:        "signature_mismatch",
-							Name:        fn.Name,
+							Name:        srcKey,
 							Description: "Function has different signatures",
 							SourceInstances: []ConflictInstance{{
 								RepoID:    srcCtx.ID,
@@ -230,7 +235,7 @@ func (c *comparer) FindConflicts(ctx context.Context, sourceContexts []*ctxpkg.R
 							}},
 							TargetInstance: &ConflictInstance{
 								RepoID:    targetContext.ID,
-								FilePath:  targetFuncFiles[fn.Name],
+								FilePath:  targetFuncFiles[srcKey],
 								Line:      targetFn.LineStart,
 								Signature: targetFn.Signature,
 							},
@@ -243,12 +248,12 @@ func (c *comparer) FindConflicts(ctx context.Context, sourceContexts []*ctxpkg.R
 		}
 	}
 
-	// Build target type map
+	// Build target type map using package-aware keys
 	targetTypes := make(map[string]*ctxpkg.TypeDef)
 	for _, fc := range targetContext.Files {
 		for i := range fc.Types {
 			td := &fc.Types[i]
-			targetTypes[td.Name] = td
+			targetTypes[c.normalizeTypeKey(td, fc.Package)] = td
 		}
 	}
 
@@ -256,12 +261,13 @@ func (c *comparer) FindConflicts(ctx context.Context, sourceContexts []*ctxpkg.R
 	for _, srcCtx := range sourceContexts {
 		for filePath, fc := range srcCtx.Files {
 			for _, td := range fc.Types {
-				if targetTd, exists := targetTypes[td.Name]; exists {
+				typeKey := c.normalizeTypeKey(&td, fc.Package)
+				if targetTd, exists := targetTypes[typeKey]; exists {
 					// Check for field count mismatch (simplified check)
 					if len(td.Fields) != len(targetTd.Fields) {
 						conflicts = append(conflicts, Conflict{
 							Type:        "type_mismatch",
-							Name:        td.Name,
+							Name:        typeKey,
 							Description: "Type has different structure",
 							SourceInstances: []ConflictInstance{{
 								RepoID:   srcCtx.ID,
@@ -286,14 +292,16 @@ func (c *comparer) FindConflicts(ctx context.Context, sourceContexts []*ctxpkg.R
 }
 
 // FindGaps identifies functionality in source repos missing from target repo.
+// Uses domain-aware concept similarity to filter out irrelevant gaps.
 func (c *comparer) FindGaps(ctx context.Context, sourceContexts []*ctxpkg.RepoContext, targetContext *ctxpkg.RepoContext) ([]Gap, error) {
 	var gaps []Gap
 
 	if targetContext == nil {
 		return gaps, nil
 	}
+	ensureMigrated(append(sourceContexts, targetContext))
 
-	// Build target inventory
+	// Build target inventory using receiver-aware keys
 	targetFuncs := make(map[string]bool)
 	targetTypes := make(map[string]bool)
 	targetFiles := make(map[string]bool)
@@ -301,67 +309,163 @@ func (c *comparer) FindGaps(ctx context.Context, sourceContexts []*ctxpkg.RepoCo
 	for filePath, fc := range targetContext.Files {
 		targetFiles[filePath] = true
 		for _, fn := range fc.Functions {
-			targetFuncs[fn.Name] = true
+			targetFuncs[c.normalizeFunctionKey(&fn)] = true
 		}
 		for _, td := range fc.Types {
-			targetTypes[td.Name] = true
+			targetTypes[c.normalizeTypeKey(&td, fc.Package)] = true
 		}
 	}
 
-	// Find missing functions
-	funcSources := make(map[string][]string)
-	funcFiles := make(map[string]string)
+	// Build domain profile for concept similarity scoring
+	domainProfile := c.buildDomainProfile(targetContext)
+
+	// Find missing functions with similarity scoring
+	type gapCandidate struct {
+		key        string
+		repos      []string
+		filePath   string
+		similarity float64
+	}
+	funcCandidates := make(map[string]*gapCandidate)
+
 	for _, srcCtx := range sourceContexts {
 		for filePath, fc := range srcCtx.Files {
 			for _, fn := range fc.Functions {
-				if !targetFuncs[fn.Name] {
-					funcSources[fn.Name] = append(funcSources[fn.Name], srcCtx.ID)
-					funcFiles[fn.Name] = filePath
+				fnKey := c.normalizeFunctionKey(&fn)
+				if !targetFuncs[fnKey] {
+					if cand, exists := funcCandidates[fnKey]; exists {
+						cand.repos = append(cand.repos, srcCtx.ID)
+					} else {
+						words := functionWords(&fn)
+						similarity := nlp.ConceptSimilarity(words, domainProfile)
+						funcCandidates[fnKey] = &gapCandidate{
+							key:        fnKey,
+							repos:      []string{srcCtx.ID},
+							filePath:   filePath,
+							similarity: similarity,
+						}
+					}
 				}
 			}
 		}
 	}
 
-	for name, repos := range funcSources {
+	threshold := c.gapSimilarityThreshold()
+	for _, cand := range funcCandidates {
+		if cand.similarity < threshold {
+			continue
+		}
 		gaps = append(gaps, Gap{
 			Type:        "function",
-			Name:        name,
-			SourceRepos: repos,
-			FilePath:    funcFiles[name],
-			Description: "Function not present in target repo",
-			Priority:    c.assessGapPriority(len(repos)),
+			Name:        cand.key,
+			SourceRepos: cand.repos,
+			FilePath:    cand.filePath,
+			Description: fmt.Sprintf("Function not present in target repo (similarity: %.2f)", cand.similarity),
+			Priority:    c.assessGapPriority(len(cand.repos)),
+			Similarity:  cand.similarity,
 		})
 	}
 
-	// Find missing types
-	typeSources := make(map[string][]string)
+	// Find missing types with similarity scoring
+	typeCandidates := make(map[string]*gapCandidate)
 	for _, srcCtx := range sourceContexts {
 		for _, fc := range srcCtx.Files {
 			for _, td := range fc.Types {
-				if !targetTypes[td.Name] {
-					typeSources[td.Name] = append(typeSources[td.Name], srcCtx.ID)
+				typeKey := c.normalizeTypeKey(&td, fc.Package)
+				if !targetTypes[typeKey] {
+					if cand, exists := typeCandidates[typeKey]; exists {
+						cand.repos = append(cand.repos, srcCtx.ID)
+					} else {
+						words := typeWords(&td)
+						similarity := nlp.ConceptSimilarity(words, domainProfile)
+						typeCandidates[typeKey] = &gapCandidate{
+							key:        typeKey,
+							repos:      []string{srcCtx.ID},
+							similarity: similarity,
+						}
+					}
 				}
 			}
 		}
 	}
 
-	for name, repos := range typeSources {
+	for _, cand := range typeCandidates {
+		if cand.similarity < threshold {
+			continue
+		}
 		gaps = append(gaps, Gap{
 			Type:        "type",
-			Name:        name,
-			SourceRepos: repos,
-			Description: "Type not present in target repo",
-			Priority:    c.assessGapPriority(len(repos)),
+			Name:        cand.key,
+			SourceRepos: cand.repos,
+			Description: fmt.Sprintf("Type not present in target repo (similarity: %.2f)", cand.similarity),
+			Priority:    c.assessGapPriority(len(cand.repos)),
+			Similarity:  cand.similarity,
 		})
 	}
 
-	// Sort by priority
+	// Sort by similarity descending, then by priority
 	priorityOrder := map[string]int{"high": 0, "medium": 1, "low": 2}
 	sort.Slice(gaps, func(i, j int) bool {
+		if gaps[i].Similarity != gaps[j].Similarity {
+			return gaps[i].Similarity > gaps[j].Similarity
+		}
 		return priorityOrder[gaps[i].Priority] < priorityOrder[gaps[j].Priority]
 	})
 
 	return gaps, nil
+}
+
+// buildDomainProfile creates a stemmed word set from a repo's identifiers.
+func (c *comparer) buildDomainProfile(rc *ctxpkg.RepoContext) map[string]bool {
+	var names []string
+	for _, fc := range rc.Files {
+		for _, fn := range fc.Functions {
+			names = append(names, fn.Name)
+		}
+		for _, td := range fc.Types {
+			names = append(names, td.Name)
+		}
+		// Add package name
+		if fc.Package != "" {
+			names = append(names, fc.Package)
+		}
+	}
+	// Add repo ID path components
+	for _, part := range strings.Split(rc.ID, "/") {
+		if part != "" {
+			names = append(names, part)
+		}
+	}
+	return nlp.BuildDomainProfile(names)
+}
+
+// functionWords returns stemmed non-stop words from a function's name and description.
+func functionWords(fn *ctxpkg.FunctionDef) []string {
+	var words []string
+	words = append(words, nlp.SplitCamelCase(fn.Name)...)
+	if fn.Description != "" {
+		words = append(words, strings.Fields(fn.Description)...)
+	}
+	return words
+}
+
+// typeWords returns stemmed non-stop words from a type's name.
+func typeWords(td *ctxpkg.TypeDef) []string {
+	return nlp.SplitCamelCase(td.Name)
+}
+
+// gapSimilarityThreshold returns the minimum concept similarity for gap reporting.
+func (c *comparer) gapSimilarityThreshold() float64 {
+	return 0.3
+}
+
+// ensureMigrated bumps Version to 1 for pre-fix contexts.
+func ensureMigrated(contexts []*ctxpkg.RepoContext) {
+	for _, rc := range contexts {
+		if rc.Version < 1 {
+			rc.Version = 1
+		}
+	}
 }
 
 // AnalyzeConsistency checks for implementation consistency across repos.
@@ -479,11 +583,16 @@ func (c *comparer) findFileOverlaps(repoContexts []*ctxpkg.RepoContext) []FileOv
 }
 
 func (c *comparer) normalizeFunctionKey(fn *ctxpkg.FunctionDef) string {
-	// Create a normalized key based on function name and parameter types
+	if fn.Receiver != "" {
+		return strings.TrimPrefix(fn.Receiver, "*") + "." + fn.Name
+	}
 	return fn.Name
 }
 
-func (c *comparer) normalizeTypeKey(td *ctxpkg.TypeDef) string {
+func (c *comparer) normalizeTypeKey(td *ctxpkg.TypeDef, packageName string) string {
+	if packageName != "" {
+		return packageName + "." + td.Name
+	}
 	return td.Name
 }
 

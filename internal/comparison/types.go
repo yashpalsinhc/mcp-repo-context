@@ -162,6 +162,9 @@ type Gap struct {
 
 	// Priority: "high", "medium", "low".
 	Priority string `json:"priority"`
+
+	// Similarity is the concept similarity score to the target domain (0.0-1.0).
+	Similarity float64 `json:"similarity,omitempty"`
 }
 
 // ConsistencyReport analyzes implementation consistency.

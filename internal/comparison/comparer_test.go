@@ -268,15 +268,17 @@ func TestComparer_FindGaps(t *testing.T) {
 	c := NewComparer()
 	ctx := context.Background()
 
+	// Source has route-related functions that are similar to the target domain
 	sourceRepos := []*ctxpkg.RepoContext{
 		{
 			ID: "github.com/test/source1",
 			Files: map[string]*ctxpkg.FileContext{
 				"util.go": {
-					Path: "util.go",
+					Path:    "util.go",
+					Package: "routing",
 					Functions: []ctxpkg.FunctionDef{
-						{Name: "HelperFunc", Signature: "func HelperFunc()"},
-						{Name: "SharedFunc", Signature: "func SharedFunc()"},
+						{Name: "RouteHelper", Signature: "func RouteHelper()", Description: "helps with routes"},
+						{Name: "SharedRouter", Signature: "func SharedRouter()", Description: "shared router setup"},
 					},
 				},
 			},
@@ -285,10 +287,11 @@ func TestComparer_FindGaps(t *testing.T) {
 			ID: "github.com/test/source2",
 			Files: map[string]*ctxpkg.FileContext{
 				"helper.go": {
-					Path: "helper.go",
+					Path:    "helper.go",
+					Package: "routing",
 					Functions: []ctxpkg.FunctionDef{
-						{Name: "HelperFunc", Signature: "func HelperFunc()"},
-						{Name: "AnotherFunc", Signature: "func AnotherFunc()"},
+						{Name: "RouteHelper", Signature: "func RouteHelper()", Description: "helps with routes"},
+						{Name: "SubrouteBuilder", Signature: "func SubrouteBuilder()", Description: "builds sub-routes"},
 					},
 				},
 			},
@@ -299,10 +302,13 @@ func TestComparer_FindGaps(t *testing.T) {
 		ID: "github.com/test/target",
 		Files: map[string]*ctxpkg.FileContext{
 			"main.go": {
-				Path: "main.go",
+				Path:    "main.go",
+				Package: "routing",
 				Functions: []ctxpkg.FunctionDef{
-					{Name: "main", Signature: "func main()"},
+					{Name: "HandleRoute", Signature: "func HandleRoute()"},
+					{Name: "NewRouter", Signature: "func NewRouter()"},
 				},
+				Types: []ctxpkg.TypeDef{{Name: "Router"}, {Name: "Route"}},
 			},
 		},
 	}
@@ -312,17 +318,16 @@ func TestComparer_FindGaps(t *testing.T) {
 		t.Fatalf("unexpected error: %v", err)
 	}
 
-	// Should find HelperFunc (from 2 repos) as high priority
-	// SharedFunc and AnotherFunc should also be gaps
-	if len(gaps) < 3 {
-		t.Errorf("expected at least 3 gaps, got %d", len(gaps))
+	// Should find route-related gaps that have high similarity to target domain
+	if len(gaps) == 0 {
+		t.Error("expected some gaps for route-related source functions")
 	}
 
-	// HelperFunc should be high priority (appears in 2 repos)
+	// RouteHelper should appear from 2 repos
 	for _, gap := range gaps {
-		if gap.Name == "HelperFunc" {
+		if gap.Name == "RouteHelper" {
 			if gap.Priority != "medium" { // 2 repos = medium
-				t.Errorf("expected medium priority for HelperFunc, got %s", gap.Priority)
+				t.Errorf("expected medium priority for RouteHelper, got %s", gap.Priority)
 			}
 			if len(gap.SourceRepos) != 2 {
 				t.Errorf("expected 2 source repos, got %d", len(gap.SourceRepos))
@@ -443,3 +448,305 @@ func TestDefaultCompareOptions(t *testing.T) {
 
 // Helper to suppress unused variable warning
 var _ = time.Now()
+
+// === Section 02: Receiver-Aware Comparison Key Tests ===
+
+func TestNormalizeFunctionKey_WithPointerReceiver(t *testing.T) {
+	c := &comparer{}
+	fn := &ctxpkg.FunctionDef{Name: "ServeHTTP", Receiver: "*Router"}
+	got := c.normalizeFunctionKey(fn)
+	if got != "Router.ServeHTTP" {
+		t.Errorf("got %q, want %q", got, "Router.ServeHTTP")
+	}
+}
+
+func TestNormalizeFunctionKey_WithValueReceiver(t *testing.T) {
+	c := &comparer{}
+	fn := &ctxpkg.FunctionDef{Name: "ServeHTTP", Receiver: "Router"}
+	got := c.normalizeFunctionKey(fn)
+	if got != "Router.ServeHTTP" {
+		t.Errorf("got %q, want %q", got, "Router.ServeHTTP")
+	}
+}
+
+func TestNormalizeFunctionKey_NoReceiver(t *testing.T) {
+	c := &comparer{}
+	fn := &ctxpkg.FunctionDef{Name: "NewRouter"}
+	got := c.normalizeFunctionKey(fn)
+	if got != "NewRouter" {
+		t.Errorf("got %q, want %q", got, "NewRouter")
+	}
+}
+
+func TestNormalizeTypeKey_DifferentPackages(t *testing.T) {
+	c := &comparer{}
+	td := &ctxpkg.TypeDef{Name: "Handler"}
+	k1 := c.normalizeTypeKey(td, "mux")
+	k2 := c.normalizeTypeKey(td, "cors")
+	if k1 == k2 {
+		t.Errorf("same-named types in different packages should produce different keys: %q vs %q", k1, k2)
+	}
+}
+
+func TestFindDuplicates_DifferentReceivers_NotDuplicate(t *testing.T) {
+	c := NewComparer()
+	ctx := context.Background()
+
+	mux := &ctxpkg.RepoContext{
+		ID: "github.com/gorilla/mux", Version: 1,
+		Files: map[string]*ctxpkg.FileContext{
+			"router.go": {Package: "mux", Functions: []ctxpkg.FunctionDef{
+				{Name: "ServeHTTP", Receiver: "*Router", Signature: "func(w,r)"},
+			}},
+		},
+	}
+	handlers := &ctxpkg.RepoContext{
+		ID: "github.com/gorilla/handlers", Version: 1,
+		Files: map[string]*ctxpkg.FileContext{
+			"cors.go": {Package: "handlers", Functions: []ctxpkg.FunctionDef{
+				{Name: "ServeHTTP", Receiver: "*cors", Signature: "func(w,r)"},
+			}},
+		},
+	}
+
+	dups, err := c.FindDuplicates(ctx, []*ctxpkg.RepoContext{mux, handlers})
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, d := range dups {
+		if d.Name == "ServeHTTP" {
+			t.Error("ServeHTTP on different receivers should NOT be duplicate")
+		}
+	}
+}
+
+func TestFindDuplicates_SameReceiver_IsDuplicate(t *testing.T) {
+	c := NewComparer()
+	ctx := context.Background()
+
+	repo1 := &ctxpkg.RepoContext{
+		ID: "repo1", Version: 1,
+		Files: map[string]*ctxpkg.FileContext{
+			"router.go": {Package: "mux", Functions: []ctxpkg.FunctionDef{
+				{Name: "ServeHTTP", Receiver: "*Router"},
+			}},
+		},
+	}
+	repo2 := &ctxpkg.RepoContext{
+		ID: "repo2", Version: 1,
+		Files: map[string]*ctxpkg.FileContext{
+			"router.go": {Package: "mux", Functions: []ctxpkg.FunctionDef{
+				{Name: "ServeHTTP", Receiver: "*Router"},
+			}},
+		},
+	}
+
+	dups, err := c.FindDuplicates(ctx, []*ctxpkg.RepoContext{repo1, repo2})
+	if err != nil {
+		t.Fatal(err)
+	}
+	found := false
+	for _, d := range dups {
+		if d.Name == "Router.ServeHTTP" {
+			found = true
+		}
+	}
+	if !found {
+		t.Error("Router.ServeHTTP should be flagged as duplicate")
+	}
+}
+
+func TestFindConflicts_DifferentReceivers_NotConflict(t *testing.T) {
+	c := NewComparer()
+	ctx := context.Background()
+
+	target := &ctxpkg.RepoContext{
+		ID: "mux", Version: 1,
+		Files: map[string]*ctxpkg.FileContext{
+			"router.go": {Package: "mux", Functions: []ctxpkg.FunctionDef{
+				{Name: "ServeHTTP", Receiver: "*Router", Signature: "func(w,r)"},
+			}},
+		},
+	}
+	source := &ctxpkg.RepoContext{
+		ID: "handlers", Version: 1,
+		Files: map[string]*ctxpkg.FileContext{
+			"cors.go": {Package: "handlers", Functions: []ctxpkg.FunctionDef{
+				{Name: "ServeHTTP", Receiver: "*cors", Signature: "func(w,r,opts)"},
+			}},
+		},
+	}
+
+	conflicts, err := c.FindConflicts(ctx, []*ctxpkg.RepoContext{source}, target)
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, conflict := range conflicts {
+		if conflict.Name == "ServeHTTP" {
+			t.Error("ServeHTTP on different receivers should NOT be a conflict")
+		}
+	}
+}
+
+func TestFindConflicts_SameReceiver_IsConflict(t *testing.T) {
+	c := NewComparer()
+	ctx := context.Background()
+
+	target := &ctxpkg.RepoContext{
+		ID: "repo1", Version: 1,
+		Files: map[string]*ctxpkg.FileContext{
+			"router.go": {Package: "mux", Functions: []ctxpkg.FunctionDef{
+				{Name: "ServeHTTP", Receiver: "*Router", Signature: "func(w,r)"},
+			}},
+		},
+	}
+	source := &ctxpkg.RepoContext{
+		ID: "repo2", Version: 1,
+		Files: map[string]*ctxpkg.FileContext{
+			"router.go": {Package: "mux", Functions: []ctxpkg.FunctionDef{
+				{Name: "ServeHTTP", Receiver: "*Router", Signature: "func(w,r,opts)"},
+			}},
+		},
+	}
+
+	conflicts, err := c.FindConflicts(ctx, []*ctxpkg.RepoContext{source}, target)
+	if err != nil {
+		t.Fatal(err)
+	}
+	found := false
+	for _, conflict := range conflicts {
+		if conflict.Name == "Router.ServeHTTP" {
+			found = true
+		}
+	}
+	if !found {
+		t.Error("Router.ServeHTTP with different signatures should be a conflict")
+	}
+}
+
+func TestFindGaps_DifferentReceivers_SimilarityFiltering(t *testing.T) {
+	c := NewComparer()
+	ctx := context.Background()
+
+	target := &ctxpkg.RepoContext{
+		ID: "mux", Version: 1,
+		Files: map[string]*ctxpkg.FileContext{
+			"router.go": {Package: "mux", Functions: []ctxpkg.FunctionDef{
+				{Name: "ServeHTTP", Receiver: "*Router"},
+				{Name: "HandleFunc", Receiver: "*Router"},
+				{Name: "NewRouter"},
+			}, Types: []ctxpkg.TypeDef{{Name: "Router", Kind: "struct"}}},
+		},
+	}
+	source := &ctxpkg.RepoContext{
+		ID: "handlers", Version: 1,
+		Files: map[string]*ctxpkg.FileContext{
+			"cors.go": {Package: "handlers", Functions: []ctxpkg.FunctionDef{
+				{Name: "ServeHTTP", Receiver: "*cors"},
+				{Name: "CORS", Description: "returns CORS middleware handler"},
+				{Name: "CompressHandler", Description: "compresses response bodies"},
+			}, Types: []ctxpkg.TypeDef{{Name: "cors", Kind: "struct"}}},
+		},
+	}
+
+	gaps, err := c.FindGaps(ctx, []*ctxpkg.RepoContext{source}, target)
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, gap := range gaps {
+		if gap.Name == "CORS" || gap.Name == "CompressHandler" {
+			t.Errorf("gap %q should be filtered out (low similarity), got similarity=%.2f", gap.Name, gap.Similarity)
+		}
+	}
+}
+
+func TestEnsureMigrated_BumpsVersion(t *testing.T) {
+	rc := &ctxpkg.RepoContext{Version: 0}
+	ensureMigrated([]*ctxpkg.RepoContext{rc})
+	if rc.Version != 1 {
+		t.Errorf("Version should be 1 after migration, got %d", rc.Version)
+	}
+}
+
+func TestEnsureMigrated_Idempotent(t *testing.T) {
+	rc := &ctxpkg.RepoContext{Version: 0}
+	ensureMigrated([]*ctxpkg.RepoContext{rc})
+	ensureMigrated([]*ctxpkg.RepoContext{rc})
+	if rc.Version != 1 {
+		t.Errorf("Version should still be 1, got %d", rc.Version)
+	}
+}
+
+func TestEnsureMigrated_SkipsV1(t *testing.T) {
+	rc := &ctxpkg.RepoContext{Version: 1}
+	ensureMigrated([]*ctxpkg.RepoContext{rc})
+	if rc.Version != 1 {
+		t.Errorf("Version should remain 1, got %d", rc.Version)
+	}
+}
+
+func TestGaps_StopWordsNotInflating(t *testing.T) {
+	c := NewComparer()
+	ctx := context.Background()
+
+	target := &ctxpkg.RepoContext{
+		ID: "target", Version: 1,
+		Files: map[string]*ctxpkg.FileContext{
+			"route.go": {Package: "routing", Functions: []ctxpkg.FunctionDef{
+				{Name: "HandleRoute"}, {Name: "NewRouter"},
+			}},
+		},
+	}
+	source := &ctxpkg.RepoContext{
+		ID: "source", Version: 1,
+		Files: map[string]*ctxpkg.FileContext{
+			"util.go": {Package: "util", Functions: []ctxpkg.FunctionDef{
+				{Name: "GetNewHandler"},
+			}},
+		},
+	}
+
+	gaps, err := c.FindGaps(ctx, []*ctxpkg.RepoContext{source}, target)
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, gap := range gaps {
+		if gap.Name == "GetNewHandler" {
+			t.Errorf("GetNewHandler (all stop words) should be filtered out, got similarity=%.2f", gap.Similarity)
+		}
+	}
+}
+
+func TestGaps_SortedBySimilarity(t *testing.T) {
+	c := NewComparer()
+	ctx := context.Background()
+
+	target := &ctxpkg.RepoContext{
+		ID: "target", Version: 1,
+		Files: map[string]*ctxpkg.FileContext{
+			"route.go": {Package: "routing", Functions: []ctxpkg.FunctionDef{
+				{Name: "HandleRoute"}, {Name: "NewRouter"}, {Name: "RouteMatch"},
+			}, Types: []ctxpkg.TypeDef{{Name: "Router"}, {Name: "Route"}}},
+		},
+	}
+	source := &ctxpkg.RepoContext{
+		ID: "source", Version: 1,
+		Files: map[string]*ctxpkg.FileContext{
+			"sub.go": {Package: "ext", Functions: []ctxpkg.FunctionDef{
+				{Name: "SubrouteHandler", Description: "handles sub-routes for routing"},
+				{Name: "RouteValidator", Description: "validates routes"},
+			}},
+		},
+	}
+
+	gaps, err := c.FindGaps(ctx, []*ctxpkg.RepoContext{source}, target)
+	if err != nil {
+		t.Fatal(err)
+	}
+	for i := 1; i < len(gaps); i++ {
+		if gaps[i].Similarity > gaps[i-1].Similarity {
+			t.Errorf("gaps not sorted: gaps[%d]=%.2f > gaps[%d]=%.2f",
+				i, gaps[i].Similarity, i-1, gaps[i-1].Similarity)
+		}
+	}
+}
