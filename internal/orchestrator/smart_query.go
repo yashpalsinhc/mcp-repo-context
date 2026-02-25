@@ -8,6 +8,7 @@ import (
 	"strings"
 
 	ctxpkg "github.com/yashpalc/mcp-repo-context/internal/context"
+	"github.com/yashpalc/mcp-repo-context/internal/nlp"
 )
 
 // QueryType represents the type of query being asked.
@@ -65,7 +66,7 @@ type FlowTraceStep struct {
 // This is the main entry point that handles complex queries WITHOUT AI.
 func (m *manager) SmartQuery(ctx context.Context, query string, projectID string) (*SmartQueryResult, error) {
 	// Parse the query to understand intent
-	queryType, extracted := parseQuery(query)
+	queryType, extracted, parsingConfidence := parseQuery(query)
 
 	// Get project context
 	repoCtx, err := m.store.GetRepoContext(ctx, projectID)
@@ -75,49 +76,74 @@ func (m *manager) SmartQuery(ctx context.Context, query string, projectID string
 
 	result := &SmartQueryResult{
 		QueryType:  queryType,
-		Confidence: 0.8,
+		Confidence: parsingConfidence,
 		Sources:    []string{},
 	}
 
+	var res *SmartQueryResult
+
 	switch queryType {
 	case QueryTypeFunction:
-		return m.handleFunctionQuery(ctx, repoCtx, extracted, result)
+		res, err = m.handleFunctionQuery(ctx, repoCtx, extracted, result)
 
 	case QueryTypeType:
-		return m.handleTypeQuery(ctx, repoCtx, extracted, result)
+		res, err = m.handleTypeQuery(ctx, repoCtx, extracted, result)
 
 	case QueryTypeSideEffect:
-		return m.handleSideEffectQuery(ctx, repoCtx, extracted, result)
+		res, err = m.handleSideEffectQuery(ctx, repoCtx, extracted, result)
 
 	case QueryTypeConcept:
-		return m.handleConceptQuery(ctx, repoCtx, extracted, result)
+		res, err = m.handleConceptQuery(ctx, repoCtx, extracted, result)
 
 	case QueryTypeCallers:
-		return m.handleCallersQuery(ctx, repoCtx, extracted, result)
+		res, err = m.handleCallersQuery(ctx, repoCtx, extracted, result)
 
 	case QueryTypeCalls:
-		return m.handleCallsQuery(ctx, repoCtx, extracted, result)
+		res, err = m.handleCallsQuery(ctx, repoCtx, extracted, result)
 
 	case QueryTypeFlow:
-		return m.handleFlowQuery(ctx, repoCtx, extracted, result)
+		res, err = m.handleFlowQuery(ctx, repoCtx, extracted, result)
 
 	case QueryTypeFile:
-		return m.handleFileQuery(ctx, repoCtx, extracted, result)
+		res, err = m.handleFileQuery(ctx, repoCtx, extracted, result)
 
 	case QueryTypePackage:
-		return m.handlePackageQuery(ctx, repoCtx, extracted, result)
+		res, err = m.handlePackageQuery(ctx, repoCtx, extracted, result)
 
 	case QueryTypeArchitecture:
-		return m.handleArchitectureQuery(ctx, repoCtx, result)
+		res, err = m.handleArchitectureQuery(ctx, repoCtx, result)
 
 	default:
 		// General query - try to answer from context, flag if AI needed
-		return m.handleGeneralQuery(ctx, repoCtx, query, result)
+		res, err = m.handleGeneralQuery(ctx, repoCtx, query, result)
 	}
+
+	if err != nil {
+		return nil, err
+	}
+
+	// Enforce confidence ceiling: handler cannot raise above parsing confidence
+	if res.Confidence > parsingConfidence {
+		res.Confidence = parsingConfidence
+	}
+
+	// AI fallback threshold
+	if res.Confidence < 0.6 {
+		res.NeedsAI = true
+	}
+
+	return res, nil
+}
+
+// architectureWords are words that should route to architecture queries, not type lookups.
+var architectureWords = map[string]bool{
+	"structure": true, "architecture": true, "layout": true,
+	"overview": true, "project": true, "codebase": true,
 }
 
 // parseQuery analyzes the query and extracts key information.
-func parseQuery(query string) (QueryType, map[string]string) {
+// Returns the query type, extracted parameters, and a parsing confidence score.
+func parseQuery(query string) (QueryType, map[string]string, float64) {
 	queryLower := strings.ToLower(query)
 	extracted := make(map[string]string)
 
@@ -134,11 +160,11 @@ func parseQuery(query string) (QueryType, map[string]string) {
 		re := regexp.MustCompile(pattern)
 		if matches := re.FindStringSubmatch(queryLower); len(matches) > 1 {
 			extracted["function"] = matches[1]
-			return QueryTypeFunction, extracted
+			return QueryTypeFunction, extracted, 0.9
 		}
 	}
 
-	// Type/struct patterns
+	// Type/struct patterns with architecture guard
 	typePatterns := []string{
 		`what is (?:the )?(?:type |struct )?["\x60]?(\w+)["\x60]?`,
 		`show (?:me )?(?:the )?(?:type |struct )?["\x60]?(\w+)["\x60]? fields`,
@@ -147,8 +173,13 @@ func parseQuery(query string) (QueryType, map[string]string) {
 	for _, pattern := range typePatterns {
 		re := regexp.MustCompile(pattern)
 		if matches := re.FindStringSubmatch(queryLower); len(matches) > 1 {
-			extracted["type"] = matches[1]
-			return QueryTypeType, extracted
+			word := matches[1]
+			// Architecture guard: prevent architecture words from matching as type names
+			if architectureWords[word] {
+				return QueryTypeArchitecture, extracted, 0.7
+			}
+			extracted["type"] = word
+			return QueryTypeType, extracted, 0.9
 		}
 	}
 
@@ -175,7 +206,7 @@ func parseQuery(query string) (QueryType, map[string]string) {
 				strings.Contains(queryLower, "what") ||
 				strings.Contains(queryLower, "list")) {
 			extracted["effect"] = effect
-			return QueryTypeSideEffect, extracted
+			return QueryTypeSideEffect, extracted, 0.8
 		}
 	}
 
@@ -196,7 +227,7 @@ func parseQuery(query string) (QueryType, map[string]string) {
 				strings.Contains(queryLower, "find") ||
 				strings.Contains(queryLower, "show")) {
 			extracted["concept"] = concept
-			return QueryTypeConcept, extracted
+			return QueryTypeConcept, extracted, 0.8
 		}
 	}
 
@@ -212,7 +243,7 @@ func parseQuery(query string) (QueryType, map[string]string) {
 		re := regexp.MustCompile(pattern)
 		if matches := re.FindStringSubmatch(queryLower); len(matches) > 1 {
 			extracted["function"] = matches[1]
-			return QueryTypeCallers, extracted
+			return QueryTypeCallers, extracted, 0.9
 		}
 	}
 
@@ -226,7 +257,7 @@ func parseQuery(query string) (QueryType, map[string]string) {
 		re := regexp.MustCompile(pattern)
 		if matches := re.FindStringSubmatch(queryLower); len(matches) > 1 {
 			extracted["function"] = matches[1]
-			return QueryTypeCalls, extracted
+			return QueryTypeCalls, extracted, 0.9
 		}
 	}
 
@@ -242,11 +273,11 @@ func parseQuery(query string) (QueryType, map[string]string) {
 		re := regexp.MustCompile(pattern)
 		if matches := re.FindStringSubmatch(queryLower); len(matches) > 1 {
 			extracted["function"] = matches[1]
-			return QueryTypeFlow, extracted
+			return QueryTypeFlow, extracted, 0.9
 		}
 	}
 	if strings.Contains(queryLower, "flow") || strings.Contains(queryLower, "trace") {
-		return QueryTypeFlow, extracted
+		return QueryTypeFlow, extracted, 0.7
 	}
 
 	// File patterns (specific file with extension)
@@ -258,7 +289,7 @@ func parseQuery(query string) (QueryType, map[string]string) {
 		re := regexp.MustCompile(pattern)
 		if matches := re.FindStringSubmatch(queryLower); len(matches) > 1 {
 			extracted["file"] = matches[1]
-			return QueryTypeFile, extracted
+			return QueryTypeFile, extracted, 0.9
 		}
 	}
 
@@ -278,7 +309,7 @@ func parseQuery(query string) (QueryType, map[string]string) {
 		re := regexp.MustCompile(pattern)
 		if matches := re.FindStringSubmatch(queryLower); len(matches) > 1 {
 			extracted["package"] = matches[1]
-			return QueryTypePackage, extracted
+			return QueryTypePackage, extracted, 0.9
 		}
 	}
 
@@ -290,7 +321,7 @@ func parseQuery(query string) (QueryType, map[string]string) {
 		for _, word := range words {
 			if strings.Contains(word, "/") {
 				extracted["package"] = strings.Trim(word, `"'\x60?.,`)
-				return QueryTypePackage, extracted
+				return QueryTypePackage, extracted, 0.8
 			}
 		}
 	}
@@ -301,10 +332,10 @@ func parseQuery(query string) (QueryType, map[string]string) {
 		strings.Contains(queryLower, "codebase structure") ||
 		strings.Contains(queryLower, "overview") ||
 		strings.Contains(queryLower, "project layout") {
-		return QueryTypeArchitecture, extracted
+		return QueryTypeArchitecture, extracted, 0.7
 	}
 
-	return QueryTypeGeneral, extracted
+	return QueryTypeGeneral, extracted, 0.5
 }
 
 // handleFunctionQuery handles function-related queries.
@@ -316,9 +347,10 @@ func (m *manager) handleFunctionQuery(ctx context.Context, repoCtx *ctxpkg.RepoC
 		return result, nil
 	}
 
-	// Search for the function
+	// Search for the function - exact match first
 	var foundFunc *ctxpkg.FunctionDef
 	var foundFile string
+	stemmedMatch := false
 
 	for path, fileCtx := range repoCtx.Files {
 		for i := range fileCtx.Functions {
@@ -334,10 +366,48 @@ func (m *manager) handleFunctionQuery(ctx context.Context, repoCtx *ctxpkg.RepoC
 		}
 	}
 
+	// Second pass: stemmed matching if exact match not found
 	if foundFunc == nil {
-		result.Answer = fmt.Sprintf("Function `%s` not found in this project", funcName)
-		result.Confidence = 0.5
+		queryStem := nlp.Stem(funcName)
+		for path, fileCtx := range repoCtx.Files {
+			for i := range fileCtx.Functions {
+				fn := &fileCtx.Functions[i]
+				if nlp.Stem(strings.ToLower(fn.Name)) == queryStem {
+					foundFunc = fn
+					foundFile = path
+					stemmedMatch = true
+					break
+				}
+			}
+			if foundFunc != nil {
+				break
+			}
+		}
+	}
+
+	// Fall through to concept search if function not found
+	if foundFunc == nil {
+		extracted["concept"] = funcName
+		conceptResult, err := m.handleConceptQuery(ctx, repoCtx, extracted, result)
+		if err != nil {
+			return nil, err
+		}
+		// If concept search found results, return those
+		if len(conceptResult.Functions) > 0 {
+			conceptResult.QueryType = QueryTypeConcept
+			return conceptResult, nil
+		}
+		// Neither function nor concept found - suggest AI
+		result.Answer = fmt.Sprintf("No function or concept matching `%s` found. Try the `ask` tool for complex questions.", funcName)
+		result.Confidence = 0.3
+		result.NeedsAI = true
+		result.SuggestedQuery = fmt.Sprintf("ask: How does %s work?", funcName)
 		return result, nil
+	}
+
+	// Adjust confidence for stemmed matches
+	if stemmedMatch {
+		result.Confidence = 0.75
 	}
 
 	// Build comprehensive answer
@@ -828,7 +898,7 @@ func (m *manager) handleFileQuery(ctx context.Context, repoCtx *ctxpkg.RepoConte
 	var filePath string
 
 	for path, fc := range repoCtx.Files {
-		if strings.HasSuffix(path, fileName) || strings.Contains(path, fileName) {
+		if matchesFileName(path, fileName) {
 			fileCtx = fc
 			filePath = path
 			break
@@ -909,8 +979,7 @@ func (m *manager) handlePackageQuery(ctx context.Context, repoCtx *ctxpkg.RepoCo
 	var matchingFiles []fileInfo
 
 	for path, fileCtx := range repoCtx.Files {
-		// Match if the file path contains the package path
-		if strings.Contains(path, packagePath) {
+		if matchesPackagePath(path, packagePath) {
 			matchingFiles = append(matchingFiles, fileInfo{path: path, context: fileCtx})
 		}
 	}
@@ -1184,6 +1253,34 @@ func containsAnyWord(text, query string) bool {
 		if len(word) > 3 && strings.Contains(text, word) {
 			return true
 		}
+	}
+	return false
+}
+
+// matchesPackagePath checks if filePath contains packagePath at a "/" boundary.
+// "http" matches "net/http/server.go" but NOT "net/https/client.go".
+func matchesPackagePath(filePath, packagePath string) bool {
+	idx := strings.Index(filePath, packagePath)
+	if idx < 0 {
+		return false
+	}
+	// Check left boundary: must be at start or preceded by "/"
+	if idx > 0 && filePath[idx-1] != '/' {
+		return false
+	}
+	// Check right boundary: must be at end or followed by "/"
+	endIdx := idx + len(packagePath)
+	if endIdx < len(filePath) && filePath[endIdx] != '/' {
+		return false
+	}
+	return true
+}
+
+// matchesFileName checks if filePath ends with exactly the given fileName.
+// "router.go" matches "gorilla/mux/router.go" but NOT "gorilla/mux/subrouter.go".
+func matchesFileName(filePath, fileName string) bool {
+	if strings.HasSuffix(filePath, "/"+fileName) || filePath == fileName {
+		return true
 	}
 	return false
 }

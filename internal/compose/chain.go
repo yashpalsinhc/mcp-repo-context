@@ -23,21 +23,43 @@ type ToolResult struct {
 	TokenCost int         `json:"token_cost,omitempty"`
 }
 
+// StepStatus represents the execution state of a chain step.
+type StepStatus string
+
+const (
+	StepExecuted   StepStatus = "executed"
+	StepSkipped    StepStatus = "skipped"
+	StepNotReached StepStatus = "not_reached"
+	StepFailed     StepStatus = "failed"
+)
+
+// StepResult records the outcome of a single chain step.
+type StepResult struct {
+	StepName string     `json:"step_name"`
+	ToolName string     `json:"tool_name"`
+	Status   StepStatus `json:"status"`
+	Reason   string     `json:"reason,omitempty"`
+	Data     any        `json:"data,omitempty"`
+	Error    string     `json:"error,omitempty"`
+}
+
 // ChainContext holds state during chain execution.
 type ChainContext struct {
 	context.Context
-	Results    []ToolResult          `json:"results"`
-	Vars       map[string]any        `json:"vars"`
-	StopReason string                `json:"stop_reason,omitempty"`
-	stopped    bool
+	Results     []ToolResult   `json:"results"`
+	StepResults []StepResult   `json:"step_results"`
+	Vars        map[string]any `json:"vars"`
+	StopReason  string         `json:"stop_reason,omitempty"`
+	stopped     bool
 }
 
 // NewChainContext creates a new chain execution context.
 func NewChainContext(ctx context.Context) *ChainContext {
 	return &ChainContext{
-		Context: ctx,
-		Results: make([]ToolResult, 0),
-		Vars:    make(map[string]any),
+		Context:     ctx,
+		Results:     make([]ToolResult, 0),
+		StepResults: make([]StepResult, 0),
+		Vars:        make(map[string]any),
 	}
 }
 
@@ -108,6 +130,7 @@ type Chain struct {
 
 // ChainStep represents a step in the chain.
 type ChainStep struct {
+	Name      string
 	Call      ToolCall
 	Condition func(*ChainContext) bool
 	Transform func(*ChainContext, *ToolResult) error
@@ -128,15 +151,27 @@ func (c *Chain) Use(m Middleware) *Chain {
 	return c
 }
 
+// stepName generates a default name for a step from its tool call and index.
+func (c *Chain) stepName(call ToolCall) string {
+	return fmt.Sprintf("step_%d_%s", len(c.steps)+1, call.Name)
+}
+
 // Add adds a tool call to the chain.
 func (c *Chain) Add(call ToolCall) *Chain {
-	c.steps = append(c.steps, ChainStep{Call: call})
+	c.steps = append(c.steps, ChainStep{Name: c.stepName(call), Call: call})
+	return c
+}
+
+// AddNamed adds a named tool call to the chain.
+func (c *Chain) AddNamed(name string, call ToolCall) *Chain {
+	c.steps = append(c.steps, ChainStep{Name: name, Call: call})
 	return c
 }
 
 // AddConditional adds a conditional tool call.
 func (c *Chain) AddConditional(call ToolCall, condition func(*ChainContext) bool) *Chain {
 	c.steps = append(c.steps, ChainStep{
+		Name:      c.stepName(call),
 		Call:      call,
 		Condition: condition,
 	})
@@ -146,6 +181,7 @@ func (c *Chain) AddConditional(call ToolCall, condition func(*ChainContext) bool
 // AddWithTransform adds a tool call with result transformation.
 func (c *Chain) AddWithTransform(call ToolCall, transform func(*ChainContext, *ToolResult) error) *Chain {
 	c.steps = append(c.steps, ChainStep{
+		Name:      c.stepName(call),
 		Call:      call,
 		Transform: transform,
 	})
@@ -162,22 +198,54 @@ func (c *Chain) Execute(ctx context.Context) (*ChainContext, error) {
 		executor = c.middleware[i](executor)
 	}
 
-	for _, step := range c.steps {
+	for i, step := range c.steps {
 		// Check context cancellation
 		select {
 		case <-ctx.Done():
 			chainCtx.Stop("context cancelled")
+			// Mark remaining steps as not_reached
+			for j := i; j < len(c.steps); j++ {
+				chainCtx.StepResults = append(chainCtx.StepResults, StepResult{
+					StepName: c.steps[j].Name,
+					ToolName: c.steps[j].Call.Name,
+					Status:   StepNotReached,
+					Reason:   "context cancelled",
+				})
+			}
 			return chainCtx, ctx.Err()
 		default:
 		}
 
 		// Check if chain was stopped
 		if chainCtx.IsStopped() {
+			// Mark remaining steps as not_reached
+			for j := i; j < len(c.steps); j++ {
+				chainCtx.StepResults = append(chainCtx.StepResults, StepResult{
+					StepName: c.steps[j].Name,
+					ToolName: c.steps[j].Call.Name,
+					Status:   StepNotReached,
+					Reason:   "chain stopped: " + chainCtx.StopReason,
+				})
+			}
 			break
 		}
 
 		// Check condition
 		if step.Condition != nil && !step.Condition(chainCtx) {
+			reason := "condition evaluated to false"
+			// Check for custom skip reason
+			if sr, ok := chainCtx.Vars["_skip_reason"]; ok {
+				if s, ok := sr.(string); ok && s != "" {
+					reason = s
+				}
+				delete(chainCtx.Vars, "_skip_reason")
+			}
+			chainCtx.StepResults = append(chainCtx.StepResults, StepResult{
+				StepName: step.Name,
+				ToolName: step.Call.Name,
+				Status:   StepSkipped,
+				Reason:   reason,
+			})
 			continue
 		}
 
@@ -197,9 +265,31 @@ func (c *Chain) Execute(ctx context.Context) (*ChainContext, error) {
 
 		// Stop on error
 		if !result.Success {
+			chainCtx.StepResults = append(chainCtx.StepResults, StepResult{
+				StepName: step.Name,
+				ToolName: step.Call.Name,
+				Status:   StepFailed,
+				Error:    result.Error,
+			})
 			chainCtx.Stop("tool error: " + result.Error)
+			// Mark remaining steps as not_reached
+			for j := i + 1; j < len(c.steps); j++ {
+				chainCtx.StepResults = append(chainCtx.StepResults, StepResult{
+					StepName: c.steps[j].Name,
+					ToolName: c.steps[j].Call.Name,
+					Status:   StepNotReached,
+					Reason:   "step failed: " + step.Name,
+				})
+			}
 			break
 		}
+
+		chainCtx.StepResults = append(chainCtx.StepResults, StepResult{
+			StepName: step.Name,
+			ToolName: step.Call.Name,
+			Status:   StepExecuted,
+			Data:     result.Data,
+		})
 	}
 
 	return chainCtx, nil
@@ -260,24 +350,41 @@ func (c *ChainContext) Summary() ChainSummary {
 		}
 	}
 
+	skippedCount := 0
+	notReachedCount := 0
+	for _, sr := range c.StepResults {
+		switch sr.Status {
+		case StepSkipped:
+			skippedCount++
+		case StepNotReached:
+			notReachedCount++
+		}
+	}
+
 	return ChainSummary{
-		TotalSteps:    len(c.Results),
+		TotalSteps:    len(c.StepResults),
 		SuccessSteps:  successCount,
 		FailedSteps:   len(c.Results) - successCount,
+		SkippedSteps:  skippedCount,
+		NotReached:    notReachedCount,
 		TotalDuration: totalDuration.String(),
 		TotalTokens:   totalTokens,
 		StopReason:    c.StopReason,
+		StepDetails:   c.StepResults,
 	}
 }
 
 // ChainSummary provides statistics about chain execution.
 type ChainSummary struct {
-	TotalSteps    int    `json:"total_steps"`
-	SuccessSteps  int    `json:"success_steps"`
-	FailedSteps   int    `json:"failed_steps"`
-	TotalDuration string `json:"total_duration"`
-	TotalTokens   int    `json:"total_tokens"`
-	StopReason    string `json:"stop_reason,omitempty"`
+	TotalSteps    int          `json:"total_steps"`
+	SuccessSteps  int          `json:"success_steps"`
+	FailedSteps   int          `json:"failed_steps"`
+	SkippedSteps  int          `json:"skipped_steps"`
+	NotReached    int          `json:"not_reached"`
+	TotalDuration string       `json:"total_duration"`
+	TotalTokens   int          `json:"total_tokens"`
+	StopReason    string       `json:"stop_reason,omitempty"`
+	StepDetails   []StepResult `json:"step_details,omitempty"`
 }
 
 // FuncExecutor wraps a function as a ToolExecutor.

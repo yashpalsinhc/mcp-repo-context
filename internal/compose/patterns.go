@@ -135,22 +135,15 @@ func (p *SearchWithContext) Build(executor ToolExecutor, params map[string]any) 
 		func(ctx *ChainContext) bool {
 			results := ctx.LastData()
 			if results == nil {
+				ctx.Set("_skip_reason", "no search results to expand")
 				return false
 			}
 
-			// Extract first function info
-			switch r := results.(type) {
-			case []map[string]any:
-				if len(r) > 0 {
-					if file, ok := r[0]["file"].(string); ok {
-						ctx.Set("first_file", file)
-					}
-					if name, ok := r[0]["name"].(string); ok {
-						ctx.Set("first_func", name)
-					}
-					return true
-				}
+			// Extract first function info from various result formats
+			if extractFirstResult(ctx, results) {
+				return true
 			}
+			ctx.Set("_skip_reason", "could not parse search results: unexpected format")
 			return false
 		},
 	)
@@ -241,19 +234,70 @@ func (p *ImpactAnalysis) Description() string {
 func (p *ImpactAnalysis) Build(executor ToolExecutor, params map[string]any) *Chain {
 	chain := NewChain(executor)
 
-	// Step 1: Get function context
-	chain.AddWithTransform(
-		ToolCall{
-			Name:   "get_function_context",
-			Params: params,
-		},
-		func(ctx *ChainContext, result *ToolResult) error {
-			if result.Success {
-				ctx.Set("function_context", result.Data)
-			}
-			return nil
-		},
-	)
+	// If file_path is already provided, store it directly
+	if fp, ok := params["file_path"].(string); ok && fp != "" {
+		// Step 1: Get function context directly (file_path known)
+		chain.AddWithTransform(
+			ToolCall{
+				Name:   "get_function_context",
+				Params: params,
+			},
+			func(ctx *ChainContext, result *ToolResult) error {
+				if result.Success {
+					ctx.Set("function_context", result.Data)
+				}
+				return nil
+			},
+		)
+	} else {
+		// Step 0: Search for function to resolve file_path
+		chain.AddWithTransform(
+			ToolCall{
+				Name: "search_context",
+				Params: map[string]any{
+					"repo_id":     params["repo_id"],
+					"query":       params["function_name"],
+					"search_type": "function",
+				},
+			},
+			func(ctx *ChainContext, result *ToolResult) error {
+				if !result.Success || result.Data == nil {
+					return nil
+				}
+				// Extract file_path from search results
+				if extractFirstResult(ctx, result.Data) {
+					filePath := ctx.GetString("first_file")
+					funcName := ctx.GetString("first_func")
+					if filePath != "" {
+						ctx.Set("file_path", filePath)
+						ctx.Set("function_name", funcName)
+						ctx.Set("resolved_file_message", "Selected file: "+filePath)
+					}
+				}
+				return nil
+			},
+		)
+
+		// Step 1: Get function context using resolved file_path
+		chain.AddConditional(
+			ToolCall{
+				Name: "get_function_context",
+				Params: map[string]any{
+					"repo_id":       params["repo_id"],
+					"file_path":     "{{file_path}}",
+					"function_name": "{{function_name}}",
+				},
+			},
+			func(ctx *ChainContext) bool {
+				fp := ctx.GetString("file_path")
+				if fp == "" {
+					ctx.Set("_skip_reason", "could not resolve file_path: function not found in search")
+					return false
+				}
+				return true
+			},
+		)
+	}
 
 	// Step 2: Get callers
 	chain.AddWithTransform(
@@ -338,4 +382,56 @@ func DefaultRegistry() *PatternRegistry {
 func ExecutePattern(ctx context.Context, executor ToolExecutor, pattern Pattern, params map[string]any) (*ChainContext, error) {
 	chain := pattern.Build(executor, params)
 	return chain.Execute(ctx)
+}
+
+// extractFirstResult extracts file and function name from various result formats
+// and stores them as "first_file" and "first_func" in the chain context.
+func extractFirstResult(ctx *ChainContext, results any) bool {
+	switch r := results.(type) {
+	case []map[string]any:
+		if len(r) > 0 {
+			if file, ok := r[0]["file"].(string); ok {
+				ctx.Set("first_file", file)
+			}
+			if name, ok := r[0]["name"].(string); ok {
+				ctx.Set("first_func", name)
+			}
+			return true
+		}
+	case map[string]any:
+		// Handle wrapped results like {"items": [...], "count": N}
+		if items, ok := r["items"].([]any); ok && len(items) > 0 {
+			if item, ok := items[0].(map[string]any); ok {
+				if file, ok := item["file"].(string); ok {
+					ctx.Set("first_file", file)
+				}
+				if name, ok := item["name"].(string); ok {
+					ctx.Set("first_func", name)
+				}
+				return true
+			}
+		}
+		// Handle single result directly
+		if file, ok := r["file"].(string); ok {
+			ctx.Set("first_file", file)
+			if name, ok := r["name"].(string); ok {
+				ctx.Set("first_func", name)
+			}
+			return true
+		}
+	case []any:
+		// Handle JSON-deserialized arrays
+		if len(r) > 0 {
+			if item, ok := r[0].(map[string]any); ok {
+				if file, ok := item["file"].(string); ok {
+					ctx.Set("first_file", file)
+				}
+				if name, ok := item["name"].(string); ok {
+					ctx.Set("first_func", name)
+				}
+				return true
+			}
+		}
+	}
+	return false
 }

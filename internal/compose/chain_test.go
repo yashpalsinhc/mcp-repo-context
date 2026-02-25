@@ -265,6 +265,11 @@ func TestChainSummary(t *testing.T) {
 		{Success: true, Duration: "20ms", TokenCost: 200},
 		{Success: false, Duration: "5ms", TokenCost: 50, Error: "failed"},
 	}
+	ctx.StepResults = []StepResult{
+		{StepName: "step_1", Status: StepExecuted},
+		{StepName: "step_2", Status: StepExecuted},
+		{StepName: "step_3", Status: StepFailed, Error: "failed"},
+	}
 	ctx.StopReason = "error"
 
 	summary := ctx.Summary()
