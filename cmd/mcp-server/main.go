@@ -2,11 +2,13 @@ package main
 
 import (
 	"context"
+	"database/sql"
 	"flag"
 	"fmt"
 	"log"
 	"os"
 	"os/signal"
+	"path/filepath"
 	"syscall"
 
 	"github.com/yashpalc/mcp-repo-context/internal/comparison"
@@ -16,6 +18,8 @@ import (
 	"github.com/yashpalc/mcp-repo-context/internal/repo"
 	"github.com/yashpalc/mcp-repo-context/internal/storage"
 	"github.com/yashpalc/mcp-repo-context/internal/vectors"
+
+	_ "github.com/mattn/go-sqlite3"
 )
 
 var (
@@ -35,8 +39,23 @@ func main() {
 		os.Exit(0)
 	}
 
-	// Setup storage
-	store, err := storage.NewFilesystemStore(*storagePath)
+	// Ensure storage directory exists
+	if err := os.MkdirAll(*storagePath, 0755); err != nil {
+		log.Fatalf("Failed to create storage directory: %v", err)
+	}
+
+	// Open shared SQLite database
+	dbPath := filepath.Join(*storagePath, "contexts.db")
+	db, err := sql.Open("sqlite3", dbPath+"?_journal_mode=WAL&_foreign_keys=ON")
+	if err != nil {
+		log.Fatalf("Failed to open database: %v", err)
+	}
+	defer db.Close()
+	db.SetMaxOpenConns(10)
+	db.SetMaxIdleConns(5)
+
+	// Create main storage with shared DB (also creates org tables)
+	store, err := storage.NewSQLiteStoreWithDB(db)
 	if err != nil {
 		log.Fatalf("Failed to create storage: %v", err)
 	}
@@ -68,20 +87,27 @@ func main() {
 	}
 	scanner := repo.NewScanner(excludePatterns, 1024*1024) // 1MB max file size
 
-	// Create manager
+	// Create orchestrator manager
 	manager := orchestrator.NewManager(store, cloner, scanner)
 
 	// Create comparer for multi-repo analysis
 	comparer := comparison.NewComparer()
 
-	// Create org store and manager for org-level operations
-	orgStore, err := org.NewFilesystemStore(*storagePath)
+	// Create org SQLite store with shared DB (org tables created by storage above)
+	orgStore, err := org.NewSQLiteStore(db)
 	if err != nil {
 		log.Fatalf("Failed to create org store: %v", err)
 	}
+
+	// Run filesystem migration (one-time, idempotent)
+	if err := org.MigrateFromFilesystem(*storagePath, orgStore); err != nil {
+		log.Printf("WARNING: org filesystem migration failed: %v", err)
+	}
+
+	// Create org manager with orchestrator for concurrent analysis
 	orgManager := org.NewManager(orgStore, manager)
 
-	// Create vector store for semantic search (index_repo, index_org)
+	// Create vector store for semantic search
 	vectorStorePath := getEnvOrDefault("MCP_VECTOR_STORE_PATH", *storagePath+"/vectors.db")
 	vectorStore, err := vectors.NewSQLiteVectorStore(vectorStorePath, 384)
 	if err != nil {

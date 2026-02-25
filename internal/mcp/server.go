@@ -436,8 +436,108 @@ func (s *server) handleListTools(req *jsonRPCRequest) *jsonRPCResponse {
 						"type":        "boolean",
 						"description": "Force re-analysis even if cached context exists (default: false)",
 					},
+					"concurrency": map[string]interface{}{
+						"type":        "integer",
+						"description": "Number of concurrent repo analyses (default: 3, max: 10)",
+					},
 				},
 				"required": []string{"org_id"},
+			},
+		},
+		{
+			Name:        "get_org",
+			Description: "Get details of a registered organization including repos and config.",
+			InputSchema: map[string]interface{}{
+				"type": "object",
+				"properties": map[string]interface{}{
+					"org_id": map[string]interface{}{
+						"type":        "string",
+						"description": "Organization ID",
+					},
+				},
+				"required": []string{"org_id"},
+			},
+		},
+		{
+			Name:        "delete_org",
+			Description: "Delete a registered organization. Use mode='cascade' to also delete all repo contexts.",
+			InputSchema: map[string]interface{}{
+				"type": "object",
+				"properties": map[string]interface{}{
+					"org_id": map[string]interface{}{
+						"type":        "string",
+						"description": "Organization ID",
+					},
+					"mode": map[string]interface{}{
+						"type":        "string",
+						"description": "Delete mode: 'detach' (default, just unregister) or 'cascade' (also delete repo contexts)",
+					},
+				},
+				"required": []string{"org_id"},
+			},
+		},
+		{
+			Name:        "update_org_config",
+			Description: "Update organization configuration (exclude patterns, max file size).",
+			InputSchema: map[string]interface{}{
+				"type": "object",
+				"properties": map[string]interface{}{
+					"org_id": map[string]interface{}{
+						"type":        "string",
+						"description": "Organization ID",
+					},
+					"config": map[string]interface{}{
+						"type": "object",
+						"properties": map[string]interface{}{
+							"exclude_patterns": map[string]interface{}{
+								"type":  "array",
+								"items": map[string]interface{}{"type": "string"},
+							},
+							"max_file_size": map[string]interface{}{
+								"type": "integer",
+							},
+						},
+					},
+				},
+				"required": []string{"org_id"},
+			},
+		},
+		{
+			Name:        "add_repos_to_org",
+			Description: "Add repositories to an existing organization.",
+			InputSchema: map[string]interface{}{
+				"type": "object",
+				"properties": map[string]interface{}{
+					"org_id": map[string]interface{}{
+						"type":        "string",
+						"description": "Organization ID",
+					},
+					"repo_ids": map[string]interface{}{
+						"type":        "array",
+						"items":       map[string]interface{}{"type": "string"},
+						"description": "Repository IDs to add",
+					},
+				},
+				"required": []string{"org_id", "repo_ids"},
+			},
+		},
+		{
+			Name:        "remove_repos_from_org",
+			Description: "Remove repositories from an organization.",
+			InputSchema: map[string]interface{}{
+				"type": "object",
+				"properties": map[string]interface{}{
+					"org_id": map[string]interface{}{
+						"type":        "string",
+						"description": "Organization ID",
+					},
+					"repo_ids": map[string]interface{}{
+						"type":        "array",
+						"items":       map[string]interface{}{"type": "string"},
+						"description": "Repository IDs to remove",
+					},
+				},
+				"required": []string{"org_id", "repo_ids"},
 			},
 		},
 		{
@@ -1093,6 +1193,16 @@ func (s *server) handleCallToolWithID(ctx context.Context, req *jsonRPCRequest, 
 		result = s.toolListOrgs(ctx, params.Arguments)
 	case "analyze_org":
 		result = s.toolAnalyzeOrg(ctx, params.Arguments)
+	case "get_org":
+		result = s.toolGetOrg(ctx, params.Arguments)
+	case "delete_org":
+		result = s.toolDeleteOrg(ctx, params.Arguments)
+	case "update_org_config":
+		result = s.toolUpdateOrgConfig(ctx, params.Arguments)
+	case "add_repos_to_org":
+		result = s.toolAddReposToOrg(ctx, params.Arguments)
+	case "remove_repos_from_org":
+		result = s.toolRemoveReposFromOrg(ctx, params.Arguments)
 	case "search_context":
 		result = s.toolSearchContext(ctx, params.Arguments)
 	case "compare_repos":

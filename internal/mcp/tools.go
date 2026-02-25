@@ -354,7 +354,7 @@ func (s *server) toolListOrgs(ctx context.Context, args map[string]any) callTool
 	}
 }
 
-// toolAnalyzeOrg handles the analyze_org tool call.
+// toolAnalyzeOrg handles the analyze_org tool call using concurrent analysis.
 func (s *server) toolAnalyzeOrg(ctx context.Context, args map[string]any) callToolResult {
 	if s.config.OrgManager == nil {
 		return errorResult("org support not configured (OrgManager is nil)")
@@ -365,49 +365,254 @@ func (s *server) toolAnalyzeOrg(ctx context.Context, args map[string]any) callTo
 	}
 	force, _ := args["force"].(bool)
 
+	concurrency := 3
+	if c, ok := args["concurrency"].(float64); ok {
+		concurrency = int(c)
+		if concurrency < 1 {
+			concurrency = 1
+		}
+		if concurrency > 10 {
+			concurrency = 10
+		}
+	}
+
+	result, err := s.config.OrgManager.AnalyzeOrg(ctx, orgID, force, concurrency)
+	if err != nil {
+		return errorResult(fmt.Sprintf("Failed to analyze org: %v", err))
+	}
+
+	var sb strings.Builder
+	fmt.Fprintf(&sb, "# Org Analysis: %s\n\n", result.OrgID)
+	fmt.Fprintf(&sb, "- **Total:** %d repos\n", result.Total)
+	fmt.Fprintf(&sb, "- **Succeeded:** %d\n", result.Succeeded)
+	fmt.Fprintf(&sb, "- **Failed:** %d\n", result.Failed)
+	fmt.Fprintf(&sb, "- **Skipped:** %d\n", result.Skipped)
+	fmt.Fprintf(&sb, "- **Duration:** %s\n", result.Duration.Round(time.Millisecond))
+
+	if len(result.Errors) > 0 {
+		sb.WriteString("\n## Errors\n\n")
+		for _, e := range result.Errors {
+			fmt.Fprintf(&sb, "- **%s**: %s\n", e.RepoID, e.Error)
+		}
+	}
+
+	return callToolResult{
+		Content: []contentItem{{Type: "text", Text: sb.String()}},
+	}
+}
+
+// toolGetOrg handles the get_org tool call.
+func (s *server) toolGetOrg(ctx context.Context, args map[string]any) callToolResult {
+	if s.config.OrgManager == nil {
+		return errorResult("org support not configured (OrgManager is nil)")
+	}
+	orgID, ok := args["org_id"].(string)
+	if !ok || orgID == "" {
+		return errorResult("org_id is required")
+	}
+
+	o, err := s.config.OrgManager.Get(ctx, orgID)
+	if err != nil {
+		return callToolResult{
+			Content: []contentItem{{Type: "text", Text: fmt.Sprintf("Org not found: %v", err)}},
+			IsError: true,
+		}
+	}
+
+	var sb strings.Builder
+	fmt.Fprintf(&sb, "# Org: %s\n\n", o.ID)
+	fmt.Fprintf(&sb, "- **Repos:** %d\n", len(o.Repos))
+	if !o.Created.IsZero() {
+		fmt.Fprintf(&sb, "- **Created:** %s\n", o.Created.Format(time.RFC3339))
+	}
+
+	if len(o.Repos) > 0 {
+		sb.WriteString("\n## Repositories\n\n")
+		for _, r := range o.Repos {
+			fmt.Fprintf(&sb, "- %s\n", r)
+		}
+	}
+
+	if len(o.Config.ExcludePatterns) > 0 || o.Config.MaxFileSize > 0 {
+		sb.WriteString("\n## Config\n\n")
+		if len(o.Config.ExcludePatterns) > 0 {
+			fmt.Fprintf(&sb, "- **Exclude patterns:** %s\n", strings.Join(o.Config.ExcludePatterns, ", "))
+		}
+		if o.Config.MaxFileSize > 0 {
+			fmt.Fprintf(&sb, "- **Max file size:** %d bytes\n", o.Config.MaxFileSize)
+		}
+	}
+
+	return callToolResult{
+		Content: []contentItem{{Type: "text", Text: sb.String()}},
+	}
+}
+
+// toolDeleteOrg handles the delete_org tool call.
+func (s *server) toolDeleteOrg(ctx context.Context, args map[string]any) callToolResult {
+	if s.config.OrgManager == nil {
+		return errorResult("org support not configured (OrgManager is nil)")
+	}
+	orgID, ok := args["org_id"].(string)
+	if !ok || orgID == "" {
+		return errorResult("org_id is required")
+	}
+
+	mode := "detach"
+	if m, ok := args["mode"].(string); ok && m != "" {
+		mode = m
+	}
+
+	if mode == "cascade" {
+		o, err := s.config.OrgManager.Get(ctx, orgID)
+		if err != nil {
+			return errorResult(fmt.Sprintf("Org not found: %v", err))
+		}
+		for _, repoID := range o.Repos {
+			if err := s.manager.DeleteRepoContext(ctx, repoID); err != nil {
+				s.logger.WithFields(map[string]interface{}{
+					"org_id":  orgID,
+					"repo_id": repoID,
+				}).Warnf("failed to delete repo context during cascade: %v", err)
+			}
+		}
+	}
+
+	if err := s.config.OrgManager.Delete(ctx, orgID); err != nil {
+		return errorResult(fmt.Sprintf("Failed to delete org: %v", err))
+	}
+
+	return callToolResult{
+		Content: []contentItem{{Type: "text", Text: fmt.Sprintf("Deleted org **%s** (mode: %s)", orgID, mode)}},
+	}
+}
+
+// toolUpdateOrgConfig handles the update_org_config tool call.
+func (s *server) toolUpdateOrgConfig(ctx context.Context, args map[string]any) callToolResult {
+	if s.config.OrgManager == nil {
+		return errorResult("org support not configured (OrgManager is nil)")
+	}
+	orgID, ok := args["org_id"].(string)
+	if !ok || orgID == "" {
+		return errorResult("org_id is required")
+	}
+
 	o, err := s.config.OrgManager.Get(ctx, orgID)
 	if err != nil {
 		return errorResult(fmt.Sprintf("Org not found: %v", err))
 	}
 
-	opts := orchestrator.AnalyzeOptions{
-		Force:       force,
-		GitHubToken: s.config.GitHubToken,
-		MaxAge:      24 * time.Hour,
+	if configMap, ok := args["config"].(map[string]interface{}); ok {
+		if patterns, ok := configMap["exclude_patterns"].([]interface{}); ok {
+			o.Config.ExcludePatterns = nil
+			for _, p := range patterns {
+				if ps, ok := p.(string); ok {
+					o.Config.ExcludePatterns = append(o.Config.ExcludePatterns, ps)
+				}
+			}
+		}
+		if maxSize, ok := configMap["max_file_size"].(float64); ok {
+			o.Config.MaxFileSize = int64(maxSize)
+		}
+	}
+
+	// Re-register with updated config
+	updated, err := s.config.OrgManager.Register(ctx, o.ID, o.Repos, &o.Config)
+	if err != nil {
+		return errorResult(fmt.Sprintf("Failed to update org config: %v", err))
 	}
 
 	var sb strings.Builder
-	fmt.Fprintf(&sb, "Analyzing %d repo(s) in org **%s**\n\n", len(o.Repos), orgID)
+	fmt.Fprintf(&sb, "Updated config for org **%s**\n\n", updated.ID)
+	if len(updated.Config.ExcludePatterns) > 0 {
+		fmt.Fprintf(&sb, "- **Exclude patterns:** %s\n", strings.Join(updated.Config.ExcludePatterns, ", "))
+	}
+	if updated.Config.MaxFileSize > 0 {
+		fmt.Fprintf(&sb, "- **Max file size:** %d bytes\n", updated.Config.MaxFileSize)
+	}
 
-	for _, repoID := range o.Repos {
-		// Convert repo ID to URL: github.com/owner/repo -> https://github.com/owner/repo
-		// local:path stays as path for analyze_local
-		if strings.HasPrefix(repoID, "local:") {
-			path := strings.TrimPrefix(repoID, "local:")
-			localResult, localErr := s.manager.AnalyzeLocal(ctx, path, orchestrator.AnalyzeLocalOptions{Force: force})
-			if localErr != nil {
-				fmt.Fprintf(&sb, "- **%s**: ❌ %v\n", repoID, localErr)
-				continue
-			}
-			fmt.Fprintf(&sb, "- **%s**: ✅ %d files\n", localResult.ProjectID, localResult.FileCount)
-			for _, w := range localResult.Warnings {
-				fmt.Fprintf(&sb, "  - %s\n", w)
-			}
-		} else {
-			repoURL := repoID
-			if !strings.HasPrefix(repoID, "http") {
-				repoURL = "https://" + repoID
-			}
-			result, analyzeErr := s.manager.AnalyzeRepo(ctx, repoURL, opts)
-			if analyzeErr != nil {
-				fmt.Fprintf(&sb, "- **%s**: ❌ %v\n", repoID, analyzeErr)
-				continue
-			}
-			fmt.Fprintf(&sb, "- **%s**: ✅ %d files\n", result.RepoID, result.FileCount)
-			for _, w := range result.Warnings {
-				fmt.Fprintf(&sb, "  - %s\n", w)
+	return callToolResult{
+		Content: []contentItem{{Type: "text", Text: sb.String()}},
+	}
+}
+
+// toolAddReposToOrg handles the add_repos_to_org tool call.
+func (s *server) toolAddReposToOrg(ctx context.Context, args map[string]any) callToolResult {
+	if s.config.OrgManager == nil {
+		return errorResult("org support not configured (OrgManager is nil)")
+	}
+	orgID, ok := args["org_id"].(string)
+	if !ok || orgID == "" {
+		return errorResult("org_id is required")
+	}
+
+	var repoIDs []string
+	if rids, ok := args["repo_ids"].([]interface{}); ok {
+		for _, r := range rids {
+			if s, ok := r.(string); ok && s != "" {
+				repoIDs = append(repoIDs, s)
 			}
 		}
+	}
+	if len(repoIDs) == 0 {
+		return errorResult("repo_ids is required and must not be empty")
+	}
+
+	if err := s.config.OrgManager.AddRepos(ctx, orgID, repoIDs); err != nil {
+		return errorResult(fmt.Sprintf("Failed to add repos: %v", err))
+	}
+
+	o, err := s.config.OrgManager.Get(ctx, orgID)
+	if err != nil {
+		return errorResult(fmt.Sprintf("Repos added but failed to fetch updated org: %v", err))
+	}
+
+	var sb strings.Builder
+	fmt.Fprintf(&sb, "Added %d repo(s) to org **%s** (total: %d)\n\n", len(repoIDs), orgID, len(o.Repos))
+	for _, r := range o.Repos {
+		fmt.Fprintf(&sb, "- %s\n", r)
+	}
+
+	return callToolResult{
+		Content: []contentItem{{Type: "text", Text: sb.String()}},
+	}
+}
+
+// toolRemoveReposFromOrg handles the remove_repos_from_org tool call.
+func (s *server) toolRemoveReposFromOrg(ctx context.Context, args map[string]any) callToolResult {
+	if s.config.OrgManager == nil {
+		return errorResult("org support not configured (OrgManager is nil)")
+	}
+	orgID, ok := args["org_id"].(string)
+	if !ok || orgID == "" {
+		return errorResult("org_id is required")
+	}
+
+	var repoIDs []string
+	if rids, ok := args["repo_ids"].([]interface{}); ok {
+		for _, r := range rids {
+			if s, ok := r.(string); ok && s != "" {
+				repoIDs = append(repoIDs, s)
+			}
+		}
+	}
+	if len(repoIDs) == 0 {
+		return errorResult("repo_ids is required and must not be empty")
+	}
+
+	if err := s.config.OrgManager.RemoveRepos(ctx, orgID, repoIDs); err != nil {
+		return errorResult(fmt.Sprintf("Failed to remove repos: %v", err))
+	}
+
+	o, err := s.config.OrgManager.Get(ctx, orgID)
+	if err != nil {
+		return errorResult(fmt.Sprintf("Repos removed but failed to fetch updated org: %v", err))
+	}
+
+	var sb strings.Builder
+	fmt.Fprintf(&sb, "Removed %d repo(s) from org **%s** (remaining: %d)\n\n", len(repoIDs), orgID, len(o.Repos))
+	for _, r := range o.Repos {
+		fmt.Fprintf(&sb, "- %s\n", r)
 	}
 
 	return callToolResult{
