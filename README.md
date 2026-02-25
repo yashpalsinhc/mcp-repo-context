@@ -1,105 +1,88 @@
 # MCP Repo Context Server
 
-A stateless MCP (Model Context Protocol) server that generates, stores, and serves comprehensive repository context for AI-powered Q&A.
+A Model Context Protocol (MCP) server that generates deep, structured context from codebases using AST parsing, call graph analysis, and semantic search — enabling AI agents to understand and navigate repositories with minimal token usage.
+
+Built in Go. Two direct dependencies. 35+ tools.
+
+## Why
+
+AI coding assistants waste tokens re-reading files every session. This server analyzes repositories once, stores structured context (functions, types, call graphs, behaviors, side effects), and serves it on demand via MCP — so the AI gets precise answers in ~2-4K tokens instead of ~50K+.
 
 ## Features
 
-- **Analyze GitHub repositories**: Clone and extract code structure, functions, types, and relationships
-- **Store context**: Persist analysis as JSON files for fast retrieval
-- **Search context**: Find functions, types, and files across analyzed repositories
-- **Go language support**: Deep analysis of Go source files using AST parsing
-- **Multi-repo comparison**: Compare multiple repositories for duplicates, conflicts, and gaps
-- **AI-powered summaries**: Generate intelligent repository summaries using Claude (requires `ANTHROPIC_API_KEY`)
-- **AI architecture analysis**: Get AI-generated architecture insights, strengths, weaknesses, and recommendations
+- **AST-Based Analysis** — Full Go AST parsing: functions, types, interfaces, imports, complexity metrics
+- **Call Graph** — Maps caller/callee relationships across the entire codebase, with Mermaid/DOT visualization
+- **Semantic Search** — Local vector embeddings (384-dim) stored in SQLite for meaning-based code search
+- **Behavior Extraction** — Auto-detects what functions do: DB queries (with SQL), HTTP calls, file I/O, error handling
+- **Multi-Repo Comparison** — Find duplicates, conflicts, and gaps across repositories
+- **Incremental Updates** — Refresh a single file (~1-2K tokens) or git changes (~2-5K tokens) without full re-analysis
+- **AI-Powered Q&A** — Natural language queries routed to the right tool automatically via `smart_query`
+- **PR Review** — Context-aware pull request analysis using function-level impact analysis
+- **Organization Support** — Group repos, query across entire orgs
+- **Composable Patterns** — Pre-built tool chains for common workflows (search + expand, impact analysis)
 
-## Installation
+## Architecture
 
-### Option 1: Docker (Recommended)
-
-```bash
-# Clone the repository
-git clone https://github.com/yashpalc/mcp-repo-context.git
-cd mcp-repo-context
-
-# Build Docker image
-docker build -t mcp-repo-context:latest .
-
-# Create data directory
-mkdir -p ./data/contexts
+```
+MCP Client (Claude Code / AI Agent)
+    |  JSON-RPC 2.0 over stdio
+    v
++---------------------------+
+|   MCP Server (35+ tools)  |
++-----------+---------------+
+            |
+    +-------+-------+-----------+-----------+
+    v       v       v           v           v
+Analyzer  Storage  Vector Store  AI Module  Comparer
+ (AST)   (JSON/FS) (SQLite)    (Claude)   (Multi-Repo)
+    |
+    +-- Go AST parser
+    +-- Call graph builder
+    +-- Search index (concepts, side effects, routes)
+    +-- Behavior summarizer
+    +-- Error handling detector
 ```
 
-### Option 2: Build from Source
+**Storage:** Each repo is analyzed into a structured JSON file containing all functions, types, call graphs, search indexes, and behavior data. Vector embeddings are stored in SQLite for semantic search.
+
+## Quick Start
+
+### Prerequisites
+- Go 1.24+
+- GitHub token (for private repos)
+- Anthropic API key (optional, for AI features)
+
+### Build
 
 ```bash
-# Clone the repository
-git clone https://github.com/yashpalc/mcp-repo-context.git
+git clone https://github.com/yashpalsinhc/mcp-repo-context.git
 cd mcp-repo-context
-
-# Build and install
-go install ./cmd/mcp-server
-
-# Or build only
 go build -o mcp-server ./cmd/mcp-server
 ```
 
-## Usage
-
-### Docker with Claude Code
-
-Add to `~/.claude/settings.json`:
-
-```json
-{
-  "mcpServers": {
-    "repo-context": {
-      "command": "/path/to/mcp-repo-context/scripts/run-docker.sh",
-      "env": {
-        "GITHUB_TOKEN": "your-github-token"
-      }
-    }
-  }
-}
-```
-
-Or run Docker directly:
-
-```json
-{
-  "mcpServers": {
-    "repo-context": {
-      "command": "docker",
-      "args": [
-        "run", "--rm", "-i",
-        "-v", "/path/to/data:/data",
-        "-e", "GITHUB_TOKEN",
-        "-e", "MCP_STORAGE_PATH=/data/contexts",
-        "mcp-repo-context:latest"
-      ],
-      "env": {
-        "GITHUB_TOKEN": "your-github-token"
-      }
-    }
-  }
-}
-```
-
-### Docker Compose
+### Run
 
 ```bash
-# Copy environment file
-cp .env.example .env
-# Edit .env with your GITHUB_TOKEN
-
-# Run with docker-compose
-docker-compose up -d
-
-# With PostgreSQL (for future index storage)
-docker-compose --profile with-postgres up -d
+./mcp-server \
+  -storage ./data/contexts \
+  -temp /tmp/mcp-repos \
+  -github-token $GITHUB_TOKEN
 ```
 
-### Native Binary with Claude Desktop / Claude Code
+### Docker
 
-Add to your Claude Desktop configuration (`~/Library/Application Support/Claude/claude_desktop_config.json`):
+```bash
+docker build -t mcp-repo-context .
+docker run -it \
+  -v $(pwd)/data:/home/mcp/data \
+  -e GITHUB_TOKEN \
+  -e ANTHROPIC_API_KEY \
+  mcp-repo-context
+```
+
+### Integrate with Claude Code
+
+Add to your MCP config (`~/.claude/settings.json` or project `.mcp.json`):
 
 ```json
 {
@@ -108,240 +91,107 @@ Add to your Claude Desktop configuration (`~/Library/Application Support/Claude/
       "command": "/path/to/mcp-server",
       "args": ["-storage", "/path/to/data/contexts"],
       "env": {
-        "GITHUB_TOKEN": "your-github-token"
+        "GITHUB_TOKEN": "your-token",
+        "ANTHROPIC_API_KEY": "your-key"
       }
     }
   }
 }
 ```
 
-### Command Line Options
+## Tools Reference
+
+### Analysis
+| Tool | Purpose | Tokens |
+|------|---------|--------|
+| `analyze_repo` | Clone and analyze a GitHub repository | ~8K |
+| `analyze_local` | Analyze a local directory | ~8K |
+| `refresh_file` | Re-analyze a single changed file | ~1-2K |
+| `refresh_changed` | Re-analyze all git-changed files | ~2-5K |
+
+### Search & Query
+| Tool | Purpose | Tokens |
+|------|---------|--------|
+| `smart_query` | Natural language — auto-routes to the right tool | ~2-4K |
+| `search_context` | Find functions/types/files by keyword | ~2K |
+| `semantic_search` | Vector-based search by meaning | ~3K |
+| `search_by_concept` | Find code by concept (auth, validation, CRUD) | ~3K |
+| `search_by_side_effect` | Find code by effect (db_query, http_call, file_io) | ~3K |
+| `get_function_context` | Deep function analysis: behavior, SQL, HTTP calls, callers | ~4K |
+| `get_callers` | Who calls this function? | ~2K |
+| `get_package_structure` | All files/types/functions in a package | ~3K |
+
+### AI-Powered
+| Tool | Purpose | Tokens |
+|------|---------|--------|
+| `ask` | Intelligent Q&A with auto-extracted context | ~8K |
+| `generate_ai_summary` | AI-generated repo overview | ~6K |
+| `review_pr` | Context-aware PR review | ~10K |
+
+### Visualization & Comparison
+| Tool | Purpose | Tokens |
+|------|---------|--------|
+| `visualize_call_graph` | Mermaid/DOT call graph diagrams | ~2K |
+| `compare_repos` | Find duplicates, conflicts, gaps across repos | ~10K |
+| `get_context_budgeted` | Get relevant context within a token budget | varies |
+
+### System
+| Tool | Purpose |
+|------|---------|
+| `list_repos` | List all analyzed repositories |
+| `index_repository` | Build vector index for semantic search |
+| `get_usage_stats` | Token usage analytics |
+| `list_patterns` / `execute_pattern` | Composable tool chains |
+
+## Configuration
+
+| Flag | Env Var | Default | Purpose |
+|------|---------|---------|---------|
+| `-storage` | `MCP_STORAGE_PATH` | `./data/contexts` | Where analyzed context is stored |
+| `-temp` | `MCP_TEMP_DIR` | `/tmp/mcp-repos` | Temp dir for cloning |
+| `-github-token` | `GITHUB_TOKEN` | — | GitHub API access |
+| — | `ANTHROPIC_API_KEY` | — | Claude API (for AI features) |
+| — | `ANTHROPIC_MODEL` | `claude-sonnet-4-20250514` | Model for AI queries |
+| — | `MCP_VECTOR_STORE_PATH` | `{storage}/vectors.db` | SQLite vector DB |
+
+## What Gets Extracted (Go)
+
+For every Go file, the analyzer produces:
+
+- **Functions**: signature, parameters, returns, line range, visibility, complexity
+- **Behavior**: one-line summary, data reads/writes, external API calls, DB queries with SQL
+- **Types**: structs with fields (including JSON/DB tags), interfaces with methods
+- **Call Graph**: full caller/callee map across the codebase
+- **Search Index**: concepts (auth, validation), side effects (db_query, http_call), routes, error types
+- **HTTP Handlers**: method, path, request/response types
+
+## Project Structure
 
 ```
--storage       Path to store context files (default: ./data/contexts)
--temp          Temporary directory for cloning repos (default: /tmp/mcp-repos)
--github-token  GitHub personal access token (or use GITHUB_TOKEN env var)
--version       Show version
+cmd/mcp-server/     Entry point, CLI flags, signal handling
+internal/
+  analyzer/         Go AST parser, call graph, behavior, search index
+  ai/               Anthropic Claude integration, context extraction
+  comparison/       Multi-repo duplicate/conflict/gap detection
+  compose/          Tool composition patterns and chains
+  context/          Core types (RepoContext, FileContext, CallGraph)
+  graph/            Mermaid/DOT call graph visualization
+  mcp/              MCP protocol handler, 35+ tool implementations
+  orchestrator/     Analysis orchestration, smart query routing
+  org/              Organization-level multi-repo operations
+  prreview/         GitHub PR review automation
+  repo/             Git clone, file scanning
+  storage/          Filesystem-based JSON storage
+  vectors/          Local embeddings, SQLite vector store, semantic search
+  skills/           Built-in AI prompts (Go expert, PR review, security)
 ```
 
-### Environment Variables
+## Dependencies
 
-| Variable | Description | Default |
-|----------|-------------|---------|
-| `GITHUB_TOKEN` | GitHub personal access token | - |
-| `MCP_STORAGE_PATH` | Path to store context files | `./data/contexts` |
-| `MCP_TEMP_DIR` | Temporary directory for cloning | `/tmp/mcp-repos` |
-| `ANTHROPIC_API_KEY` | Anthropic API key for AI features | - |
-| `ANTHROPIC_MODEL` | Claude model to use | `claude-sonnet-4-20250514` |
+Minimal by design:
 
-## Available Tools
-
-### `analyze_repo`
-
-Analyze a GitHub repository and generate comprehensive context.
-
-**Input:**
-- `repo_url` (required): GitHub repository URL
-- `branch` (optional): Branch to analyze
-- `force` (optional): Force re-analysis even if cached
-
-**Example:**
-```json
-{
-  "repo_url": "https://github.com/owner/repo",
-  "branch": "main",
-  "force": false
-}
-```
-
-### `get_context`
-
-Retrieve stored context for a repository.
-
-**Input:**
-- `repo_id` (required): Repository identifier
-- `scope` (optional): "full", "architecture", or "file"
-- `file_path` (optional): File path (required if scope is "file")
-
-**Example:**
-```json
-{
-  "repo_id": "github.com/owner/repo",
-  "scope": "architecture"
-}
-```
-
-### `list_repos`
-
-List all analyzed repositories.
-
-**Input:** None
-
-### `search_context`
-
-Search for code elements across repositories.
-
-**Input:**
-- `query` (required): Search query
-- `repo_id` (optional): Limit to specific repository
-- `search_type` (optional): "function", "type", "file", or "all"
-
-**Example:**
-```json
-{
-  "query": "Handler",
-  "search_type": "function"
-}
-```
-
-### `compare_repos`
-
-Compare multiple repositories to identify duplicates, conflicts, gaps, and consistency issues.
-
-**Input:**
-- `repo_ids` (required): Array of repository IDs to compare
-- `target_repo_id` (optional): Target repository for merge analysis
-- `include_duplicates` (optional): Include duplicate detection (default: true)
-- `include_conflicts` (optional): Include conflict detection (default: true)
-- `include_gaps` (optional): Include gap detection (default: true)
-
-**Example:**
-```json
-{
-  "repo_ids": ["github.com/owner/repo1", "github.com/owner/repo2"],
-  "target_repo_id": "github.com/owner/repo1"
-}
-```
-
-### `find_duplicates`
-
-Find duplicate functions, types, and patterns across multiple repositories.
-
-**Input:**
-- `repo_ids` (required): Array of repository IDs to search
-
-### `find_conflicts`
-
-Find conflicting implementations between source and target repositories.
-
-**Input:**
-- `source_repo_ids` (required): Array of source repository IDs
-- `target_repo_id` (required): Target repository ID
-
-### `find_gaps`
-
-Find functionality in source repositories that is missing from the target.
-
-**Input:**
-- `source_repo_ids` (required): Array of source repository IDs
-- `target_repo_id` (required): Target repository ID
-
-### `generate_ai_summary`
-
-Generate an AI-powered summary of a repository using Claude. Requires `ANTHROPIC_API_KEY`.
-
-**Input:**
-- `repo_id` (required): Repository ID (must be previously analyzed)
-
-**Output includes:**
-- Overview and purpose
-- Key features
-- Technology stack
-- Architecture style
-- Main components
-- Improvement suggestions
-
-**Example:**
-```json
-{
-  "repo_id": "github.com/owner/repo"
-}
-```
-
-### `generate_ai_arch_analysis`
-
-Generate AI-powered architecture analysis using Claude. Requires `ANTHROPIC_API_KEY`.
-
-**Input:**
-- `repo_id` (required): Repository ID (must be previously analyzed)
-
-**Output includes:**
-- Architecture pattern identification
-- Layer analysis
-- Data flow description
-- Strengths and weaknesses
-- Recommendations
-
-**Example:**
-```json
-{
-  "repo_id": "github.com/owner/repo"
-}
-```
-
-### `ask`
-
-**The main tool for intelligent queries.** Ask natural language questions about your code - the AI automatically finds relevant context and provides focused answers. Requires `ANTHROPIC_API_KEY`.
-
-**Input:**
-- `query` (required): Your question in natural language
-- `repo_ids` (optional): Limit to specific repositories
-
-**Features:**
-- Automatically extracts only relevant code context
-- Classifies query type (search, explain, architecture, compare)
-- Returns focused answers with source references
-- Minimizes token usage by sending only necessary data
-
-**Examples:**
-```json
-{"query": "How does authentication work?"}
-{"query": "Where is the main entry point?"}
-{"query": "What does the Handler interface do?"}
-{"query": "Explain the data flow in the API layer"}
-{"query": "What functions handle user input?", "repo_ids": ["github.com/owner/repo"]}
-```
-
-## What Gets Analyzed
-
-For Go files:
-- Package documentation
-- Imports (with aliases)
-- Exported and unexported functions (with signatures, parameters, returns)
-- Types (structs, interfaces, aliases) with fields and methods
-- Constants and variables
-- Cyclomatic complexity
-
-For other files:
-- Basic file metadata
-- Purpose detection based on filename
-
-## Architecture Context
-
-The server generates an architecture overview including:
-- Module structure
-- Entry points (main packages)
-- Build system detection
-- File organization
-
-## Development
-
-```bash
-# Run tests
-go test ./...
-
-# Build
-go build ./cmd/mcp-server
-
-# Run locally
-./mcp-server -storage ./data/contexts
-
-# Build Docker image
-docker build -t mcp-repo-context:latest .
-
-# Test Docker image
-echo '{"jsonrpc":"2.0","id":1,"method":"tools/list"}' | docker run --rm -i mcp-repo-context:latest
-```
+- `github.com/go-git/go-git/v5` — Git operations
+- `github.com/mattn/go-sqlite3` — SQLite (vector store)
 
 ## License
 
