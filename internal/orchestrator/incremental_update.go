@@ -11,6 +11,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/yashpalc/mcp-repo-context/internal/analyzer"
 	ctxpkg "github.com/yashpalc/mcp-repo-context/internal/context"
 	"github.com/yashpalc/mcp-repo-context/internal/repo"
 	"github.com/yashpalc/mcp-repo-context/internal/storage"
@@ -82,7 +83,7 @@ func (m *manager) RefreshFile(ctx context.Context, projectID, filePath string, o
 	}
 
 	// Get analyzer for this file
-	analyzer := m.registry.Get(absPath)
+	fileAnalyzer := m.registry.Get(absPath)
 
 	// Create FileInfo
 	info, err := os.Stat(absPath)
@@ -98,7 +99,7 @@ func (m *manager) RefreshFile(ctx context.Context, projectID, filePath string, o
 	}
 
 	// Analyze the file
-	fileCtx, err := analyzer.AnalyzeFile(ctx, fileInfo, content)
+	fileCtx, err := fileAnalyzer.AnalyzeFile(ctx, fileInfo, content)
 	if err != nil {
 		return nil, fmt.Errorf("failed to analyze file: %w", err)
 	}
@@ -106,6 +107,44 @@ func (m *manager) RefreshFile(ctx context.Context, projectID, filePath string, o
 	// Update the context
 	repoCtx.Files[filePath] = fileCtx
 	repoCtx.AnalyzedAt = time.Now()
+
+	// Handle go.mod changes: re-parse module info and re-aggregate imports
+	if filepath.Base(filePath) == "go.mod" {
+		modInfo, err := analyzer.ParseGoMod(content)
+		if err != nil {
+			log.Printf("warning: failed to parse go.mod: %v", err)
+		} else {
+			repoCtx.ModuleInfo = modInfo
+			repoCtx.ImportSummary = analyzer.AggregateImports(repoCtx.Files, modInfo)
+			repoCtx.Architecture = m.generateArchitecture(repoCtx)
+		}
+	}
+
+	// Handle config file changes
+	configType, structured, cfErr := analyzer.ParseConfigFile(filePath, content)
+	if cfErr == nil && configType != "" {
+		updated := false
+		for i, existing := range repoCtx.ConfigFiles {
+			if existing.Path == filePath {
+				repoCtx.ConfigFiles[i] = ctxpkg.ConfigFile{
+					Path:           filePath,
+					Type:           configType,
+					Content:        string(content),
+					StructuredJSON: structured,
+				}
+				updated = true
+				break
+			}
+		}
+		if !updated {
+			repoCtx.ConfigFiles = append(repoCtx.ConfigFiles, ctxpkg.ConfigFile{
+				Path:           filePath,
+				Type:           configType,
+				Content:        string(content),
+				StructuredJSON: structured,
+			})
+		}
+	}
 
 	// Rebuild call graph edges for this file
 	m.updateCallGraphForFile(repoCtx, filePath, fileCtx)
@@ -255,6 +294,22 @@ func (m *manager) RefreshChangedFiles(ctx context.Context, projectID string) ([]
 	if hasTracker && len(updatedHashes) > 0 {
 		if err := fileTracker.UpdateFileHashes(ctx, projectID, updatedHashes); err != nil {
 			log.Printf("failed to batch update file hashes: %v", err)
+		}
+	}
+
+	// Post-processing: if go.mod was among refreshed files, ensure import summary is consistent
+	goModRefreshed := false
+	for _, r := range results {
+		if r.Updated && filepath.Base(r.FilePath) == "go.mod" {
+			goModRefreshed = true
+			break
+		}
+	}
+	if goModRefreshed && repoCtx.ModuleInfo != nil {
+		repoCtx.ImportSummary = analyzer.AggregateImports(repoCtx.Files, repoCtx.ModuleInfo)
+		repoCtx.Architecture = m.generateArchitecture(repoCtx)
+		if err := m.store.StoreRepoContext(ctx, projectID, repoCtx); err != nil {
+			log.Printf("failed to save updated context after go.mod refresh: %v", err)
 		}
 	}
 

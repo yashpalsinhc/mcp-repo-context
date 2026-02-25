@@ -86,6 +86,34 @@ func (e *ContextExtractor) Extract(query string, repos []*ctxpkg.RepoContext) *R
 			Languages:    repo.Statistics.LanguageBreakdown,
 		})
 
+		// Add dependency info if available
+		if repo.ModuleInfo != nil {
+			depInfo := RepoDependencyInfo{
+				RepoID:     repo.ID,
+				ModulePath: repo.ModuleInfo.ModulePath,
+				GoVersion:  repo.ModuleInfo.GoVersion,
+			}
+			// Determine package type
+			if len(e.getMainPackages(repo)) > 0 {
+				depInfo.PackageType = "application"
+			} else {
+				depInfo.PackageType = "library"
+			}
+			// Direct deps
+			for _, dep := range repo.ModuleInfo.Dependencies {
+				if dep.IsDirect {
+					depInfo.DirectDeps = append(depInfo.DirectDeps, dep.Path)
+				}
+			}
+			// Import counts
+			if repo.ImportSummary != nil {
+				depInfo.StdlibImportCount = len(repo.ImportSummary.Stdlib)
+				depInfo.InternalImportCount = len(repo.ImportSummary.Internal)
+				depInfo.ExternalImportCount = len(repo.ImportSummary.External)
+			}
+			ctx.DependencyInfo = append(ctx.DependencyInfo, depInfo)
+		}
+
 		// Score files
 		for path, file := range repo.Files {
 			score := e.scoreFile(file, path, keywords, queryType)

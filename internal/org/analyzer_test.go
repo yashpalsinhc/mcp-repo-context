@@ -110,6 +110,7 @@ func (m *mockOrch) RefreshChangedFiles(context.Context, string) ([]orchestrator.
 func (m *mockOrch) CheckFileStale(context.Context, string, string) (bool, error)                { return false, nil }
 func (m *mockOrch) GetPRContext(context.Context, string, []orchestrator.ChangedFile) (*orchestrator.PRContextResult, error) { return nil, nil }
 func (m *mockOrch) DeleteRepoContext(context.Context, string) error                             { return nil }
+func (m *mockOrch) GetDependencyGraph(context.Context, []string, bool) (*ctxpkg.DependencyGraph, error) { return nil, nil }
 
 // newAnalyzerTestStore creates an in-memory store + manager for testing the analyzer.
 func newAnalyzerTestSetup(t *testing.T, mo *mockOrch) (Manager, *SQLiteStore) {

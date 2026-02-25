@@ -120,6 +120,9 @@ func (c *comparer) Compare(ctx context.Context, repoContexts []*ctxpkg.RepoConte
 		result.Consistency = consistency
 	}
 
+	// Find dependency relationships
+	result.DependencyRelationships = c.findDependencyRelationships(repoContexts)
+
 	// Generate recommendations
 	result.Recommendations = c.generateRecommendations(result)
 
@@ -741,6 +744,77 @@ func (c *comparer) analyzeStructureConsistency(repoContexts []*ctxpkg.RepoContex
 	return score, issues
 }
 
+// findDependencyRelationships computes inter-repo dependency edges and shared external deps.
+func (c *comparer) findDependencyRelationships(repoContexts []*ctxpkg.RepoContext) *DependencyRelationships {
+	// Build module_path -> repo_id lookup for repos that have ModuleInfo
+	moduleToRepo := make(map[string]string)
+	for _, rc := range repoContexts {
+		if rc.ModuleInfo != nil {
+			moduleToRepo[rc.ModuleInfo.ModulePath] = rc.ID
+		}
+	}
+
+	if len(moduleToRepo) == 0 {
+		return nil
+	}
+
+	var internalDeps []InternalDep
+	// Track external deps: module_path -> map[repo_id]version
+	externalTracker := make(map[string]map[string]string)
+
+	for _, rc := range repoContexts {
+		if rc.ModuleInfo == nil {
+			continue
+		}
+		for _, dep := range rc.ModuleInfo.Dependencies {
+			if targetRepoID, ok := moduleToRepo[dep.Path]; ok && targetRepoID != rc.ID {
+				internalDeps = append(internalDeps, InternalDep{
+					FromRepoID: rc.ID,
+					FromModule: rc.ModuleInfo.ModulePath,
+					ToRepoID:   targetRepoID,
+					ToModule:   dep.Path,
+					Version:    dep.Version,
+				})
+			} else if !ok {
+				if externalTracker[dep.Path] == nil {
+					externalTracker[dep.Path] = make(map[string]string)
+				}
+				externalTracker[dep.Path][rc.ID] = dep.Version
+			}
+		}
+	}
+
+	// Only include shared external deps (appear in 2+ repos)
+	var sharedDeps []SharedDep
+	for modPath, repoVersions := range externalTracker {
+		if len(repoVersions) < 2 {
+			continue
+		}
+		repoIDs := make([]string, 0, len(repoVersions))
+		for id := range repoVersions {
+			repoIDs = append(repoIDs, id)
+		}
+		sort.Strings(repoIDs)
+		sharedDeps = append(sharedDeps, SharedDep{
+			ModulePath: modPath,
+			RepoIDs:    repoIDs,
+			Versions:   repoVersions,
+		})
+	}
+	sort.Slice(sharedDeps, func(i, j int) bool {
+		return sharedDeps[i].ModulePath < sharedDeps[j].ModulePath
+	})
+
+	if len(internalDeps) == 0 && len(sharedDeps) == 0 {
+		return nil
+	}
+
+	return &DependencyRelationships{
+		InternalDeps:       internalDeps,
+		SharedExternalDeps: sharedDeps,
+	}
+}
+
 func (c *comparer) generateRecommendations(result *CompareResult) []string {
 	var recommendations []string
 
@@ -785,6 +859,35 @@ func (c *comparer) generateRecommendations(result *CompareResult) []string {
 	}
 	if conflictingOverlaps > 0 {
 		recommendations = append(recommendations, "Review files that exist in multiple repos with different content")
+	}
+
+	// Dependency-aware recommendations
+	if result.DependencyRelationships != nil {
+		// Check for circular dependencies
+		if len(result.DependencyRelationships.InternalDeps) > 0 {
+			depSet := make(map[string]bool)
+			for _, dep := range result.DependencyRelationships.InternalDeps {
+				key := dep.FromRepoID + "->" + dep.ToRepoID
+				reverse := dep.ToRepoID + "->" + dep.FromRepoID
+				if depSet[reverse] {
+					recommendations = append(recommendations, "Circular dependency detected between repos -- review dependency structure")
+					break
+				}
+				depSet[key] = true
+			}
+		}
+
+		// Check for version mismatches in shared deps
+		for _, shared := range result.DependencyRelationships.SharedExternalDeps {
+			versions := make(map[string]bool)
+			for _, v := range shared.Versions {
+				versions[v] = true
+			}
+			if len(versions) > 1 {
+				recommendations = append(recommendations, "Shared dependencies have version mismatches across repos -- consider aligning dependency versions")
+				break
+			}
+		}
 	}
 
 	if len(recommendations) == 0 {

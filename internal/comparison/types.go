@@ -55,8 +55,35 @@ type CompareResult struct {
 	// FileOverlap shows files that exist in multiple repos.
 	FileOverlap []FileOverlapInfo `json:"file_overlap,omitempty"`
 
+	// DependencyRelationships shows how compared repos relate via go.mod dependencies.
+	DependencyRelationships *DependencyRelationships `json:"dependency_relationships,omitempty"`
+
 	// Recommendations for the merge process.
 	Recommendations []string `json:"recommendations,omitempty"`
+}
+
+// DependencyRelationships describes inter-repo and shared dependency info.
+type DependencyRelationships struct {
+	// InternalDeps lists dependency edges between the compared repos.
+	InternalDeps []InternalDep `json:"internal_deps,omitempty"`
+	// SharedExternalDeps lists external modules used by multiple compared repos.
+	SharedExternalDeps []SharedDep `json:"shared_external_deps,omitempty"`
+}
+
+// InternalDep represents one compared repo depending on another.
+type InternalDep struct {
+	FromRepoID string `json:"from_repo_id"`
+	FromModule string `json:"from_module"`
+	ToRepoID   string `json:"to_repo_id"`
+	ToModule   string `json:"to_module"`
+	Version    string `json:"version"`
+}
+
+// SharedDep represents an external dependency shared by multiple compared repos.
+type SharedDep struct {
+	ModulePath string            `json:"module_path"`
+	RepoIDs    []string          `json:"repo_ids"`
+	Versions   map[string]string `json:"versions"` // repo_id -> version
 }
 
 // RepoSummary provides a quick overview of a repo in comparison.

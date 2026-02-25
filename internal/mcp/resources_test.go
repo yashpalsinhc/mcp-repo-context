@@ -112,6 +112,10 @@ func (m *mockManager) DeleteRepoContext(ctx context.Context, repoID string) erro
 	return nil
 }
 
+func (m *mockManager) GetDependencyGraph(ctx context.Context, repoIDs []string, includeExternal bool) (*ctxpkg.DependencyGraph, error) {
+	return nil, nil
+}
+
 func newTestServer() *server {
 	mockMgr := &mockManager{
 		repos: map[string]*ctxpkg.RepoContext{

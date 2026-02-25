@@ -114,6 +114,10 @@ func (m *testManager) DeleteRepoContext(ctx context.Context, repoID string) erro
 	return nil
 }
 
+func (m *testManager) GetDependencyGraph(ctx context.Context, repoIDs []string, includeExternal bool) (*ctxpkg.DependencyGraph, error) {
+	return nil, nil
+}
+
 func newToolsTestServer() *server {
 	testMgr := &testManager{
 		repos: map[string]*ctxpkg.RepoContext{

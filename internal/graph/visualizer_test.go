@@ -111,6 +111,10 @@ func (m *mockManager) DeleteRepoContext(ctx context.Context, repoID string) erro
 	return nil
 }
 
+func (m *mockManager) GetDependencyGraph(ctx context.Context, repoIDs []string, includeExternal bool) (*ctxpkg.DependencyGraph, error) {
+	return nil, nil
+}
+
 // createTestRepoContext creates a mock repository context for testing.
 func createTestRepoContext() *ctxpkg.RepoContext {
 	return &ctxpkg.RepoContext{

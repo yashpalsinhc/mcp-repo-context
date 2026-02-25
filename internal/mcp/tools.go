@@ -10,6 +10,7 @@ import (
 
 	"github.com/yashpalc/mcp-repo-context/internal/comparison"
 	"github.com/yashpalc/mcp-repo-context/internal/compose"
+	graphpkg "github.com/yashpalc/mcp-repo-context/internal/graph"
 	ctxpkg "github.com/yashpalc/mcp-repo-context/internal/context"
 	"github.com/yashpalc/mcp-repo-context/internal/orchestrator"
 	"github.com/yashpalc/mcp-repo-context/internal/prreview"
@@ -188,13 +189,92 @@ func (s *server) getArchitectureContext(ctx context.Context, repoID string) call
 		return errorResult("No architecture context available")
 	}
 
-	data, err := json.MarshalIndent(repoCtx.Architecture, "", "  ")
-	if err != nil {
-		return errorResult(fmt.Sprintf("Failed to format architecture: %v", err))
+	arch := repoCtx.Architecture
+	var sb strings.Builder
+
+	sb.WriteString("# Architecture\n\n")
+
+	// Overview
+	if arch.Overview != "" {
+		sb.WriteString("## Overview\n\n")
+		sb.WriteString(arch.Overview)
+		sb.WriteString("\n\n")
+	}
+
+	// Build System
+	if arch.BuildSystem != "" {
+		fmt.Fprintf(&sb, "**Build System:** %s\n\n", arch.BuildSystem)
+	}
+
+	// Module Info
+	if repoCtx.ModuleInfo != nil {
+		sb.WriteString("## Module Info\n\n")
+		fmt.Fprintf(&sb, "- **Module Path:** %s\n", repoCtx.ModuleInfo.ModulePath)
+		if repoCtx.ModuleInfo.GoVersion != "" {
+			fmt.Fprintf(&sb, "- **Go Version:** %s\n", repoCtx.ModuleInfo.GoVersion)
+		}
+		sb.WriteString("\n")
+	}
+
+	// Package Type
+	if arch.PackageType != "" {
+		fmt.Fprintf(&sb, "**Package Type:** %s\n\n", arch.PackageType)
+	}
+
+	// Entry Points
+	if len(arch.EntryPoints) > 0 {
+		sb.WriteString("## Entry Points\n\n")
+		for _, ep := range arch.EntryPoints {
+			fmt.Fprintf(&sb, "- `%s` (%s)", ep.Path, ep.Type)
+			if ep.Purpose != "" {
+				fmt.Fprintf(&sb, " - %s", ep.Purpose)
+			}
+			sb.WriteString("\n")
+		}
+		sb.WriteString("\n")
+	}
+
+	// Modules
+	if len(arch.Modules) > 0 {
+		sb.WriteString("## Modules\n\n")
+		for _, mod := range arch.Modules {
+			fmt.Fprintf(&sb, "- **%s** (%d files)", mod.Name, len(mod.Files))
+			if mod.Purpose != "" {
+				fmt.Fprintf(&sb, " - %s", mod.Purpose)
+			}
+			sb.WriteString("\n")
+		}
+		sb.WriteString("\n")
+	}
+
+	// Dependencies (from ModuleInfo)
+	if repoCtx.ModuleInfo != nil && len(repoCtx.ModuleInfo.Dependencies) > 0 {
+		var directDeps []ctxpkg.ModuleDependency
+		for _, dep := range repoCtx.ModuleInfo.Dependencies {
+			if dep.IsDirect {
+				directDeps = append(directDeps, dep)
+			}
+		}
+		if len(directDeps) > 0 {
+			fmt.Fprintf(&sb, "## Direct Dependencies (%d)\n\n", len(directDeps))
+			for _, dep := range directDeps {
+				fmt.Fprintf(&sb, "- `%s` %s\n", dep.Path, dep.Version)
+			}
+			sb.WriteString("\n")
+		}
+	}
+
+	// Import Summary
+	if repoCtx.ImportSummary != nil {
+		sb.WriteString("## Import Summary\n\n")
+		fmt.Fprintf(&sb, "- **Stdlib:** %d packages\n", len(repoCtx.ImportSummary.Stdlib))
+		fmt.Fprintf(&sb, "- **Internal:** %d packages\n", len(repoCtx.ImportSummary.Internal))
+		fmt.Fprintf(&sb, "- **External:** %d packages\n", len(repoCtx.ImportSummary.External))
+		sb.WriteString("\n")
 	}
 
 	return callToolResult{
-		Content: []contentItem{{Type: "text", Text: string(data)}},
+		Content: []contentItem{{Type: "text", Text: sb.String()}},
 	}
 }
 
@@ -1010,6 +1090,30 @@ func (s *server) toolCompareRepos(ctx context.Context, args map[string]any) call
 			sb.WriteString("### Issues\n\n")
 			for _, issue := range result.Consistency.Issues {
 				fmt.Fprintf(&sb, "- **%s** (%s): %s\n", issue.Type, issue.Severity, issue.Description)
+			}
+			sb.WriteString("\n")
+		}
+	}
+
+	// Dependency Relationships
+	if result.DependencyRelationships != nil {
+		sb.WriteString("## Dependency Relationships\n\n")
+		if len(result.DependencyRelationships.InternalDeps) > 0 {
+			sb.WriteString("### Inter-Repo Dependencies\n\n")
+			for _, dep := range result.DependencyRelationships.InternalDeps {
+				fmt.Fprintf(&sb, "- **%s** depends on **%s** (%s)\n", dep.FromModule, dep.ToModule, dep.Version)
+			}
+			sb.WriteString("\n")
+		}
+		if len(result.DependencyRelationships.SharedExternalDeps) > 0 {
+			sb.WriteString("### Shared External Dependencies\n\n")
+			for _, shared := range result.DependencyRelationships.SharedExternalDeps {
+				parts := make([]string, 0, len(shared.RepoIDs))
+				for _, id := range shared.RepoIDs {
+					v := shared.Versions[id]
+					parts = append(parts, fmt.Sprintf("%s (%s)", id, v))
+				}
+				fmt.Fprintf(&sb, "- `%s` used by: %s\n", shared.ModulePath, strings.Join(parts, ", "))
 			}
 			sb.WriteString("\n")
 		}
@@ -2555,6 +2659,66 @@ func (s *server) toolGetPRContext(ctx context.Context, args map[string]any) call
 
 	// Format the result as markdown
 	output := orchestrator.FormatPRContext(result)
+
+	return callToolResult{
+		Content: []contentItem{{Type: "text", Text: output}},
+	}
+}
+
+// ============================================================================
+// Cross-repo dependency graph
+// ============================================================================
+
+// toolGetDependencyGraph handles the get_dependency_graph tool call.
+func (s *server) toolGetDependencyGraph(ctx context.Context, args map[string]any) callToolResult {
+	// Parse repo_ids (optional)
+	var repoIDs []string
+	if raw, ok := args["repo_ids"].([]interface{}); ok {
+		for _, v := range raw {
+			if id, ok := v.(string); ok && id != "" {
+				repoIDs = append(repoIDs, id)
+			}
+		}
+	}
+
+	// Parse include_external (default true)
+	includeExternal := true
+	if v, ok := args["include_external"].(bool); ok {
+		includeExternal = v
+	}
+
+	// Parse format (default "text")
+	format := "text"
+	if v, ok := args["format"].(string); ok && v != "" {
+		format = v
+	}
+
+	graph, err := s.manager.GetDependencyGraph(ctx, repoIDs, includeExternal)
+	if err != nil {
+		return errorResult(fmt.Sprintf("Failed to build dependency graph: %v", err))
+	}
+
+	if len(graph.Nodes) == 0 {
+		return callToolResult{
+			Content: []contentItem{{Type: "text", Text: "No dependency information found. Ensure repositories have been analyzed and contain go.mod files."}},
+		}
+	}
+
+	var output string
+	switch format {
+	case "json":
+		data, err := json.MarshalIndent(graph, "", "  ")
+		if err != nil {
+			return errorResult(fmt.Sprintf("Failed to marshal graph: %v", err))
+		}
+		output = string(data)
+	case "mermaid":
+		output = graphpkg.GenerateDependencyMermaid(graph)
+	case "dot":
+		output = graphpkg.GenerateDependencyDOT(graph)
+	default:
+		output = graphpkg.GenerateTextSummary(graph)
+	}
 
 	return callToolResult{
 		Content: []contentItem{{Type: "text", Text: output}},

@@ -5,6 +5,8 @@ go 1.24.0
 require (
 	github.com/go-git/go-git/v5 v5.16.5
 	github.com/mattn/go-sqlite3 v1.14.34
+	golang.org/x/mod v0.33.0
+	gopkg.in/yaml.v3 v3.0.1
 )
 
 require (
@@ -25,9 +27,7 @@ require (
 	github.com/skeema/knownhosts v1.3.2 // indirect
 	github.com/xanzy/ssh-agent v0.3.3 // indirect
 	golang.org/x/crypto v0.48.0 // indirect
-	golang.org/x/mod v0.33.0 // indirect
 	golang.org/x/net v0.50.0 // indirect
 	golang.org/x/sys v0.41.0 // indirect
-	golang.org/x/tools v0.42.0 // indirect
 	gopkg.in/warnings.v0 v0.1.2 // indirect
 )

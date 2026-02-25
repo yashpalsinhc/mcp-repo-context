@@ -38,7 +38,20 @@ type RelevantContext struct {
 	RelevantFuncs   []FuncSnippet
 	RelevantTypes   []TypeSnippet
 	SearchResults   []SearchMatch
+	DependencyInfo  []RepoDependencyInfo
 	TotalTokens     int
+}
+
+// RepoDependencyInfo holds dependency context for a single repo.
+type RepoDependencyInfo struct {
+	RepoID              string
+	ModulePath          string
+	GoVersion           string
+	PackageType         string   // "library" or "application"
+	DirectDeps          []string // Module paths of direct dependencies
+	ExternalImportCount int
+	StdlibImportCount   int
+	InternalImportCount int
 }
 
 // RepoSummary is a condensed repository overview.
@@ -155,6 +168,27 @@ func (h *QueryHandler) buildQueryPrompt(query string, ctx *RelevantContext) stri
 				sb.WriteString("\n")
 			}
 			sb.WriteString("\n")
+		}
+	}
+
+	// Add dependency info
+	if len(ctx.DependencyInfo) > 0 {
+		sb.WriteString("## Dependencies\n\n")
+		for _, dep := range ctx.DependencyInfo {
+			fmt.Fprintf(&sb, "### %s\n", dep.RepoID)
+			fmt.Fprintf(&sb, "- Module: %s\n", dep.ModulePath)
+			if dep.GoVersion != "" {
+				fmt.Fprintf(&sb, "- Go Version: %s\n", dep.GoVersion)
+			}
+			if dep.PackageType != "" {
+				fmt.Fprintf(&sb, "- Type: %s\n", dep.PackageType)
+			}
+			fmt.Fprintf(&sb, "- Direct Dependencies: %d\n", len(dep.DirectDeps))
+			for _, d := range dep.DirectDeps {
+				fmt.Fprintf(&sb, "  - %s\n", d)
+			}
+			fmt.Fprintf(&sb, "- Imports: %d stdlib, %d internal, %d external\n\n",
+				dep.StdlibImportCount, dep.InternalImportCount, dep.ExternalImportCount)
 		}
 	}
 

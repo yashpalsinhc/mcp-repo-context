@@ -160,6 +160,41 @@ func (m *manager) AnalyzeRepo(ctx context.Context, repoURL string, opts AnalyzeO
 		return nil, fmt.Errorf("failed to scan repository: %w", err)
 	}
 
+	// Parse go.mod if present
+	goModPath := filepath.Join(localPath, "go.mod")
+	if goModContent, err := os.ReadFile(goModPath); err == nil {
+		modInfo, err := analyzer.ParseGoMod(goModContent)
+		if err != nil {
+			result.Warnings = append(result.Warnings, fmt.Sprintf("Failed to parse go.mod: %v", err))
+		} else {
+			repoCtx.ModuleInfo = modInfo
+		}
+	}
+
+	// Parse config files
+	for path := range repoCtx.Files {
+		absConfigPath := filepath.Join(localPath, path)
+		cfContent, err := os.ReadFile(absConfigPath)
+		if err != nil {
+			continue
+		}
+		configType, structured, err := analyzer.ParseConfigFile(path, cfContent)
+		if err != nil || configType == "" {
+			continue
+		}
+		repoCtx.ConfigFiles = append(repoCtx.ConfigFiles, ctxpkg.ConfigFile{
+			Path:           path,
+			Type:           configType,
+			Content:        string(cfContent),
+			StructuredJSON: structured,
+		})
+	}
+
+	// Aggregate imports
+	if repoCtx.ModuleInfo != nil {
+		repoCtx.ImportSummary = analyzer.AggregateImports(repoCtx.Files, repoCtx.ModuleInfo)
+	}
+
 	// Generate architecture context
 	repoCtx.Architecture = m.generateArchitecture(repoCtx)
 
@@ -421,7 +456,8 @@ func (m *manager) generateArchitecture(repoCtx *ctxpkg.RepoContext) *ctxpkg.Arch
 		moduleFiles[dir] = append(moduleFiles[dir], path)
 	}
 
-	// Create modules
+	// Create modules and detect main packages
+	hasMainPackage := false
 	for dir, files := range moduleFiles {
 		mod := ctxpkg.Module{
 			Path:       dir,
@@ -442,6 +478,13 @@ func (m *manager) generateArchitecture(repoCtx *ctxpkg.RepoContext) *ctxpkg.Arch
 			}
 		}
 
+		// Check for main package
+		for _, f := range files {
+			if fc, ok := repoCtx.Files[f]; ok && fc.Package == "main" {
+				hasMainPackage = true
+			}
+		}
+
 		arch.Modules = append(arch.Modules, mod)
 	}
 
@@ -459,8 +502,57 @@ func (m *manager) generateArchitecture(repoCtx *ctxpkg.RepoContext) *ctxpkg.Arch
 		}
 	}
 
+	// Detect package type
+	if hasMainPackage {
+		arch.PackageType = "application"
+	} else {
+		arch.PackageType = "library"
+	}
+
+	// Populate dependencies from ModuleInfo (only direct deps)
+	if repoCtx.ModuleInfo != nil {
+		for _, dep := range repoCtx.ModuleInfo.Dependencies {
+			if dep.IsDirect {
+				arch.Dependencies = append(arch.Dependencies, dep.Path)
+			}
+		}
+	}
+
+	// Include Go version
+	if repoCtx.ModuleInfo != nil && repoCtx.ModuleInfo.GoVersion != "" {
+		arch.GoVersion = repoCtx.ModuleInfo.GoVersion
+	}
+
+	// For libraries, add exported functions/types from root package as entry points
+	if arch.PackageType == "library" {
+		for path, fileCtx := range repoCtx.Files {
+			dir := filepath.Dir(path)
+			if dir != "." {
+				continue
+			}
+			for _, fn := range fileCtx.Functions {
+				if fn.IsPublic {
+					arch.EntryPoints = append(arch.EntryPoints, ctxpkg.EntryPoint{
+						Path:    path,
+						Type:    "export",
+						Purpose: fn.Signature,
+					})
+				}
+			}
+			for _, t := range fileCtx.Types {
+				if t.IsPublic {
+					arch.EntryPoints = append(arch.EntryPoints, ctxpkg.EntryPoint{
+						Path:    path,
+						Type:    "export",
+						Purpose: fmt.Sprintf("type %s (%s)", t.Name, t.Kind),
+					})
+				}
+			}
+		}
+	}
+
 	// Generate overview
-	arch.Overview = fmt.Sprintf(
+	overview := fmt.Sprintf(
 		"Repository with %d files across %d modules. %d public exports, %d types, %d functions.",
 		repoCtx.Statistics.TotalFiles,
 		len(arch.Modules),
@@ -468,6 +560,13 @@ func (m *manager) generateArchitecture(repoCtx *ctxpkg.RepoContext) *ctxpkg.Arch
 		repoCtx.Statistics.TypeCount,
 		repoCtx.Statistics.FunctionCount,
 	)
+	if arch.GoVersion != "" {
+		overview += fmt.Sprintf(" Go version: %s.", arch.GoVersion)
+	}
+	if len(arch.Dependencies) > 0 {
+		overview += fmt.Sprintf(" %d direct dependencies.", len(arch.Dependencies))
+	}
+	arch.Overview = overview
 
 	return arch
 }
@@ -904,4 +1003,93 @@ func (m *manager) ReviewPR(ctx context.Context, prURL string, opts prreview.Revi
 // DeleteRepoContext removes all stored context for a repository.
 func (m *manager) DeleteRepoContext(ctx context.Context, repoID string) error {
 	return m.store.DeleteContext(ctx, repoID)
+}
+
+// GetDependencyGraph builds a cross-repo dependency graph from stored ModuleInfo.
+func (m *manager) GetDependencyGraph(ctx context.Context, repoIDs []string, includeExternal bool) (*ctxpkg.DependencyGraph, error) {
+	if len(repoIDs) == 0 {
+		return nil, fmt.Errorf("no repo IDs provided")
+	}
+
+	// Load module info for all repos
+	moduleInfos := make(map[string]*ctxpkg.ModuleInfo)
+	for _, repoID := range repoIDs {
+		repoCtx, err := m.store.GetRepoContext(ctx, repoID)
+		if err != nil {
+			return nil, fmt.Errorf("repo not found: %s", repoID)
+		}
+		if repoCtx.ModuleInfo != nil {
+			moduleInfos[repoID] = repoCtx.ModuleInfo
+		}
+	}
+
+	if len(moduleInfos) == 0 {
+		return nil, fmt.Errorf("no module info available for the specified repos")
+	}
+
+	builder := &depGraphBuilder{}
+	return builder.buildGraphFiltered(moduleInfos, includeExternal), nil
+}
+
+// depGraphBuilder computes dependency graphs. Inline to avoid circular import with graph package.
+type depGraphBuilder struct{}
+
+func (b *depGraphBuilder) buildGraphFiltered(moduleInfos map[string]*ctxpkg.ModuleInfo, includeExternal bool) *ctxpkg.DependencyGraph {
+	graph := &ctxpkg.DependencyGraph{
+		Nodes: []ctxpkg.DependencyNode{},
+		Edges: []ctxpkg.DependencyEdge{},
+	}
+
+	moduleToRepo := make(map[string]string)
+	for repoID, info := range moduleInfos {
+		if info != nil {
+			moduleToRepo[info.ModulePath] = repoID
+		}
+	}
+
+	addedNodes := make(map[string]bool)
+	for repoID, info := range moduleInfos {
+		if info == nil {
+			continue
+		}
+		graph.Nodes = append(graph.Nodes, ctxpkg.DependencyNode{
+			ModulePath:  info.ModulePath,
+			RepoID:      repoID,
+			IsAnalyzed:  true,
+			PackageType: "module",
+		})
+		addedNodes[info.ModulePath] = true
+	}
+
+	for _, info := range moduleInfos {
+		if info == nil {
+			continue
+		}
+		for _, dep := range info.Dependencies {
+			if _, isAnalyzed := moduleToRepo[dep.Path]; isAnalyzed {
+				graph.Edges = append(graph.Edges, ctxpkg.DependencyEdge{
+					From:    info.ModulePath,
+					To:      dep.Path,
+					Version: dep.Version,
+					Direct:  dep.IsDirect,
+				})
+			} else if includeExternal {
+				if !addedNodes[dep.Path] {
+					graph.Nodes = append(graph.Nodes, ctxpkg.DependencyNode{
+						ModulePath: dep.Path,
+						IsAnalyzed: false,
+					})
+					addedNodes[dep.Path] = true
+				}
+				graph.Edges = append(graph.Edges, ctxpkg.DependencyEdge{
+					From:    info.ModulePath,
+					To:      dep.Path,
+					Version: dep.Version,
+					Direct:  dep.IsDirect,
+				})
+			}
+		}
+	}
+
+	return graph
 }

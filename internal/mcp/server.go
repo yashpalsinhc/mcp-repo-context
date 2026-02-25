@@ -998,6 +998,30 @@ func (s *server) handleListTools(req *jsonRPCRequest) *jsonRPCResponse {
 				"required": []string{"repo_id", "changed_files"},
 			},
 		},
+		// Cross-repo dependency graph
+		{
+			Name:        "get_dependency_graph",
+			Description: "Build a cross-repo dependency graph from stored ModuleInfo. Shows how analyzed repositories depend on each other and on external modules. Returns the graph as JSON, Mermaid diagram, DOT diagram, or text summary.",
+			InputSchema: map[string]interface{}{
+				"type": "object",
+				"properties": map[string]interface{}{
+					"repo_ids": map[string]interface{}{
+						"type":        "array",
+						"items":       map[string]interface{}{"type": "string"},
+						"description": "List of repository IDs to include in the dependency graph. If empty, uses all analyzed repositories.",
+					},
+					"include_external": map[string]interface{}{
+						"type":        "boolean",
+						"description": "Include external (non-analyzed) dependencies in the graph (default: true)",
+					},
+					"format": map[string]interface{}{
+						"type":        "string",
+						"enum":        []string{"json", "mermaid", "dot", "text"},
+						"description": "Output format: 'json' for raw graph, 'mermaid' for Mermaid diagram, 'dot' for Graphviz DOT, 'text' for human-readable summary (default: text)",
+					},
+				},
+			},
+		},
 		// Call graph visualization
 		{
 			Name:        "visualize_call_graph",
@@ -1249,6 +1273,8 @@ func (s *server) handleCallToolWithID(ctx context.Context, req *jsonRPCRequest, 
 		result = s.toolRefreshChanged(ctx, params.Arguments)
 	case "get_pr_context":
 		result = s.toolGetPRContext(ctx, params.Arguments)
+	case "get_dependency_graph":
+		result = s.toolGetDependencyGraph(ctx, params.Arguments)
 	// Call graph visualization
 	case "visualize_call_graph":
 		result = s.toolVisualizeCallGraph(ctx, params.Arguments)

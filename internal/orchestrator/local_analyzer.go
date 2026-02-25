@@ -9,6 +9,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/yashpalc/mcp-repo-context/internal/analyzer"
 	ctxpkg "github.com/yashpalc/mcp-repo-context/internal/context"
 	"github.com/yashpalc/mcp-repo-context/internal/repo"
 )
@@ -150,6 +151,44 @@ func (m *manager) AnalyzeLocal(ctx context.Context, dirPath string, opts Analyze
 	if err != nil {
 		return nil, fmt.Errorf("failed to walk directory: %w", err)
 	}
+
+	// Parse go.mod if present
+	goModPath := filepath.Join(absPath, "go.mod")
+	if goModContent, err := os.ReadFile(goModPath); err == nil {
+		modInfo, err := analyzer.ParseGoMod(goModContent)
+		if err != nil {
+			warnings = append(warnings, fmt.Sprintf("Failed to parse go.mod: %v", err))
+		} else {
+			repoCtx.ModuleInfo = modInfo
+		}
+	}
+
+	// Parse config files
+	for path := range repoCtx.Files {
+		absConfigPath := filepath.Join(absPath, path)
+		cfContent, err := os.ReadFile(absConfigPath)
+		if err != nil {
+			continue
+		}
+		configType, structured, err := analyzer.ParseConfigFile(path, cfContent)
+		if err != nil || configType == "" {
+			continue
+		}
+		repoCtx.ConfigFiles = append(repoCtx.ConfigFiles, ctxpkg.ConfigFile{
+			Path:           path,
+			Type:           configType,
+			Content:        string(cfContent),
+			StructuredJSON: structured,
+		})
+	}
+
+	// Aggregate imports
+	if repoCtx.ModuleInfo != nil {
+		repoCtx.ImportSummary = analyzer.AggregateImports(repoCtx.Files, repoCtx.ModuleInfo)
+	}
+
+	// Generate architecture
+	repoCtx.Architecture = m.generateArchitecture(repoCtx)
 
 	// Build call graph using the analyzer function
 	callGraphBuilder := &callGraphBuilderHelper{}

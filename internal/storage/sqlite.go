@@ -100,6 +100,11 @@ func (s *SQLiteStore) migrate() error {
 		return fmt.Errorf("failed to apply org tables migration: %w", err)
 	}
 
+	// Run dependency graph migration
+	if err := s.migrateDependencyGraph(); err != nil {
+		return fmt.Errorf("failed to apply dependency graph migration: %w", err)
+	}
+
 	return nil
 }
 

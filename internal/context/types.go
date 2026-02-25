@@ -1,6 +1,10 @@
 package context
 
-import "time"
+import (
+	"encoding/json"
+	"fmt"
+	"time"
+)
 
 // RepoContext holds complete repository analysis.
 type RepoContext struct {
@@ -18,6 +22,11 @@ type RepoContext struct {
 	// Deep context fields
 	CallGraph   *CallGraph   `json:"call_graph,omitempty"`
 	SearchIndex *SearchIndex `json:"search_index,omitempty"`
+
+	// Dependency graph fields
+	ModuleInfo    *ModuleInfo    `json:"module_info,omitempty"`
+	ImportSummary *ImportSummary `json:"import_summary,omitempty"`
+	ConfigFiles   []ConfigFile   `json:"config_files,omitempty"`
 }
 
 // CallGraph represents function call relationships across the repository.
@@ -327,6 +336,8 @@ type ArchitectureContext struct {
 	Dependencies    []string         `json:"dependencies"`
 	BuildSystem     string           `json:"build_system"`
 	MainPackages    []string         `json:"main_packages"`
+	PackageType     string           `json:"package_type,omitempty"` // "library" or "application"
+	GoVersion       string           `json:"go_version,omitempty"`
 	AIAnalysis      *AIArchAnalysis  `json:"ai_analysis,omitempty"`
 }
 
@@ -390,4 +401,80 @@ type ContextMetadata struct {
 	CommitHash string    `json:"commit_hash"`
 	FileCount  int       `json:"file_count"`
 	AnalyzedAt time.Time `json:"analyzed_at"`
+}
+
+// --- Dependency Graph Types ---
+
+// Sentinel errors for go.mod handling.
+var (
+	ErrGoModNotFound  = fmt.Errorf("go.mod file not found")
+	ErrGoModMalformed = fmt.Errorf("go.mod file is malformed")
+)
+
+// ModuleInfo holds parsed go.mod data.
+type ModuleInfo struct {
+	ModulePath   string             `json:"module_path"`
+	GoVersion    string             `json:"go_version"`
+	Dependencies []ModuleDependency `json:"dependencies"`
+	Replaces     []ModuleReplace    `json:"replaces,omitempty"`
+}
+
+// ModuleDependency represents a single go.mod require entry.
+type ModuleDependency struct {
+	Path       string `json:"path"`
+	Version    string `json:"version"`
+	IsDirect   bool   `json:"is_direct"`
+	IsReplaced bool   `json:"is_replaced,omitempty"`
+}
+
+// ModuleReplace represents a go.mod replace directive.
+type ModuleReplace struct {
+	Old     string `json:"old"`
+	New     string `json:"new"`
+	Version string `json:"version,omitempty"`
+}
+
+// ImportSummary holds aggregated import classifications for a repo.
+type ImportSummary struct {
+	Stdlib   []string         `json:"stdlib"`
+	Internal []string         `json:"internal"`
+	External []ExternalImport `json:"external"`
+}
+
+// ExternalImport represents an external import resolved to its module.
+type ExternalImport struct {
+	ImportPath string `json:"import_path"`
+	ModulePath string `json:"module_path"`
+	Version    string `json:"version,omitempty"`
+}
+
+// ConfigFile represents a parsed config file in the repository.
+type ConfigFile struct {
+	Path           string          `json:"path"`
+	Type           string          `json:"type"`
+	Content        string          `json:"content,omitempty"`
+	StructuredJSON json.RawMessage `json:"structured,omitempty"`
+	SizeBytes      int             `json:"size_bytes"`
+}
+
+// DependencyGraph represents cross-repo dependency relationships.
+type DependencyGraph struct {
+	Nodes []DependencyNode `json:"nodes"`
+	Edges []DependencyEdge `json:"edges"`
+}
+
+// DependencyNode represents a module in the dependency graph.
+type DependencyNode struct {
+	RepoID      string `json:"repo_id"`
+	ModulePath  string `json:"module_path"`
+	IsAnalyzed  bool   `json:"is_analyzed"`
+	PackageType string `json:"package_type"`
+}
+
+// DependencyEdge represents a dependency between two modules.
+type DependencyEdge struct {
+	From    string `json:"from"`
+	To      string `json:"to"`
+	Version string `json:"version"`
+	Direct  bool   `json:"direct"`
 }

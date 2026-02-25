@@ -79,6 +79,9 @@ type Manager interface {
 
 	// DeleteRepoContext removes all stored context for a repository.
 	DeleteRepoContext(ctx context.Context, repoID string) error
+
+	// GetDependencyGraph builds a cross-repo dependency graph from stored ModuleInfo.
+	GetDependencyGraph(ctx context.Context, repoIDs []string, includeExternal bool) (*ctxpkg.DependencyGraph, error)
 }
 
 // RefreshResult contains results of refreshing AI context.
