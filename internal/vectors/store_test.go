@@ -324,3 +324,49 @@ func TestNewSQLiteVectorStoreWithDB(t *testing.T) {
 		t.Errorf("dimension should be 256, got %d", store.dimension)
 	}
 }
+
+func TestDeleteByFile(t *testing.T) {
+	store, cleanup := setupTestDB(t)
+	defer cleanup()
+
+	ctx := context.Background()
+
+	// Store vectors for two files
+	fooRecords := []VectorRecord{
+		{ID: "repo1:func:pkg/foo.go:FuncA", RepoID: "repo1", Type: "function", Name: "FuncA", FilePath: "pkg/foo.go", Vector: make([]float64, 128)},
+		{ID: "repo1:func:pkg/foo.go:FuncB", RepoID: "repo1", Type: "function", Name: "FuncB", FilePath: "pkg/foo.go", Vector: make([]float64, 128)},
+		{ID: "repo1:func:pkg/foo.go:FuncC", RepoID: "repo1", Type: "function", Name: "FuncC", FilePath: "pkg/foo.go", Vector: make([]float64, 128)},
+	}
+	barRecords := []VectorRecord{
+		{ID: "repo1:func:pkg/bar.go:FuncD", RepoID: "repo1", Type: "function", Name: "FuncD", FilePath: "pkg/bar.go", Vector: make([]float64, 128)},
+		{ID: "repo1:func:pkg/bar.go:FuncE", RepoID: "repo1", Type: "function", Name: "FuncE", FilePath: "pkg/bar.go", Vector: make([]float64, 128)},
+	}
+
+	all := append(fooRecords, barRecords...)
+	if err := store.StoreBatch(ctx, all); err != nil {
+		t.Fatalf("StoreBatch: %v", err)
+	}
+
+	count, _ := store.Count(ctx, "repo1")
+	if count != 5 {
+		t.Fatalf("expected 5 vectors, got %d", count)
+	}
+
+	// Delete foo.go vectors
+	if err := store.DeleteByFile(ctx, "repo1", "pkg/foo.go"); err != nil {
+		t.Fatalf("DeleteByFile: %v", err)
+	}
+
+	count, _ = store.Count(ctx, "repo1")
+	if count != 2 {
+		t.Errorf("expected 2 vectors after delete, got %d", count)
+	}
+
+	// Verify remaining vectors are from bar.go
+	for _, id := range []string{"repo1:func:pkg/bar.go:FuncD", "repo1:func:pkg/bar.go:FuncE"} {
+		rec, err := store.Get(ctx, id)
+		if err != nil || rec == nil {
+			t.Errorf("expected vector %s to still exist", id)
+		}
+	}
+}

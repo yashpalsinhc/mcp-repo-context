@@ -19,9 +19,14 @@ var _ Analyzer = (*goAnalyzer)(nil)
 // goAnalyzer extracts context from Go source files (private struct).
 type goAnalyzer struct{}
 
-// newGoAnalyzer creates a new Go analyzer.
-func newGoAnalyzer() Analyzer {
+// NewGoAnalyzer creates a new Go analyzer.
+func NewGoAnalyzer() Analyzer {
 	return &goAnalyzer{}
+}
+
+// Name returns the name of this analyzer.
+func (a *goAnalyzer) Name() string {
+	return "go"
 }
 
 // Languages returns file extensions this analyzer handles.

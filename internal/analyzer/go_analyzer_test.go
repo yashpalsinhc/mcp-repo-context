@@ -9,7 +9,7 @@ import (
 )
 
 func TestGoAnalyzer_Languages(t *testing.T) {
-	a := newGoAnalyzer()
+	a := NewGoAnalyzer()
 	langs := a.Languages()
 
 	if len(langs) != 1 || langs[0] != "go" {
@@ -18,7 +18,7 @@ func TestGoAnalyzer_Languages(t *testing.T) {
 }
 
 func TestGoAnalyzer_AnalyzeFile_SimpleFunction(t *testing.T) {
-	a := newGoAnalyzer()
+	a := NewGoAnalyzer()
 	ctx := context.Background()
 
 	content := []byte(`package main
@@ -77,7 +77,7 @@ func HelloWorld(name string) string {
 }
 
 func TestGoAnalyzer_AnalyzeFile_Struct(t *testing.T) {
-	a := newGoAnalyzer()
+	a := NewGoAnalyzer()
 	ctx := context.Background()
 
 	content := []byte(`package models
@@ -134,7 +134,7 @@ type User struct {
 }
 
 func TestGoAnalyzer_AnalyzeFile_Interface(t *testing.T) {
-	a := newGoAnalyzer()
+	a := NewGoAnalyzer()
 	ctx := context.Background()
 
 	content := []byte(`package storage
@@ -176,7 +176,7 @@ type Store interface {
 }
 
 func TestGoAnalyzer_AnalyzeFile_Imports(t *testing.T) {
-	a := newGoAnalyzer()
+	a := NewGoAnalyzer()
 	ctx := context.Background()
 
 	content := []byte(`package main
@@ -225,7 +225,7 @@ func main() {}
 }
 
 func TestGoAnalyzer_AnalyzeFile_Constants(t *testing.T) {
-	a := newGoAnalyzer()
+	a := NewGoAnalyzer()
 	ctx := context.Background()
 
 	content := []byte(`package config
@@ -269,7 +269,7 @@ const Version = "1.0.0"
 }
 
 func TestGoAnalyzer_AnalyzeFile_MethodReceiver(t *testing.T) {
-	a := newGoAnalyzer()
+	a := NewGoAnalyzer()
 	ctx := context.Background()
 
 	content := []byte(`package models
@@ -314,7 +314,7 @@ func (u User) GetName() string {
 }
 
 func TestGoAnalyzer_AnalyzeFile_Complexity(t *testing.T) {
-	a := newGoAnalyzer()
+	a := NewGoAnalyzer()
 	ctx := context.Background()
 
 	content := []byte(`package main
@@ -367,7 +367,7 @@ func complexFunction(x int) int {
 }
 
 func TestGoAnalyzer_AnalyzeFile_ParseError(t *testing.T) {
-	a := newGoAnalyzer()
+	a := NewGoAnalyzer()
 	ctx := context.Background()
 
 	// Invalid Go code

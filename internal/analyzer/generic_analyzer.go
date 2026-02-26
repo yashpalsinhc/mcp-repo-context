@@ -15,9 +15,14 @@ var _ Analyzer = (*genericAnalyzer)(nil)
 // genericAnalyzer provides basic analysis for unsupported languages (private struct).
 type genericAnalyzer struct{}
 
-// newGenericAnalyzer creates a new generic analyzer.
-func newGenericAnalyzer() Analyzer {
+// NewGenericAnalyzer creates a new generic analyzer.
+func NewGenericAnalyzer() Analyzer {
 	return &genericAnalyzer{}
+}
+
+// Name returns the name of this analyzer.
+func (a *genericAnalyzer) Name() string {
+	return "generic"
 }
 
 // Languages returns file extensions this analyzer handles.

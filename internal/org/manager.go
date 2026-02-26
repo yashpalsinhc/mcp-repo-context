@@ -19,12 +19,14 @@ type Manager interface {
 	GetEffectiveConfig(ctx context.Context, orgID, repoID string) (*OrgConfig, error)
 	SetRepoConfigOverride(ctx context.Context, orgID, repoID string, config *OrgConfig) error
 	AnalyzeOrg(ctx context.Context, orgID string, force bool, concurrency int) (*AnalysisResult, error)
+	IndexOrg(ctx context.Context, orgID string, force bool, concurrency int) (*IndexOrgResult, error)
 }
 
 // manager implements Manager.
 type manager struct {
 	store    Store
 	analyzer *Analyzer
+	indexer  *Indexer
 }
 
 // NewManager creates a new OrgManager.
@@ -92,6 +94,18 @@ func (m *manager) SetRepoConfigOverride(ctx context.Context, orgID, repoID strin
 
 func (m *manager) AnalyzeOrg(ctx context.Context, orgID string, force bool, concurrency int) (*AnalysisResult, error) {
 	return m.analyzer.AnalyzeOrg(ctx, orgID, force, concurrency)
+}
+
+// SetIndexer sets the org indexer for semantic search operations.
+func (m *manager) SetIndexer(indexer *Indexer) {
+	m.indexer = indexer
+}
+
+func (m *manager) IndexOrg(ctx context.Context, orgID string, force bool, concurrency int) (*IndexOrgResult, error) {
+	if m.indexer == nil {
+		return nil, fmt.Errorf("org indexer not configured; semantic search unavailable")
+	}
+	return m.indexer.IndexOrg(ctx, orgID, force, concurrency)
 }
 
 func uniqueStrings(ss []string) []string {

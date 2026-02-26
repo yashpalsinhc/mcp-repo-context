@@ -509,3 +509,303 @@ func TestSQLiteStore_UpdateExistingRepo(t *testing.T) {
 		t.Errorf("Expected 3 files, got %d", len(retrieved.Files))
 	}
 }
+
+// --- Function Hash Tests ---
+
+func TestFunctionHash_StoreAndRetrieve(t *testing.T) {
+	store, cleanup := createTestSQLiteStore(t)
+	defer cleanup()
+
+	ctx := context.Background()
+	hashes := []FunctionHashInfo{
+		{Name: "FuncA", Type: "function", ContentHash: "abc123"},
+		{Name: "FuncB", Type: "function", ContentHash: "def456"},
+		{Name: "TypeC", Type: "type", ContentHash: "ghi789"},
+	}
+
+	if err := store.UpdateFunctionHashes(ctx, "repo1", "main.go", hashes); err != nil {
+		t.Fatalf("UpdateFunctionHashes: %v", err)
+	}
+
+	got, err := store.GetFunctionHashes(ctx, "repo1", "main.go")
+	if err != nil {
+		t.Fatalf("GetFunctionHashes: %v", err)
+	}
+
+	if len(got) != 3 {
+		t.Fatalf("expected 3, got %d", len(got))
+	}
+	if got["FuncA:function"].ContentHash != "abc123" {
+		t.Errorf("FuncA hash = %q, want abc123", got["FuncA:function"].ContentHash)
+	}
+	if got["TypeC:type"].ContentHash != "ghi789" {
+		t.Errorf("TypeC hash = %q, want ghi789", got["TypeC:type"].ContentHash)
+	}
+}
+
+func TestFunctionHash_GetChangedFunctions_Added(t *testing.T) {
+	store, cleanup := createTestSQLiteStore(t)
+	defer cleanup()
+
+	ctx := context.Background()
+	hashes := []FunctionHashInfo{
+		{Name: "FuncA", Type: "function", ContentHash: "aaa"},
+		{Name: "FuncB", Type: "function", ContentHash: "bbb"},
+	}
+	store.UpdateFunctionHashes(ctx, "repo1", "main.go", hashes)
+
+	current := map[string]string{
+		"FuncA:function": "aaa",
+		"FuncB:function": "bbb",
+		"FuncC:function": "ccc",
+	}
+
+	added, modified, removed, err := store.GetChangedFunctions(ctx, "repo1", "main.go", current)
+	if err != nil {
+		t.Fatalf("GetChangedFunctions: %v", err)
+	}
+
+	if len(added) != 1 || added[0] != "FuncC:function" {
+		t.Errorf("added = %v, want [FuncC:function]", added)
+	}
+	if len(modified) != 0 {
+		t.Errorf("modified = %v, want empty", modified)
+	}
+	if len(removed) != 0 {
+		t.Errorf("removed = %v, want empty", removed)
+	}
+}
+
+func TestFunctionHash_GetChangedFunctions_Modified(t *testing.T) {
+	store, cleanup := createTestSQLiteStore(t)
+	defer cleanup()
+
+	ctx := context.Background()
+	store.UpdateFunctionHashes(ctx, "repo1", "main.go", []FunctionHashInfo{
+		{Name: "FuncA", Type: "function", ContentHash: "abc"},
+	})
+
+	current := map[string]string{"FuncA:function": "def"}
+
+	added, modified, removed, err := store.GetChangedFunctions(ctx, "repo1", "main.go", current)
+	if err != nil {
+		t.Fatalf("GetChangedFunctions: %v", err)
+	}
+
+	if len(modified) != 1 || modified[0] != "FuncA:function" {
+		t.Errorf("modified = %v, want [FuncA:function]", modified)
+	}
+	if len(added) != 0 {
+		t.Errorf("added = %v, want empty", added)
+	}
+	if len(removed) != 0 {
+		t.Errorf("removed = %v, want empty", removed)
+	}
+}
+
+func TestFunctionHash_GetChangedFunctions_Removed(t *testing.T) {
+	store, cleanup := createTestSQLiteStore(t)
+	defer cleanup()
+
+	ctx := context.Background()
+	store.UpdateFunctionHashes(ctx, "repo1", "main.go", []FunctionHashInfo{
+		{Name: "FuncA", Type: "function", ContentHash: "aaa"},
+		{Name: "FuncB", Type: "function", ContentHash: "bbb"},
+		{Name: "FuncC", Type: "function", ContentHash: "ccc"},
+	})
+
+	current := map[string]string{
+		"FuncA:function": "aaa",
+		"FuncB:function": "bbb",
+	}
+
+	_, _, removed, err := store.GetChangedFunctions(ctx, "repo1", "main.go", current)
+	if err != nil {
+		t.Fatalf("GetChangedFunctions: %v", err)
+	}
+
+	if len(removed) != 1 || removed[0] != "FuncC:function" {
+		t.Errorf("removed = %v, want [FuncC:function]", removed)
+	}
+}
+
+func TestFunctionHash_Delete(t *testing.T) {
+	store, cleanup := createTestSQLiteStore(t)
+	defer cleanup()
+
+	ctx := context.Background()
+	store.UpdateFunctionHashes(ctx, "repo1", "main.go", []FunctionHashInfo{
+		{Name: "FuncA", Type: "function", ContentHash: "aaa"},
+		{Name: "FuncB", Type: "function", ContentHash: "bbb"},
+	})
+
+	if err := store.DeleteFunctionHashes(ctx, "repo1", "main.go"); err != nil {
+		t.Fatalf("DeleteFunctionHashes: %v", err)
+	}
+
+	got, err := store.GetFunctionHashes(ctx, "repo1", "main.go")
+	if err != nil {
+		t.Fatalf("GetFunctionHashes after delete: %v", err)
+	}
+	if len(got) != 0 {
+		t.Errorf("expected empty map, got %d entries", len(got))
+	}
+}
+
+func TestFunctionHash_ReceiverQualified(t *testing.T) {
+	store, cleanup := createTestSQLiteStore(t)
+	defer cleanup()
+
+	ctx := context.Background()
+	store.UpdateFunctionHashes(ctx, "repo1", "main.go", []FunctionHashInfo{
+		{Name: "(*Foo).Bar", Type: "function", ContentHash: "aaa"},
+		{Name: "(*Baz).Bar", Type: "function", ContentHash: "bbb"},
+	})
+
+	got, err := store.GetFunctionHashes(ctx, "repo1", "main.go")
+	if err != nil {
+		t.Fatalf("GetFunctionHashes: %v", err)
+	}
+
+	if len(got) != 2 {
+		t.Fatalf("expected 2 entries, got %d", len(got))
+	}
+	if got["(*Foo).Bar:function"].ContentHash != "aaa" {
+		t.Errorf("(*Foo).Bar hash = %q", got["(*Foo).Bar:function"].ContentHash)
+	}
+	if got["(*Baz).Bar:function"].ContentHash != "bbb" {
+		t.Errorf("(*Baz).Bar hash = %q", got["(*Baz).Bar:function"].ContentHash)
+	}
+}
+
+func TestFunctionHash_Upsert(t *testing.T) {
+	store, cleanup := createTestSQLiteStore(t)
+	defer cleanup()
+
+	ctx := context.Background()
+	store.UpdateFunctionHashes(ctx, "repo1", "main.go", []FunctionHashInfo{
+		{Name: "FuncA", Type: "function", ContentHash: "old"},
+	})
+	store.UpdateFunctionHashes(ctx, "repo1", "main.go", []FunctionHashInfo{
+		{Name: "FuncA", Type: "function", ContentHash: "new"},
+	})
+
+	got, err := store.GetFunctionHashes(ctx, "repo1", "main.go")
+	if err != nil {
+		t.Fatalf("GetFunctionHashes: %v", err)
+	}
+
+	if len(got) != 1 {
+		t.Fatalf("expected 1 entry, got %d", len(got))
+	}
+	if got["FuncA:function"].ContentHash != "new" {
+		t.Errorf("hash = %q, want 'new'", got["FuncA:function"].ContentHash)
+	}
+}
+
+// --- Org Vocabulary Tests ---
+
+func TestOrgVocabulary_StoreAndGet(t *testing.T) {
+	store, cleanup := createTestSQLiteStore(t)
+	defer cleanup()
+
+	ctx := context.Background()
+	vocabJSON := []byte(`{"hello":1.5,"world":2.0}`)
+
+	if err := store.StoreOrgVocabulary(ctx, "org1", vocabJSON, "hashABC", 100, 3); err != nil {
+		t.Fatalf("StoreOrgVocabulary: %v", err)
+	}
+
+	rec, err := store.GetOrgVocabulary(ctx, "org1")
+	if err != nil {
+		t.Fatalf("GetOrgVocabulary: %v", err)
+	}
+	if rec == nil {
+		t.Fatal("expected record, got nil")
+	}
+	if rec.VersionHash != "hashABC" {
+		t.Errorf("VersionHash = %q, want hashABC", rec.VersionHash)
+	}
+	if rec.DocCount != 100 {
+		t.Errorf("DocCount = %d, want 100", rec.DocCount)
+	}
+	if rec.RepoCount != 3 {
+		t.Errorf("RepoCount = %d, want 3", rec.RepoCount)
+	}
+}
+
+func TestOrgVocabulary_Update(t *testing.T) {
+	store, cleanup := createTestSQLiteStore(t)
+	defer cleanup()
+
+	ctx := context.Background()
+	store.StoreOrgVocabulary(ctx, "org1", []byte(`{"a":1.0}`), "hash1", 10, 1)
+	store.StoreOrgVocabulary(ctx, "org1", []byte(`{"a":1.0,"b":2.0}`), "hash2", 20, 2)
+
+	rec, err := store.GetOrgVocabulary(ctx, "org1")
+	if err != nil {
+		t.Fatalf("GetOrgVocabulary: %v", err)
+	}
+	if rec.VersionHash != "hash2" {
+		t.Errorf("VersionHash = %q, want hash2", rec.VersionHash)
+	}
+	if rec.DocCount != 20 {
+		t.Errorf("DocCount = %d, want 20", rec.DocCount)
+	}
+}
+
+func TestOrgVocabulary_Delete(t *testing.T) {
+	store, cleanup := createTestSQLiteStore(t)
+	defer cleanup()
+
+	ctx := context.Background()
+	store.StoreOrgVocabulary(ctx, "org1", []byte(`{}`), "hash", 0, 0)
+
+	if err := store.DeleteOrgVocabulary(ctx, "org1"); err != nil {
+		t.Fatalf("DeleteOrgVocabulary: %v", err)
+	}
+
+	rec, err := store.GetOrgVocabulary(ctx, "org1")
+	if err != nil {
+		t.Fatalf("GetOrgVocabulary: %v", err)
+	}
+	if rec != nil {
+		t.Errorf("expected nil, got %+v", rec)
+	}
+}
+
+func TestOrgVocabulary_NotFound(t *testing.T) {
+	store, cleanup := createTestSQLiteStore(t)
+	defer cleanup()
+
+	ctx := context.Background()
+	rec, err := store.GetOrgVocabulary(ctx, "nonexistent")
+	if err != nil {
+		t.Fatalf("GetOrgVocabulary: %v", err)
+	}
+	if rec != nil {
+		t.Errorf("expected nil, got %+v", rec)
+	}
+}
+
+func TestOrgVocabulary_MarkStale(t *testing.T) {
+	store, cleanup := createTestSQLiteStore(t)
+	defer cleanup()
+
+	ctx := context.Background()
+	store.StoreOrgVocabulary(ctx, "org1", []byte(`{}`), "hash", 0, 0)
+
+	isStale, _ := store.IsOrgVocabularyStale(ctx, "org1")
+	if isStale {
+		t.Error("expected not stale initially")
+	}
+
+	if err := store.MarkOrgVocabularyStale(ctx, "org1"); err != nil {
+		t.Fatalf("MarkOrgVocabularyStale: %v", err)
+	}
+
+	isStale, _ = store.IsOrgVocabularyStale(ctx, "org1")
+	if !isStale {
+		t.Error("expected stale after marking")
+	}
+}

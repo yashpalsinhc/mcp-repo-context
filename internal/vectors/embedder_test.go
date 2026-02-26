@@ -5,6 +5,78 @@ import (
 	"testing"
 )
 
+func TestExportVocabulary(t *testing.T) {
+	emb := NewDefaultEmbedder()
+	emb.BuildVocabulary([]string{"hello world", "foo bar baz"})
+
+	vocab := emb.ExportVocabulary()
+
+	if len(vocab.WordIDF) == 0 {
+		t.Error("WordIDF is empty")
+	}
+	if vocab.DocCount != 2 {
+		t.Errorf("DocCount = %d, want 2", vocab.DocCount)
+	}
+	if vocab.VersionHash == "" {
+		t.Error("VersionHash is empty")
+	}
+}
+
+func TestImportVocabulary(t *testing.T) {
+	emb1 := NewDefaultEmbedder()
+	emb1.BuildVocabulary([]string{"hello world", "foo bar baz"})
+	vocab := emb1.ExportVocabulary()
+
+	vec1 := emb1.Embed("hello world")
+
+	emb2 := NewDefaultEmbedder()
+	if err := emb2.ImportVocabulary(vocab); err != nil {
+		t.Fatalf("ImportVocabulary: %v", err)
+	}
+
+	vec2 := emb2.Embed("hello world")
+
+	// Vectors should be identical
+	for i := range vec1 {
+		if math.Abs(vec1[i]-vec2[i]) > 1e-10 {
+			t.Errorf("vector mismatch at dim %d: %f vs %f", i, vec1[i], vec2[i])
+			break
+		}
+	}
+}
+
+func TestVersionHash_ChangesWithVocab(t *testing.T) {
+	emb := NewDefaultEmbedder()
+	emb.BuildVocabulary([]string{"hello world"})
+	hash1 := emb.ExportVocabulary().VersionHash
+
+	emb.BuildVocabulary([]string{"completely different text"})
+	hash2 := emb.ExportVocabulary().VersionHash
+
+	if hash1 == hash2 {
+		t.Error("VersionHash should change with different vocabulary")
+	}
+}
+
+func TestVersionHash_Stable(t *testing.T) {
+	emb1 := NewDefaultEmbedder()
+	emb1.BuildVocabulary([]string{"hello world", "foo bar"})
+	hash1 := emb1.ExportVocabulary().VersionHash
+
+	emb2 := NewDefaultEmbedder()
+	emb2.BuildVocabulary([]string{"hello world", "foo bar"})
+	hash2 := emb2.ExportVocabulary().VersionHash
+
+	if hash1 != hash2 {
+		t.Errorf("VersionHash not stable: %q vs %q", hash1, hash2)
+	}
+}
+
+func TestVocabularyAwareEmbedder_TypeAssertion(t *testing.T) {
+	emb := NewDefaultEmbedder()
+	var _ VocabularyAwareEmbedder = emb // compile-time check
+}
+
 func TestNewLocalEmbedder(t *testing.T) {
 	embedder := NewDefaultEmbedder()
 

@@ -37,7 +37,7 @@ func NewManager(store storage.ContextStore, cloner repo.Source, scanner repo.Fil
 		store:      store,
 		cloner:     cloner,
 		scanner:    scanner,
-		registry:   analyzer.NewRegistry(),
+		registry:   analyzer.DefaultRegistry(),
 		aiRegistry: ai.NewRegistryFromEnv(),
 		locks:      NewLockManager(),
 	}
@@ -49,7 +49,7 @@ func NewManagerWithAI(store storage.ContextStore, cloner repo.Source, scanner re
 		store:      store,
 		cloner:     cloner,
 		scanner:    scanner,
-		registry:   analyzer.NewRegistry(),
+		registry:   analyzer.DefaultRegistry(),
 		aiRegistry: aiReg,
 		locks:      NewLockManager(),
 	}

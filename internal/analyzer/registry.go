@@ -9,20 +9,31 @@ type registry struct {
 	fallback  Analyzer
 }
 
-// NewRegistry creates a new analyzer registry.
-func NewRegistry() Registry {
+// NewRegistry creates a new analyzer registry with provided analyzers.
+// Analyzers are registered by their Languages(). Duplicate languages: last wins.
+// Returns a registry with generic analyzer as fallback.
+func NewRegistry(analyzers ...Analyzer) Registry {
 	r := &registry{
 		analyzers: make(map[string]Analyzer),
-		fallback:  newGenericAnalyzer(),
+		fallback:  NewGenericAnalyzer(),
 	}
 
-	// Register Go analyzer
-	goAnalyzer := newGoAnalyzer()
-	for _, lang := range goAnalyzer.Languages() {
-		r.analyzers[lang] = goAnalyzer
+	// Register provided analyzers
+	for _, a := range analyzers {
+		if a == nil {
+			continue
+		}
+		for _, lang := range a.Languages() {
+			r.analyzers[lang] = a
+		}
 	}
 
 	return r
+}
+
+// DefaultRegistry returns a registry with built-in analyzers (Go analyzer).
+func DefaultRegistry() Registry {
+	return NewRegistry(NewGoAnalyzer())
 }
 
 // Get returns the appropriate analyzer for a language.

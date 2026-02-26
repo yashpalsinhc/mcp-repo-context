@@ -22,6 +22,9 @@ type Provider interface {
 	// GenerateDescription generates a description for code.
 	GenerateDescription(ctx context.Context, req DescriptionRequest) (string, error)
 
+	// CompleteRaw sends a raw completion request and returns the response with token count.
+	CompleteRaw(ctx context.Context, prompt string, maxTokens int) (string, int, error)
+
 	// IsConfigured returns true if the provider has valid credentials.
 	IsConfigured() bool
 
