@@ -9,6 +9,7 @@ import (
 	"os"
 	"os/signal"
 	"path/filepath"
+	"strings"
 	"syscall"
 
 	"github.com/yashpalc/mcp-repo-context/internal/comparison"
@@ -107,12 +108,11 @@ func main() {
 	// Create org manager with orchestrator for concurrent analysis
 	orgManager := org.NewManager(orgStore, manager)
 
-	// Create vector store for semantic search
+	// Create embedder and vector store for semantic search
+	embedder := vectors.NewDefaultEmbedder()
 	vectorStorePath := getEnvOrDefault("MCP_VECTOR_STORE_PATH", *storagePath+"/vectors.db")
-	vectorStore, err := vectors.NewSQLiteVectorStore(vectorStorePath, 384)
-	if err != nil {
-		log.Printf("Warning: Vector store not available (semantic search disabled): %v", err)
-	} else {
+	vectorStore := initVectorStore(vectorStorePath, embedder.Dimension())
+	if vectorStore != nil {
 		defer vectorStore.Close()
 	}
 
@@ -123,6 +123,8 @@ func main() {
 		GitHubToken: *githubToken,
 		OrgManager:  orgManager,
 		OrgSearcher: store,
+		Embedder:    embedder,
+		AutoIndex:   getAutoIndex(),
 	}
 	if vectorStore != nil {
 		serverConfig.VectorStore = vectorStore
@@ -153,4 +155,23 @@ func getEnvOrDefault(key, defaultVal string) string {
 		return val
 	}
 	return defaultVal
+}
+
+// initVectorStore creates and initializes the vector store with dimension migration.
+func initVectorStore(path string, dimension int) *vectors.SQLiteVectorStore {
+	store, err := vectors.NewSQLiteVectorStore(path, dimension)
+	if err != nil {
+		log.Printf("Warning: Vector store not available at %s (semantic search disabled): %v", path, err)
+		return nil
+	}
+	return store
+}
+
+// getAutoIndex reads MCP_AUTO_INDEX env var (default true).
+func getAutoIndex() bool {
+	v := os.Getenv("MCP_AUTO_INDEX")
+	if v == "" {
+		return true
+	}
+	return strings.ToLower(v) == "true"
 }

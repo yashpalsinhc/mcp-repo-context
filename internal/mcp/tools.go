@@ -56,6 +56,9 @@ func (s *server) toolAnalyzeRepo(ctx context.Context, args map[string]any) callT
 
 	fmt.Fprintf(&sb, "\nUse `get_context` with repo_id `%s` to retrieve the analysis.", result.RepoID)
 
+	// Auto-index if enabled
+	s.maybeAutoIndex(ctx, result.RepoID, &sb)
+
 	return callToolResult{
 		Content: []contentItem{{Type: "text", Text: sb.String()}},
 	}
@@ -473,6 +476,52 @@ func (s *server) toolAnalyzeOrg(ctx context.Context, args map[string]any) callTo
 		sb.WriteString("\n## Errors\n\n")
 		for _, e := range result.Errors {
 			fmt.Fprintf(&sb, "- **%s**: %s\n", e.RepoID, e.Error)
+		}
+	}
+
+	return callToolResult{
+		Content: []contentItem{{Type: "text", Text: sb.String()}},
+	}
+}
+
+// toolIndexOrg handles the index_org tool call.
+func (s *server) toolIndexOrg(ctx context.Context, args map[string]any) callToolResult {
+	if s.config.OrgManager == nil {
+		return errorResult("org support not configured (OrgManager is nil)")
+	}
+	orgID, ok := args["org_id"].(string)
+	if !ok || orgID == "" {
+		return errorResult("org_id is required")
+	}
+	force, _ := args["force"].(bool)
+
+	concurrency := 3
+	if c, ok := args["concurrency"].(float64); ok {
+		concurrency = int(c)
+		if concurrency < 1 {
+			concurrency = 1
+		}
+		if concurrency > 10 {
+			concurrency = 10
+		}
+	}
+
+	result, err := s.config.OrgManager.IndexOrg(ctx, orgID, force, concurrency)
+	if err != nil {
+		return errorResult(fmt.Sprintf("Failed to index org: %v", err))
+	}
+
+	var sb strings.Builder
+	fmt.Fprintf(&sb, "# Org Semantic Index: %s\n\n", result.OrgID)
+	fmt.Fprintf(&sb, "- **Repos Indexed:** %d\n", result.ReposIndexed)
+	fmt.Fprintf(&sb, "- **Repos Failed:** %d\n", result.ReposFailed)
+	fmt.Fprintf(&sb, "- **Total Vectors:** %d\n", result.TotalVectors)
+	fmt.Fprintf(&sb, "- **Duration:** %s\n", result.Duration.Round(time.Millisecond))
+
+	if len(result.Failures) > 0 {
+		sb.WriteString("\n## Failures\n\n")
+		for _, f := range result.Failures {
+			fmt.Fprintf(&sb, "- **%s**: %s\n", f.RepoID, f.Error)
 		}
 	}
 
@@ -2434,6 +2483,9 @@ func (s *server) toolAnalyzeLocal(ctx context.Context, args map[string]any) call
 	fmt.Fprintf(&sb, "- `search_by_concept`: repo_id=\"%s\" concept=\"...\"\n", result.ProjectID)
 	fmt.Fprintf(&sb, "- `search_by_side_effect`: repo_id=\"%s\" effect=\"...\"\n", result.ProjectID)
 
+	// Auto-index if enabled
+	s.maybeAutoIndex(ctx, result.ProjectID, &sb)
+
 	return callToolResult{
 		Content: []contentItem{{Type: "text", Text: sb.String()}},
 	}
@@ -2757,8 +2809,14 @@ func (s *server) toolSemanticSearch(ctx context.Context, args map[string]any) ca
 	}
 
 	// Check if semantic search is available
-	if s.semanticSearch == nil {
-		return errorResult("Semantic search is not enabled. Initialize the server with a vector store.")
+	if !s.semanticSearch.IsAvailable() {
+		return errorResult(formatStoreUnavailableMessage())
+	}
+
+	// Check if repo has been indexed
+	count, _ := s.semanticSearch.Count(ctx, repoID)
+	if count == 0 {
+		return errorResult(formatNotIndexedMessage(repoID))
 	}
 
 	var sb strings.Builder
@@ -2880,21 +2938,52 @@ func (s *server) toolGetContextBudgeted(ctx context.Context, args map[string]any
 	budgeter := tokens.NewBudgeter()
 	counter := tokens.NewTokenCounter()
 
-	// Extract keywords from query for scoring
-	queryKeywords := extractSearchKeywords(query)
-
-	// Score and collect functions
 	var scoredFunctions []tokens.ScoredItem[ctxpkg.FunctionDef]
-	for _, fileCtx := range repoCtx.Files {
-		for _, fn := range fileCtx.Functions {
-			score := scoreFunctionRelevance(fn, queryKeywords)
-			if score > 0 {
-				cost := counter.CountJSON(fn)
-				scoredFunctions = append(scoredFunctions, tokens.ScoredItem[ctxpkg.FunctionDef]{
-					Item:      fn,
-					Score:     score,
-					TokenCost: cost,
-				})
+	usingVectors := false
+
+	// Try vector ranking first
+	if s.semanticSearch.IsAvailable() && query != "" {
+		vectorCount, _ := s.semanticSearch.Count(ctx, repoID)
+		if vectorCount > 0 {
+			results, err := s.semanticSearch.SearchFunctions(ctx, query, repoID, 100)
+			if err == nil && len(results) > 0 {
+				// Build similarity score map
+				simMap := make(map[string]float64)
+				for _, r := range results {
+					simMap[r.Name] = r.Similarity
+				}
+
+				// Score all functions using vector similarity
+				for _, fileCtx := range repoCtx.Files {
+					for _, fn := range fileCtx.Functions {
+						score := simMap[fn.Name]
+						cost := counter.CountJSON(fn)
+						scoredFunctions = append(scoredFunctions, tokens.ScoredItem[ctxpkg.FunctionDef]{
+							Item:      fn,
+							Score:     score,
+							TokenCost: cost,
+						})
+					}
+				}
+				usingVectors = true
+			}
+		}
+	}
+
+	// Fall back to keyword ranking
+	if !usingVectors {
+		queryKeywords := extractSearchKeywords(query)
+		for _, fileCtx := range repoCtx.Files {
+			for _, fn := range fileCtx.Functions {
+				score := scoreFunctionRelevance(fn, queryKeywords)
+				if score > 0 {
+					cost := counter.CountJSON(fn)
+					scoredFunctions = append(scoredFunctions, tokens.ScoredItem[ctxpkg.FunctionDef]{
+						Item:      fn,
+						Score:     score,
+						TokenCost: cost,
+					})
+				}
 			}
 		}
 	}
@@ -2920,7 +3009,12 @@ func (s *server) toolGetContextBudgeted(ctx context.Context, args map[string]any
 	fmt.Fprintf(&sb, "**Repository:** `%s`\n", repoID)
 	fmt.Fprintf(&sb, "**Token Budget:** %d\n", tokenBudget)
 	fmt.Fprintf(&sb, "**Tokens Used:** ~%d\n", tokensUsed)
-	fmt.Fprintf(&sb, "**Functions Included:** %d of %d matched\n\n", len(selectedFunctions), len(scoredFunctions))
+	fmt.Fprintf(&sb, "**Functions Included:** %d of %d matched\n", len(selectedFunctions), len(scoredFunctions))
+	if usingVectors {
+		sb.WriteString("**Ranking:** Semantic (vector similarity)\n\n")
+	} else {
+		sb.WriteString("**Ranking:** Keyword\n\n")
+	}
 
 	if len(selectedFunctions) == 0 {
 		sb.WriteString("No relevant functions found for the query.\n\n")
@@ -2945,9 +3039,12 @@ func (s *server) toolGetContextBudgeted(ctx context.Context, args map[string]any
 		}
 	}
 
-	// Add summary stats
+	// Add summary stats and tip
 	sb.WriteString("---\n")
 	fmt.Fprintf(&sb, "*Budget efficiency: %.1f%% used*\n", float64(tokensUsed)/float64(tokenBudget)*100)
+	if !usingVectors {
+		sb.WriteString("\nTip: Run `index_repository(repo_id: \"" + repoID + "\")` to enable semantic ranking for better results.")
+	}
 
 	return callToolResult{
 		Content: []contentItem{{Type: "text", Text: sb.String()}},
@@ -3194,18 +3291,19 @@ func (s *server) toolIndexRepository(ctx context.Context, args map[string]any) c
 		return errorResult("repo_id is required")
 	}
 
-	if s.semanticSearch == nil {
-		return errorResult("Semantic search is not enabled. Initialize the server with a vector store.")
+	if !s.semanticSearch.IsAvailable() {
+		return errorResult(formatStoreUnavailableForIndexMessage())
 	}
 
 	// Get repository context
 	repoCtx, err := s.manager.GetContext(ctx, repoID)
-	if err != nil {
-		return errorResult(fmt.Sprintf("Failed to get repository context: %v", err))
+	if err != nil || repoCtx == nil || len(repoCtx.Files) == 0 {
+		return errorResult(formatNotAnalyzedMessage(repoID))
 	}
 
 	// Check if force re-index
 	force, _ := args["force"].(bool)
+	orgID, _ := args["org_id"].(string)
 
 	// Check existing index count
 	existingCount, _ := s.semanticSearch.Count(ctx, repoID)
@@ -3227,8 +3325,14 @@ func (s *server) toolIndexRepository(ctx context.Context, args map[string]any) c
 
 	// Index the repository
 	start := time.Now()
-	if err := s.semanticSearch.IndexRepository(ctx, repoCtx); err != nil {
-		return errorResult(fmt.Sprintf("Indexing failed: %v", err))
+	var indexErr error
+	if orgID != "" {
+		indexErr = s.semanticSearch.IndexRepositoryWithOrg(ctx, repoCtx, orgID)
+	} else {
+		indexErr = s.semanticSearch.IndexRepository(ctx, repoCtx)
+	}
+	if indexErr != nil {
+		return errorResult(fmt.Sprintf("Indexing failed: %v", indexErr))
 	}
 	duration := time.Since(start)
 

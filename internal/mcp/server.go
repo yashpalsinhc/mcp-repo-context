@@ -50,6 +50,12 @@ type ServerConfig struct {
 	// Optional: Enable semantic search with a vector store
 	VectorStore *vectors.SQLiteVectorStore
 
+	// Optional: Embedder for consistent dimension across store and embedder
+	Embedder vectors.Embedder
+
+	// Optional: Auto-index vectors after analyze (default false unless set)
+	AutoIndex bool
+
 	// Optional: Usage analytics tracker
 	UsageTracker *analytics.UsageTracker
 
@@ -82,7 +88,10 @@ func NewServer(manager orchestrator.Manager, comparer comparison.Comparer, confi
 
 	// Initialize semantic search if vector store is provided
 	if config.VectorStore != nil {
-		embedder := vectors.NewDefaultEmbedder()
+		embedder := config.Embedder
+		if embedder == nil {
+			embedder = vectors.NewDefaultEmbedder()
+		}
 		s.semanticSearch = vectors.NewSemanticSearch(embedder, config.VectorStore)
 	}
 

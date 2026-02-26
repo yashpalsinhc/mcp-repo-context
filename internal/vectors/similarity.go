@@ -2,6 +2,7 @@ package vectors
 
 import (
 	"math"
+	"sort"
 )
 
 // CosineSimilarity calculates the cosine similarity between two vectors.
@@ -150,13 +151,9 @@ func TopKSimilar(query []float64, candidates [][]float64, k int) []int {
 	}
 
 	// Sort by similarity descending
-	for i := 0; i < len(scores)-1; i++ {
-		for j := i + 1; j < len(scores); j++ {
-			if scores[j].similarity > scores[i].similarity {
-				scores[i], scores[j] = scores[j], scores[i]
-			}
-		}
-	}
+	sort.Slice(scores, func(i, j int) bool {
+		return scores[i].similarity > scores[j].similarity
+	})
 
 	// Return top k indices
 	if k > len(scores) {

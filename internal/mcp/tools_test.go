@@ -357,8 +357,8 @@ func TestToolSemanticSearch_NoVectorStore(t *testing.T) {
 		t.Error("expected error when semantic search is not enabled")
 	}
 
-	if !strings.Contains(result.Content[0].Text, "Semantic search is not enabled") {
-		t.Error("error should mention semantic search is not enabled")
+	if !strings.Contains(result.Content[0].Text, "Vector Store Unavailable") {
+		t.Errorf("error should mention vector store unavailable, got: %s", result.Content[0].Text)
 	}
 }
 
@@ -490,8 +490,8 @@ func TestToolIndexRepository_NoVectorStore(t *testing.T) {
 		t.Error("expected error when semantic search is not enabled")
 	}
 
-	if !strings.Contains(result.Content[0].Text, "Semantic search is not enabled") {
-		t.Error("error should mention semantic search is not enabled")
+	if !strings.Contains(result.Content[0].Text, "Vector Store Unavailable") {
+		t.Errorf("error should mention vector store unavailable, got: %s", result.Content[0].Text)
 	}
 }
 
