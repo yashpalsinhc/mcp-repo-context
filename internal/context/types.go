@@ -135,8 +135,12 @@ type FileContext struct {
 type Route struct {
 	Method      string   `json:"method"`
 	Path        string   `json:"path"`
+	RawPath     string   `json:"raw_path,omitempty"`
 	Handler     string   `json:"handler"`
+	HandlerFile string   `json:"handler_file,omitempty"`
+	File        string   `json:"file,omitempty"`
 	Line        int      `json:"line"`
+	Framework   string   `json:"framework,omitempty"`
 	Description string   `json:"description,omitempty"`
 	Middleware  []string `json:"middleware,omitempty"`
 }
@@ -198,7 +202,8 @@ type FunctionDef struct {
 	SideEffects   []string          `json:"side_effects,omitempty"`
 	ErrorHandling *ErrorHandling    `json:"error_handling,omitempty"`
 	UsesImports   []string          `json:"uses_imports,omitempty"`
-	APIFlow       *APIFlow          `json:"api_flow,omitempty"` // Complete API flow analysis
+	APIFlow       *APIFlow          `json:"api_flow,omitempty"`      // Complete API flow analysis
+	AsyncCalls    []AsyncCall       `json:"async_calls,omitempty"`   // Kafka/async messaging interactions
 }
 
 // FunctionBehavior describes what a function does (derived from AST).
@@ -240,6 +245,17 @@ type APIFlow struct {
 	DBQueries       []DBQuery       `json:"db_queries,omitempty"`
 	ExternalCalls   []ExternalCall  `json:"external_calls,omitempty"`
 	ValidationSteps []string        `json:"validation_steps,omitempty"`
+}
+
+// AsyncCall represents a Kafka or async messaging interaction.
+type AsyncCall struct {
+	Protocol    string `json:"protocol"`              // "kafka"
+	Direction   string `json:"direction"`             // "produce" or "consume"
+	Topic       string `json:"topic"`                 // topic name or "<dynamic>"
+	TopicExpr   string `json:"topic_expr,omitempty"`  // expression text when dynamic
+	Library     string `json:"library"`               // "segmentio/kafka-go", "sarama", "confluent"
+	MessageType string `json:"message_type,omitempty"`
+	Line        int    `json:"line"`
 }
 
 // FlowStep represents a single step in the function's execution flow.

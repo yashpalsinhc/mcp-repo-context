@@ -87,17 +87,7 @@ func (a *goAnalyzer) AnalyzeFile(ctx context.Context, file repo.FileInfo, conten
 
 	// Extract HTTP routes
 	routeExtractor := NewRouteExtractor(fset, file.Path)
-	routes := routeExtractor.Extract(f)
-	for _, r := range routes {
-		fileCtx.Routes = append(fileCtx.Routes, ctxpkg.Route{
-			Method:      r.Method,
-			Path:        r.Path,
-			Handler:     r.Handler,
-			Line:        r.Line,
-			Description: r.Description,
-			Middleware:  r.Middleware,
-		})
-	}
+	fileCtx.Routes = routeExtractor.Extract(f)
 
 	return fileCtx, nil
 }
@@ -300,6 +290,17 @@ func (a *goAnalyzer) extractFuncDecl(fset *token.FileSet, decl *ast.FuncDecl, fi
 	apiFlowExtractor := NewAPIFlowExtractor(fset)
 	apiFlowExtractor.SetFileDecls(fileDecls)
 	funcDef.APIFlow = apiFlowExtractor.ExtractAPIFlow(decl, fileCtx.Imports)
+
+	// Extract Kafka/async calls
+	kafkaExtractor := NewKafkaExtractor(fset, fileDecls)
+	funcDef.AsyncCalls = kafkaExtractor.Extract(decl, fileCtx.Imports)
+	// Add kafka side effects
+	for _, ac := range funcDef.AsyncCalls {
+		effect := "kafka_" + ac.Direction
+		if !containsString(funcDef.SideEffects, effect) {
+			funcDef.SideEffects = append(funcDef.SideEffects, effect)
+		}
+	}
 
 	// === END DEEP CONTEXT ===
 
@@ -519,4 +520,13 @@ func splitCamelCase(s string) []string {
 	}
 
 	return words
+}
+
+func containsString(slice []string, s string) bool {
+	for _, v := range slice {
+		if v == s {
+			return true
+		}
+	}
+	return false
 }
