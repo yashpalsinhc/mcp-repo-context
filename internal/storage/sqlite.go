@@ -30,6 +30,9 @@ var orgVocabularyMigration string
 //go:embed migrations/007_fts5_tables.sql
 var fts5Migration string
 
+//go:embed migrations/008_endpoints.sql
+var endpointsMigration string
+
 // Ensure SQLiteStore implements ContextStore interface.
 var _ ContextStore = (*SQLiteStore)(nil)
 
@@ -129,6 +132,11 @@ func (s *SQLiteStore) migrate() error {
 		return fmt.Errorf("failed to apply FTS5 migration: %w", err)
 	}
 
+	// Run endpoints migration
+	if err := s.migrateEndpoints(); err != nil {
+		return fmt.Errorf("failed to apply endpoints migration: %w", err)
+	}
+
 	return nil
 }
 
@@ -197,6 +205,26 @@ func (s *SQLiteStore) migrateFTS5() error {
 	_, err = s.db.Exec("INSERT OR IGNORE INTO schema_migrations (version) VALUES (7)")
 	if err != nil {
 		return fmt.Errorf("failed to record FTS5 migration: %w", err)
+	}
+
+	return nil
+}
+
+// migrateEndpoints applies migration 008 for normalized endpoint storage.
+func (s *SQLiteStore) migrateEndpoints() error {
+	var version int
+	err := s.db.QueryRow("SELECT COALESCE(MAX(version), 0) FROM schema_migrations").Scan(&version)
+	if err != nil {
+		return fmt.Errorf("failed to check schema version: %w", err)
+	}
+
+	if version >= 8 {
+		return nil
+	}
+
+	_, err = s.db.Exec(endpointsMigration)
+	if err != nil {
+		return fmt.Errorf("failed to run endpoints migration: %w", err)
 	}
 
 	return nil
@@ -287,6 +315,12 @@ func (s *SQLiteStore) StoreRepoContext(ctx context.Context, repoID string, repoC
 				return fmt.Errorf("failed to insert constant %s: %w", c.Name, err)
 			}
 		}
+	}
+
+	// Populate normalized endpoint and service call tables
+	if err := s.storeEndpointIndex(ctx, tx, repoID, repoCtx); err != nil {
+		// Non-fatal: endpoint index is supplementary
+		_ = err
 	}
 
 	return tx.Commit()
@@ -765,6 +799,10 @@ func (s *SQLiteStore) ContextExists(ctx context.Context, repoID string, maxAge t
 
 // DeleteContext removes all context for a repository.
 func (s *SQLiteStore) DeleteContext(ctx context.Context, repoID string) error {
+	// Clean endpoint and service_call tables (not cascaded from repos)
+	s.db.ExecContext(ctx, "DELETE FROM endpoints WHERE repo_id = ?", repoID)
+	s.db.ExecContext(ctx, "DELETE FROM service_calls WHERE repo_id = ?", repoID)
+
 	_, err := s.db.ExecContext(ctx, "DELETE FROM repos WHERE id = ?", repoID)
 	return err
 }
