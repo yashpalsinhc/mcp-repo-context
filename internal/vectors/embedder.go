@@ -1,16 +1,21 @@
 package vectors
 
 import (
+	"fmt"
 	"math"
 	"regexp"
 	"sort"
 	"strings"
 	"sync"
+	"time"
 	"unicode"
 )
 
 // Embedder generates vector embeddings from text.
 type Embedder interface {
+	// Name returns the name of this embedder.
+	Name() string
+
 	// Embed generates a vector embedding for the given text.
 	Embed(text string) []float64
 
@@ -27,6 +32,7 @@ type LocalEmbedder struct {
 	vocabulary  map[string]int    // word -> index
 	idf         map[string]float64 // word -> inverse document frequency
 	dimension   int
+	docCount    int
 	mu          sync.RWMutex
 
 	// Configuration
@@ -76,6 +82,11 @@ func NewDefaultEmbedder() *LocalEmbedder {
 	return NewLocalEmbedder(DefaultConfig())
 }
 
+// Name returns the name of this embedder.
+func (e *LocalEmbedder) Name() string {
+	return "local-tfidf"
+}
+
 // Dimension returns the embedding dimension.
 func (e *LocalEmbedder) Dimension() int {
 	return e.dimension
@@ -117,6 +128,7 @@ func (e *LocalEmbedder) BuildVocabulary(documents []string) {
 	// Build vocabulary with top words
 	e.vocabulary = make(map[string]int)
 	e.idf = make(map[string]float64)
+	e.docCount = totalDocs
 
 	limit := e.maxVocabSize
 	if limit > len(wfs) {
@@ -306,4 +318,70 @@ func (e *LocalEmbedder) VocabularySize() int {
 	e.mu.RLock()
 	defer e.mu.RUnlock()
 	return len(e.vocabulary)
+}
+
+// Ensure LocalEmbedder implements VocabularyAwareEmbedder.
+var _ VocabularyAwareEmbedder = (*LocalEmbedder)(nil)
+
+// ExportVocabulary exports the current vocabulary state for persistence.
+func (e *LocalEmbedder) ExportVocabulary() *VocabularyData {
+	e.mu.RLock()
+	defer e.mu.RUnlock()
+
+	idfCopy := make(map[string]float64, len(e.idf))
+	for k, v := range e.idf {
+		idfCopy[k] = v
+	}
+
+	slotsCopy := make(map[string]int, len(e.vocabulary))
+	for k, v := range e.vocabulary {
+		slotsCopy[k] = v
+	}
+
+	return &VocabularyData{
+		WordIDF:     idfCopy,
+		WordSlots:   slotsCopy,
+		DocCount:    e.docCount,
+		BuiltAt:     time.Now(),
+		VersionHash: ComputeVersionHash(idfCopy),
+	}
+}
+
+// ImportVocabulary restores vocabulary state from exported data.
+func (e *LocalEmbedder) ImportVocabulary(vocab *VocabularyData) error {
+	if vocab == nil {
+		return fmt.Errorf("vocabulary data is nil")
+	}
+
+	e.mu.Lock()
+	defer e.mu.Unlock()
+
+	// Restore IDF
+	e.idf = make(map[string]float64, len(vocab.WordIDF))
+	for k, v := range vocab.WordIDF {
+		e.idf[k] = v
+	}
+
+	// Restore vocabulary slot mapping
+	if len(vocab.WordSlots) > 0 {
+		e.vocabulary = make(map[string]int, len(vocab.WordSlots))
+		for k, v := range vocab.WordSlots {
+			e.vocabulary[k] = v
+		}
+	} else {
+		// Fallback for older exports without WordSlots: sort keys, assign i % dimension
+		keys := make([]string, 0, len(vocab.WordIDF))
+		for k := range vocab.WordIDF {
+			keys = append(keys, k)
+		}
+		sort.Strings(keys)
+
+		e.vocabulary = make(map[string]int, len(keys))
+		for i, k := range keys {
+			e.vocabulary[k] = i % e.dimension
+		}
+	}
+
+	e.docCount = vocab.DocCount
+	return nil
 }
