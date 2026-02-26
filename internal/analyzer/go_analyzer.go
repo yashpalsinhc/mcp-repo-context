@@ -75,7 +75,7 @@ func (a *goAnalyzer) AnalyzeFile(ctx context.Context, file repo.FileInfo, conten
 		case *ast.GenDecl:
 			a.extractGenDecl(fset, d, fileCtx)
 		case *ast.FuncDecl:
-			a.extractFuncDecl(fset, d, fileCtx)
+			a.extractFuncDecl(fset, d, fileCtx, f.Decls)
 		}
 	}
 
@@ -223,7 +223,7 @@ func (a *goAnalyzer) extractTypeSpec(fset *token.FileSet, spec *ast.TypeSpec, do
 	return typeDef
 }
 
-func (a *goAnalyzer) extractFuncDecl(fset *token.FileSet, decl *ast.FuncDecl, fileCtx *ctxpkg.FileContext) {
+func (a *goAnalyzer) extractFuncDecl(fset *token.FileSet, decl *ast.FuncDecl, fileCtx *ctxpkg.FileContext, fileDecls []ast.Decl) {
 	funcDef := ctxpkg.FunctionDef{
 		Name:      decl.Name.Name,
 		IsPublic:  isExported(decl.Name.Name),
@@ -298,6 +298,7 @@ func (a *goAnalyzer) extractFuncDecl(fset *token.FileSet, decl *ast.FuncDecl, fi
 
 	// Extract API flow (requests, responses, DB queries, external calls)
 	apiFlowExtractor := NewAPIFlowExtractor(fset)
+	apiFlowExtractor.SetFileDecls(fileDecls)
 	funcDef.APIFlow = apiFlowExtractor.ExtractAPIFlow(decl, fileCtx.Imports)
 
 	// === END DEEP CONTEXT ===

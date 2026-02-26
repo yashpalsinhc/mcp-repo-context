@@ -4,6 +4,7 @@ import (
 	"go/ast"
 	"go/parser"
 	"go/token"
+	"strings"
 	"testing"
 
 	ctxpkg "github.com/yashpalc/mcp-repo-context/internal/context"
@@ -269,6 +270,340 @@ func HandleUser(c *gin.Context) {
 			}
 
 			t.Logf("Steps: %d", len(flow.Steps))
+		}
+	}
+}
+
+func TestExtractExternalCall_FileConstant(t *testing.T) {
+	src := `
+package main
+
+import "net/http"
+
+const baseURL = "https://api.example.com"
+
+func FetchData() {
+	http.Get(baseURL)
+}
+`
+	fset := token.NewFileSet()
+	f, err := parser.ParseFile(fset, "test.go", src, parser.ParseComments)
+	if err != nil {
+		t.Fatalf("Failed to parse: %v", err)
+	}
+
+	extractor := NewAPIFlowExtractor(fset)
+	extractor.SetFileDecls(f.Decls)
+
+	for _, decl := range f.Decls {
+		fn, ok := decl.(*ast.FuncDecl)
+		if !ok || fn.Name.Name != "FetchData" {
+			continue
+		}
+		flow := extractor.ExtractAPIFlow(fn, []ctxpkg.Import{{Path: "net/http"}})
+
+		if len(flow.ExternalCalls) == 0 {
+			t.Fatal("Expected external call")
+		}
+		ec := flow.ExternalCalls[0]
+		if ec.URL != "https://api.example.com" {
+			t.Errorf("Expected URL 'https://api.example.com', got '%s'", ec.URL)
+		}
+		if ec.Method != "GET" {
+			t.Errorf("Expected method GET, got %s", ec.Method)
+		}
+	}
+}
+
+func TestExtractExternalCall_FmtSprintf(t *testing.T) {
+	src := `
+package main
+
+import (
+	"fmt"
+	"net/http"
+)
+
+func FetchUser(id int) {
+	http.Get(fmt.Sprintf("https://api.example.com/users/%d", id))
+}
+`
+	fset := token.NewFileSet()
+	f, err := parser.ParseFile(fset, "test.go", src, parser.ParseComments)
+	if err != nil {
+		t.Fatalf("Failed to parse: %v", err)
+	}
+
+	extractor := NewAPIFlowExtractor(fset)
+	extractor.SetFileDecls(f.Decls)
+
+	for _, decl := range f.Decls {
+		fn, ok := decl.(*ast.FuncDecl)
+		if !ok || fn.Name.Name != "FetchUser" {
+			continue
+		}
+		flow := extractor.ExtractAPIFlow(fn, []ctxpkg.Import{{Path: "net/http"}, {Path: "fmt"}})
+
+		if len(flow.ExternalCalls) == 0 {
+			t.Fatal("Expected external call")
+		}
+		ec := flow.ExternalCalls[0]
+		if ec.URL != "https://api.example.com/users/{param}" {
+			t.Errorf("Expected URL template with {param}, got '%s'", ec.URL)
+		}
+	}
+}
+
+func TestExtractExternalCall_StringConcatenation(t *testing.T) {
+	src := `
+package main
+
+import "net/http"
+
+func FetchUser(id string) {
+	http.Get("https://api.example.com" + "/users/" + id)
+}
+`
+	fset := token.NewFileSet()
+	f, err := parser.ParseFile(fset, "test.go", src, parser.ParseComments)
+	if err != nil {
+		t.Fatalf("Failed to parse: %v", err)
+	}
+
+	extractor := NewAPIFlowExtractor(fset)
+	extractor.SetFileDecls(f.Decls)
+
+	for _, decl := range f.Decls {
+		fn, ok := decl.(*ast.FuncDecl)
+		if !ok || fn.Name.Name != "FetchUser" {
+			continue
+		}
+		flow := extractor.ExtractAPIFlow(fn, []ctxpkg.Import{{Path: "net/http"}})
+
+		if len(flow.ExternalCalls) == 0 {
+			t.Fatal("Expected external call")
+		}
+		ec := flow.ExternalCalls[0]
+		if !strings.Contains(ec.URL, "https://api.example.com") {
+			t.Errorf("Expected URL to contain base URL, got '%s'", ec.URL)
+		}
+		if !strings.Contains(ec.URL, "{dynamic}") {
+			t.Errorf("Expected URL to contain {dynamic} for variable part, got '%s'", ec.URL)
+		}
+	}
+}
+
+func TestExtractExternalCall_DynamicURL(t *testing.T) {
+	src := `
+package main
+
+import "net/http"
+
+func getURL() string { return "" }
+
+func FetchData() {
+	http.Get(getURL())
+}
+`
+	fset := token.NewFileSet()
+	f, err := parser.ParseFile(fset, "test.go", src, parser.ParseComments)
+	if err != nil {
+		t.Fatalf("Failed to parse: %v", err)
+	}
+
+	extractor := NewAPIFlowExtractor(fset)
+	extractor.SetFileDecls(f.Decls)
+
+	for _, decl := range f.Decls {
+		fn, ok := decl.(*ast.FuncDecl)
+		if !ok || fn.Name.Name != "FetchData" {
+			continue
+		}
+		flow := extractor.ExtractAPIFlow(fn, []ctxpkg.Import{{Path: "net/http"}})
+
+		if len(flow.ExternalCalls) == 0 {
+			t.Fatal("Expected external call")
+		}
+		ec := flow.ExternalCalls[0]
+		if ec.URL != "<dynamic>" {
+			t.Errorf("Expected URL '<dynamic>', got '%s'", ec.URL)
+		}
+		if ec.URLExpression == "" {
+			t.Error("Expected URLExpression to be set for dynamic URL")
+		}
+	}
+}
+
+func TestExtractExternalCall_NewRequest(t *testing.T) {
+	src := `
+package main
+
+import "net/http"
+
+func PostData() {
+	http.NewRequest("POST", "https://api.example.com/data", nil)
+}
+`
+	fset := token.NewFileSet()
+	f, err := parser.ParseFile(fset, "test.go", src, parser.ParseComments)
+	if err != nil {
+		t.Fatalf("Failed to parse: %v", err)
+	}
+
+	extractor := NewAPIFlowExtractor(fset)
+	extractor.SetFileDecls(f.Decls)
+
+	for _, decl := range f.Decls {
+		fn, ok := decl.(*ast.FuncDecl)
+		if !ok || fn.Name.Name != "PostData" {
+			continue
+		}
+		flow := extractor.ExtractAPIFlow(fn, []ctxpkg.Import{{Path: "net/http"}})
+
+		if len(flow.ExternalCalls) == 0 {
+			t.Fatal("Expected external call")
+		}
+		ec := flow.ExternalCalls[0]
+		if ec.Method != "POST" {
+			t.Errorf("Expected method POST, got %s", ec.Method)
+		}
+		if ec.URL != "https://api.example.com/data" {
+			t.Errorf("Expected URL 'https://api.example.com/data', got '%s'", ec.URL)
+		}
+	}
+}
+
+func TestExtractExternalCall_ServiceHint(t *testing.T) {
+	src := `
+package main
+
+import "net/http"
+
+func CallAuthService() {
+	http.Get("http://auth-service:8080/validate")
+}
+`
+	fset := token.NewFileSet()
+	f, err := parser.ParseFile(fset, "test.go", src, parser.ParseComments)
+	if err != nil {
+		t.Fatalf("Failed to parse: %v", err)
+	}
+
+	extractor := NewAPIFlowExtractor(fset)
+	extractor.SetFileDecls(f.Decls)
+
+	for _, decl := range f.Decls {
+		fn, ok := decl.(*ast.FuncDecl)
+		if !ok || fn.Name.Name != "CallAuthService" {
+			continue
+		}
+		flow := extractor.ExtractAPIFlow(fn, []ctxpkg.Import{{Path: "net/http"}})
+
+		if len(flow.ExternalCalls) == 0 {
+			t.Fatal("Expected external call")
+		}
+		ec := flow.ExternalCalls[0]
+		if ec.ServiceHint != "auth-service" {
+			t.Errorf("Expected ServiceHint 'auth-service', got '%s'", ec.ServiceHint)
+		}
+	}
+}
+
+func TestHTTPClientWrapper_ServiceFieldDetection(t *testing.T) {
+	src := `
+package main
+
+type Server struct {
+	authService AuthClient
+}
+
+func (s *Server) Handle() {
+	s.authService.ValidateToken(ctx, token)
+}
+`
+	fset := token.NewFileSet()
+	f, err := parser.ParseFile(fset, "test.go", src, parser.ParseComments)
+	if err != nil {
+		t.Fatalf("Failed to parse: %v", err)
+	}
+
+	extractor := NewAPIFlowExtractor(fset)
+
+	for _, decl := range f.Decls {
+		fn, ok := decl.(*ast.FuncDecl)
+		if !ok || fn.Name.Name != "Handle" {
+			continue
+		}
+		flow := extractor.ExtractAPIFlow(fn, nil)
+
+		if len(flow.ExternalCalls) == 0 {
+			t.Fatal("Expected external call from HTTP client wrapper")
+		}
+		ec := flow.ExternalCalls[0]
+		if ec.ServiceHint != "authService" {
+			t.Errorf("Expected ServiceHint 'authService', got '%s'", ec.ServiceHint)
+		}
+	}
+}
+
+func TestGRPCClientDetection(t *testing.T) {
+	src := `
+package main
+
+import pb "somemodule/pb"
+
+func GetUser() {
+	pb.NewUserServiceClient(conn).GetUser(ctx, req)
+}
+`
+	fset := token.NewFileSet()
+	f, err := parser.ParseFile(fset, "test.go", src, parser.ParseComments)
+	if err != nil {
+		t.Fatalf("Failed to parse: %v", err)
+	}
+
+	imports := []ctxpkg.Import{{Path: "somemodule/pb", Alias: "pb"}}
+	extractor := NewAPIFlowExtractor(fset)
+
+	for _, decl := range f.Decls {
+		fn, ok := decl.(*ast.FuncDecl)
+		if !ok || fn.Name.Name != "GetUser" {
+			continue
+		}
+		flow := extractor.ExtractAPIFlow(fn, imports)
+
+		if len(flow.ExternalCalls) == 0 {
+			t.Fatal("Expected gRPC external call")
+		}
+		ec := flow.ExternalCalls[0]
+		if ec.Method != "gRPC" {
+			t.Errorf("Expected method 'gRPC', got '%s'", ec.Method)
+		}
+		if ec.URL != "/UserService/GetUser" {
+			t.Errorf("Expected URL '/UserService/GetUser', got '%s'", ec.URL)
+		}
+		if ec.ServiceHint != "UserService" {
+			t.Errorf("Expected ServiceHint 'UserService', got '%s'", ec.ServiceHint)
+		}
+	}
+}
+
+func TestExtractServiceHint(t *testing.T) {
+	tests := []struct {
+		url  string
+		want string
+	}{
+		{"http://auth-service:8080/validate", "auth-service"},
+		{"https://api.example.com/users", ""},    // external domain
+		{"http://localhost:3000/api", ""},          // localhost
+		{"http://user-service/health", "user-service"},
+		{"/api/v1/users", ""},                     // no host
+	}
+
+	for _, tt := range tests {
+		got := extractServiceHint(tt.url)
+		if got != tt.want {
+			t.Errorf("extractServiceHint(%q) = %q, want %q", tt.url, got, tt.want)
 		}
 	}
 }

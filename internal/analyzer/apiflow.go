@@ -1,8 +1,10 @@
 package analyzer
 
 import (
+	"fmt"
 	"go/ast"
 	"go/token"
+	"net/url"
 	"regexp"
 	"strings"
 
@@ -11,7 +13,13 @@ import (
 
 // APIFlowExtractor extracts complete API flow information from functions.
 type APIFlowExtractor struct {
-	fset *token.FileSet
+	fset      *token.FileSet
+	fileDecls []ast.Decl // top-level declarations for constant resolution
+}
+
+// SetFileDecls sets the file-level declarations for constant resolution.
+func (e *APIFlowExtractor) SetFileDecls(decls []ast.Decl) {
+	e.fileDecls = decls
 }
 
 // NewAPIFlowExtractor creates a new API flow extractor.
@@ -522,8 +530,18 @@ func extractTableFromQuery(query string) string {
 	return ""
 }
 
-// extractExternalCall extracts external HTTP call information.
-func (e *APIFlowExtractor) extractExternalCall(call *ast.CallExpr, _ []ctxpkg.Import) *ctxpkg.ExternalCall {
+// extractExternalCall extracts external HTTP or gRPC call information.
+func (e *APIFlowExtractor) extractExternalCall(call *ast.CallExpr, imports []ctxpkg.Import) *ctxpkg.ExternalCall {
+	// Check for gRPC client pattern: pb.NewXxxClient(conn).MethodName(ctx, req)
+	if grpc := e.extractGRPCCall(call, imports); grpc != nil {
+		return grpc
+	}
+
+	// Check for HTTP client wrapper pattern: s.authService.ValidateToken(ctx, token)
+	if wrapper := e.extractHTTPClientWrapper(call); wrapper != nil {
+		return wrapper
+	}
+
 	sel, ok := call.Fun.(*ast.SelectorExpr)
 	if !ok {
 		return nil
@@ -547,6 +565,11 @@ func (e *APIFlowExtractor) extractExternalCall(call *ast.CallExpr, _ []ctxpkg.Im
 		Line: e.fset.Position(call.Pos()).Line,
 	}
 
+	// Special case: http.NewRequest(method, url, body)
+	if methodLower == "newrequest" {
+		return e.extractNewRequest(call, extCall)
+	}
+
 	// Determine HTTP method
 	switch methodLower {
 	case "get":
@@ -560,20 +583,269 @@ func (e *APIFlowExtractor) extractExternalCall(call *ast.CallExpr, _ []ctxpkg.Im
 	case "patch":
 		extCall.Method = "PATCH"
 	case "do":
-		extCall.Method = "DO" // Generic request
+		extCall.Method = "DO"
 	default:
 		return nil
 	}
 
-	// Try to extract URL
-	for _, arg := range call.Args {
-		if lit, ok := arg.(*ast.BasicLit); ok && lit.Kind == token.STRING {
-			extCall.URL = strings.Trim(lit.Value, "\"'`")
-			break
-		}
+	// Extract URL using enhanced resolution
+	if len(call.Args) > 0 {
+		e.resolveAndSetURL(call.Args[0], extCall)
 	}
 
 	return extCall
+}
+
+// extractNewRequest handles http.NewRequest(method, url, body).
+func (e *APIFlowExtractor) extractNewRequest(call *ast.CallExpr, extCall *ctxpkg.ExternalCall) *ctxpkg.ExternalCall {
+	if len(call.Args) < 2 {
+		return nil
+	}
+
+	// First arg is the HTTP method
+	if lit, ok := call.Args[0].(*ast.BasicLit); ok && lit.Kind == token.STRING {
+		extCall.Method = strings.Trim(lit.Value, "\"'`")
+	} else {
+		extCall.Method = "DO"
+	}
+
+	// Second arg is the URL
+	e.resolveAndSetURL(call.Args[1], extCall)
+
+	return extCall
+}
+
+// resolveAndSetURL resolves the URL from an expression and sets it on the ExternalCall.
+func (e *APIFlowExtractor) resolveAndSetURL(expr ast.Expr, extCall *ctxpkg.ExternalCall) {
+	urlStr, exprText, resolved := e.resolveURLExpr(expr)
+	extCall.URL = urlStr
+	if !resolved && exprText != "" {
+		extCall.URLExpression = exprText
+	}
+	if urlStr != "" && urlStr != "<dynamic>" {
+		extCall.ServiceHint = extractServiceHint(urlStr)
+	}
+}
+
+// resolveURLExpr attempts to resolve a URL from an AST expression.
+func (e *APIFlowExtractor) resolveURLExpr(expr ast.Expr) (url string, exprText string, resolved bool) {
+	switch v := expr.(type) {
+	case *ast.BasicLit:
+		if v.Kind == token.STRING {
+			return strings.Trim(v.Value, "\"'`"), "", true
+		}
+
+	case *ast.Ident:
+		if val, ok := e.resolveFileConstant(v.Name); ok {
+			return val, "", true
+		}
+		return "<dynamic>", v.Name, false
+
+	case *ast.CallExpr:
+		// Check for fmt.Sprintf pattern
+		if sel, ok := v.Fun.(*ast.SelectorExpr); ok {
+			if ident, ok := sel.X.(*ast.Ident); ok {
+				if ident.Name == "fmt" && sel.Sel.Name == "Sprintf" {
+					return e.resolveFmtSprintf(v)
+				}
+			}
+		}
+		return "<dynamic>", e.exprToString(expr), false
+
+	case *ast.BinaryExpr:
+		if v.Op == token.ADD {
+			leftURL, _, leftResolved := e.resolveURLExpr(v.X)
+			rightURL, _, rightResolved := e.resolveURLExpr(v.Y)
+
+			if leftResolved && rightResolved {
+				return leftURL + rightURL, "", true
+			}
+			if leftResolved {
+				return leftURL + "{dynamic}", "", true
+			}
+			if rightResolved {
+				return "{dynamic}" + rightURL, "", true
+			}
+			return "<dynamic>", e.exprToString(expr), false
+		}
+	}
+
+	return "<dynamic>", e.exprToString(expr), false
+}
+
+// resolveFmtSprintf resolves fmt.Sprintf("url/%s", args...) to a URL template.
+func (e *APIFlowExtractor) resolveFmtSprintf(call *ast.CallExpr) (string, string, bool) {
+	if len(call.Args) == 0 {
+		return "<dynamic>", "fmt.Sprintf(...)", false
+	}
+
+	// First arg should be the format string
+	if lit, ok := call.Args[0].(*ast.BasicLit); ok && lit.Kind == token.STRING {
+		format := strings.Trim(lit.Value, "\"'`")
+		// Replace format verbs with {param}
+		paramRe := regexp.MustCompile(`%[sdvftq]`)
+		template := paramRe.ReplaceAllString(format, "{param}")
+		return template, "", true
+	}
+
+	return "<dynamic>", "fmt.Sprintf(...)", false
+}
+
+// resolveFileConstant resolves a file-scope constant by name.
+func (e *APIFlowExtractor) resolveFileConstant(name string) (string, bool) {
+	for _, decl := range e.fileDecls {
+		genDecl, ok := decl.(*ast.GenDecl)
+		if !ok || genDecl.Tok != token.CONST {
+			continue
+		}
+		for _, spec := range genDecl.Specs {
+			valueSpec, ok := spec.(*ast.ValueSpec)
+			if !ok {
+				continue
+			}
+			for i, ident := range valueSpec.Names {
+				if ident.Name == name && i < len(valueSpec.Values) {
+					if lit, ok := valueSpec.Values[i].(*ast.BasicLit); ok && lit.Kind == token.STRING {
+						return strings.Trim(lit.Value, "\"'`"), true
+					}
+				}
+			}
+		}
+	}
+	return "", false
+}
+
+// extractGRPCCall detects gRPC client call patterns: pb.NewXxxClient(conn).MethodName(ctx, req)
+func (e *APIFlowExtractor) extractGRPCCall(call *ast.CallExpr, imports []ctxpkg.Import) *ctxpkg.ExternalCall {
+	sel, ok := call.Fun.(*ast.SelectorExpr)
+	if !ok {
+		return nil
+	}
+
+	// The receiver should be a call expression: pb.NewXxxClient(conn)
+	innerCall, ok := sel.X.(*ast.CallExpr)
+	if !ok {
+		return nil
+	}
+
+	innerSel, ok := innerCall.Fun.(*ast.SelectorExpr)
+	if !ok {
+		return nil
+	}
+
+	constructorName := innerSel.Sel.Name
+	if !strings.HasPrefix(constructorName, "New") || !strings.HasSuffix(constructorName, "Client") {
+		return nil
+	}
+
+	// Verify the package looks like a protobuf package
+	pkgIdent, ok := innerSel.X.(*ast.Ident)
+	if !ok {
+		return nil
+	}
+
+	isProtoImport := false
+	pkgName := pkgIdent.Name
+	for _, imp := range imports {
+		impName := imp.Alias
+		if impName == "" {
+			parts := strings.Split(imp.Path, "/")
+			impName = parts[len(parts)-1]
+		}
+		if impName == pkgName {
+			pathLower := strings.ToLower(imp.Path)
+			if strings.Contains(pathLower, "pb") || strings.Contains(pathLower, "proto") || strings.HasSuffix(pathLower, "/pb") {
+				isProtoImport = true
+				break
+			}
+		}
+	}
+
+	if !isProtoImport {
+		return nil
+	}
+
+	// Extract service name: NewUserServiceClient -> UserService
+	serviceName := strings.TrimPrefix(constructorName, "New")
+	serviceName = strings.TrimSuffix(serviceName, "Client")
+	methodName := sel.Sel.Name
+
+	return &ctxpkg.ExternalCall{
+		Method:      "gRPC",
+		URL:         fmt.Sprintf("/%s/%s", serviceName, methodName),
+		Line:        e.fset.Position(call.Pos()).Line,
+		ServiceHint: serviceName,
+	}
+}
+
+// extractHTTPClientWrapper detects HTTP client wrapper patterns: s.authService.ValidateToken(ctx, token)
+func (e *APIFlowExtractor) extractHTTPClientWrapper(call *ast.CallExpr) *ctxpkg.ExternalCall {
+	sel, ok := call.Fun.(*ast.SelectorExpr)
+	if !ok {
+		return nil
+	}
+
+	// Look for chained selector: s.fieldName.Method()
+	innerSel, ok := sel.X.(*ast.SelectorExpr)
+	if !ok {
+		return nil
+	}
+
+	fieldName := innerSel.Sel.Name
+	fieldLower := strings.ToLower(fieldName)
+
+	if !strings.Contains(fieldLower, "client") &&
+		!strings.Contains(fieldLower, "service") &&
+		!strings.Contains(fieldLower, "api") {
+		return nil
+	}
+
+	return &ctxpkg.ExternalCall{
+		Method:      "HTTP",
+		URL:         "<dynamic>",
+		Description: fieldName + "." + sel.Sel.Name,
+		Line:        e.fset.Position(call.Pos()).Line,
+		ServiceHint: fieldName,
+	}
+}
+
+// extractServiceHint extracts a service name hint from a URL.
+func extractServiceHint(rawURL string) string {
+	parsed, err := url.Parse(rawURL)
+	if err != nil || parsed.Host == "" {
+		return ""
+	}
+
+	host := parsed.Hostname()
+	// Skip common non-service hostnames
+	if host == "localhost" || host == "127.0.0.1" || host == "0.0.0.0" {
+		return ""
+	}
+	// Skip external domains (contain dots like api.example.com)
+	if strings.Count(host, ".") > 1 || strings.HasSuffix(host, ".com") ||
+		strings.HasSuffix(host, ".org") || strings.HasSuffix(host, ".io") {
+		return ""
+	}
+
+	return host
+}
+
+// exprToString returns a best-effort string representation of an AST expression.
+func (e *APIFlowExtractor) exprToString(expr ast.Expr) string {
+	switch v := expr.(type) {
+	case *ast.BasicLit:
+		return v.Value
+	case *ast.Ident:
+		return v.Name
+	case *ast.SelectorExpr:
+		return e.exprToString(v.X) + "." + v.Sel.Name
+	case *ast.CallExpr:
+		return e.exprToString(v.Fun) + "(...)"
+	case *ast.BinaryExpr:
+		return e.exprToString(v.X) + " + " + e.exprToString(v.Y)
+	default:
+		return "<expr>"
+	}
 }
 
 // typeToString converts an AST type to a string representation.

@@ -261,12 +261,14 @@ type DBQuery struct {
 	Line      int    `json:"line"`
 }
 
-// ExternalCall represents an external HTTP call.
+// ExternalCall represents an external HTTP or gRPC call.
 type ExternalCall struct {
-	Method      string `json:"method"` // GET, POST, etc.
-	URL         string `json:"url,omitempty"`
-	Description string `json:"description,omitempty"`
-	Line        int    `json:"line"`
+	Method        string `json:"method"`                   // GET, POST, PUT, DELETE, PATCH, gRPC
+	URL           string `json:"url,omitempty"`             // Extracted URL or template; "<dynamic>" when unresolvable
+	URLExpression string `json:"url_expression,omitempty"`  // Original expression text when URL is dynamic
+	Description   string `json:"description,omitempty"`
+	Line          int    `json:"line"`
+	ServiceHint   string `json:"service_hint,omitempty"`    // Guessed destination service name
 }
 
 // PayloadInfo describes a request or response payload.
