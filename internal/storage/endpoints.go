@@ -4,9 +4,19 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
+	"strings"
 
 	ctxpkg "github.com/yashpalc/mcp-repo-context/internal/context"
 )
+
+// normalizeStoredPath applies basic normalization to endpoint paths at storage time:
+// strips trailing slash (unless root) so SQL exact match works consistently.
+func normalizeStoredPath(p string) string {
+	if len(p) > 1 && strings.HasSuffix(p, "/") {
+		return strings.TrimRight(p, "/")
+	}
+	return p
+}
 
 // Endpoint represents a server-side HTTP route stored in normalized form.
 type Endpoint struct {
@@ -64,7 +74,8 @@ func (s *SQLiteStore) storeEndpointsTx(ctx context.Context, tx *sql.Tx, repoID s
 	defer stmt.Close()
 
 	for _, ep := range endpoints {
-		if _, err := stmt.ExecContext(ctx, repoID, ep.FilePath, ep.HandlerName, ep.Method, ep.Path, ep.RawPath, ep.Framework, ep.Line); err != nil {
+		storePath := normalizeStoredPath(ep.Path)
+		if _, err := stmt.ExecContext(ctx, repoID, ep.FilePath, ep.HandlerName, ep.Method, storePath, ep.RawPath, ep.Framework, ep.Line); err != nil {
 			return fmt.Errorf("failed to insert endpoint %s %s: %w", ep.Method, ep.Path, err)
 		}
 	}
