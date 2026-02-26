@@ -13,6 +13,7 @@ import (
 	"github.com/yashpalc/mcp-repo-context/internal/analytics"
 	"github.com/yashpalc/mcp-repo-context/internal/comparison"
 	"github.com/yashpalc/mcp-repo-context/internal/compose"
+	"github.com/yashpalc/mcp-repo-context/internal/flow"
 	"github.com/yashpalc/mcp-repo-context/internal/logging"
 	"github.com/yashpalc/mcp-repo-context/internal/org"
 	"github.com/yashpalc/mcp-repo-context/internal/orchestrator"
@@ -64,6 +65,10 @@ type ServerConfig struct {
 
 	// Optional: Org-scoped search (keyword, concept, hybrid)
 	OrgSearcher OrgSearcher
+
+	// Optional: Flow tracing components
+	TopologyBuilder *flow.TopologyBuilder
+	EndpointMatcher *flow.EndpointMatcher
 }
 
 // Server is the MCP server interface.
@@ -1242,6 +1247,50 @@ func (s *server) handleListTools(req *jsonRPCRequest) *jsonRPCResponse {
 				},
 			},
 		},
+		{
+			Name:        "trace_api_flow",
+			Description: "Trace how an API call flows across services in an organization. Shows the call chain from entry point through all downstream services.",
+			InputSchema: map[string]interface{}{
+				"type": "object",
+				"properties": map[string]interface{}{
+					"org_id": map[string]interface{}{
+						"type":        "string",
+						"description": "Organization ID",
+					},
+					"entry_point": map[string]interface{}{
+						"type":        "string",
+						"description": "Starting endpoint: 'METHOD /path' (e.g., 'POST /login')",
+					},
+					"repo_id": map[string]interface{}{
+						"type":        "string",
+						"description": "Optional repo ID to disambiguate when multiple services have the same endpoint",
+					},
+					"max_depth": map[string]interface{}{
+						"type":        "integer",
+						"description": "Max hops to trace (default: 5)",
+					},
+				},
+				"required": []string{"org_id", "entry_point"},
+			},
+		},
+		{
+			Name:        "get_service_map",
+			Description: "Get the service topology for an organization showing all services and their connections (HTTP, gRPC, Kafka).",
+			InputSchema: map[string]interface{}{
+				"type": "object",
+				"properties": map[string]interface{}{
+					"org_id": map[string]interface{}{
+						"type":        "string",
+						"description": "Organization ID",
+					},
+					"rebuild": map[string]interface{}{
+						"type":        "boolean",
+						"description": "Force rebuild of topology (default: false, always rebuilds for now)",
+					},
+				},
+				"required": []string{"org_id"},
+			},
+		},
 	}
 
 	return &jsonRPCResponse{
@@ -1373,6 +1422,11 @@ func (s *server) handleCallToolWithID(ctx context.Context, req *jsonRPCRequest, 
 	// NEW: Usage analytics
 	case "get_usage_stats":
 		result = s.toolGetUsageStats(ctx, params.Arguments)
+	// NEW: API flow tracing
+	case "trace_api_flow":
+		result = s.toolTraceAPIFlow(ctx, params.Arguments)
+	case "get_service_map":
+		result = s.toolGetServiceMap(ctx, params.Arguments)
 	default:
 		logger.Warn("unknown tool requested")
 		return &jsonRPCResponse{

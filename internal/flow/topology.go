@@ -64,8 +64,8 @@ func NewTopologyBuilder(store TopologyStore, orgStore OrgStore) *TopologyBuilder
 	return &TopologyBuilder{store: store, orgStore: orgStore}
 }
 
-// deriveServiceName extracts a service name from a repo ID.
-func deriveServiceName(repoID string) string {
+// DeriveServiceName extracts a service name from a repo ID.
+func DeriveServiceName(repoID string) string {
 	// For local repos: "local:/path/to/auth-service" → "auth-service"
 	if strings.HasPrefix(repoID, "local:") {
 		return path.Base(strings.TrimPrefix(repoID, "local:"))
@@ -95,7 +95,7 @@ func (b *TopologyBuilder) BuildTopology(ctx context.Context, orgID string) (*Ser
 	trie := NewPathTrie()
 
 	for _, repoID := range repoIDs {
-		serviceName := deriveServiceName(repoID)
+		serviceName := DeriveServiceName(repoID)
 		repoToService[repoID] = serviceName
 
 		endpoints, err := b.store.GetEndpoints(ctx, repoID)
@@ -149,7 +149,7 @@ func (b *TopologyBuilder) BuildTopology(ctx context.Context, orgID string) (*Ser
 				for _, c := range consumers {
 					targetName := repoToService[c.RepoID]
 					if targetName == "" {
-						targetName = deriveServiceName(c.RepoID)
+						targetName = DeriveServiceName(c.RepoID)
 					}
 					topology.Edges = append(topology.Edges, ServiceEdge{
 						Source:     call.Target,
@@ -213,7 +213,7 @@ func (b *TopologyBuilder) BuildTopology(ctx context.Context, orgID string) (*Ser
 					for _, mr := range matches {
 						targetName := repoToService[mr.Endpoint.RepoID]
 						if targetName == "" {
-							targetName = deriveServiceName(mr.Endpoint.RepoID)
+							targetName = DeriveServiceName(mr.Endpoint.RepoID)
 						}
 						topology.Edges = append(topology.Edges, ServiceEdge{
 							Source:     sourceName,

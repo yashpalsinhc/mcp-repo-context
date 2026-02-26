@@ -85,9 +85,9 @@ func TestDeriveServiceName(t *testing.T) {
 		{"my-repo", "my-repo"},
 	}
 	for _, tt := range tests {
-		got := deriveServiceName(tt.repoID)
+		got := DeriveServiceName(tt.repoID)
 		if got != tt.expected {
-			t.Errorf("deriveServiceName(%q) = %q, want %q", tt.repoID, got, tt.expected)
+			t.Errorf("DeriveServiceName(%q) = %q, want %q", tt.repoID, got, tt.expected)
 		}
 	}
 }

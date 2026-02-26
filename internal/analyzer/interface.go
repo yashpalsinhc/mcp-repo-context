@@ -9,6 +9,9 @@ import (
 
 // Analyzer extracts context from source code files.
 type Analyzer interface {
+	// Name returns the name of this analyzer.
+	Name() string
+
 	// Languages returns file extensions this analyzer handles.
 	Languages() []string
 
