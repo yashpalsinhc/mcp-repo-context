@@ -16,9 +16,10 @@ import (
 
 // AnalyzeLocalOptions configures local directory analysis.
 type AnalyzeLocalOptions struct {
-	Force      bool          // Force re-analysis even if cached
-	MaxAge     time.Duration // Consider cache fresh if newer than this
-	IncludeAll bool          // Include all files (not just code files)
+	Force        bool          // Force re-analysis even if cached
+	MaxAge       time.Duration // Consider cache fresh if newer than this
+	IncludeAll   bool          // Include all files (not just code files)
+	AnalyzerName string        // Override analyzer selection by name (empty = default)
 }
 
 // AnalyzeLocalResult contains the result of local analysis.

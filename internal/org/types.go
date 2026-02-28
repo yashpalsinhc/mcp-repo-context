@@ -19,6 +19,8 @@ type Org struct {
 type OrgConfig struct {
 	ExcludePatterns []string `json:"exclude_patterns,omitempty"`
 	MaxFileSize     int64    `json:"max_file_size,omitempty"`
+	AnalyzerName    string   `json:"analyzer_name,omitempty"`
+	EmbedderName    string   `json:"embedder_name,omitempty"`
 }
 
 // OrgWithCount extends Org with repo count for listing.

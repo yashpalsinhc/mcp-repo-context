@@ -1,5 +1,7 @@
 package analyzer
 
+import "sort"
+
 // Ensure registry implements Registry interface.
 var _ Registry = (*registry)(nil)
 
@@ -42,4 +44,36 @@ func (r *registry) Get(lang string) Analyzer {
 		return a
 	}
 	return r.fallback
+}
+
+// GetByName returns the analyzer with the given name, or nil if not found.
+func (r *registry) GetByName(name string) Analyzer {
+	// Check the fallback
+	if r.fallback != nil && r.fallback.Name() == name {
+		return r.fallback
+	}
+	// Check registered analyzers (deduplicated by name)
+	for _, a := range r.analyzers {
+		if a.Name() == name {
+			return a
+		}
+	}
+	return nil
+}
+
+// Names returns a list of all registered analyzer names (deduplicated, sorted).
+func (r *registry) Names() []string {
+	seen := make(map[string]bool)
+	for _, a := range r.analyzers {
+		seen[a.Name()] = true
+	}
+	if r.fallback != nil {
+		seen[r.fallback.Name()] = true
+	}
+	names := make([]string, 0, len(seen))
+	for name := range seen {
+		names = append(names, name)
+	}
+	sort.Strings(names)
+	return names
 }

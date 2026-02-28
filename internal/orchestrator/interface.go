@@ -119,6 +119,7 @@ type AnalyzeOptions struct {
 	MaxAge        time.Duration
 	EnableAI      bool   // Enable AI-powered analysis
 	AIProvider    string // Specific AI provider to use (default: auto-detect)
+	AnalyzerName  string // Override analyzer selection by name (empty = default)
 }
 
 // AnalyzeResult contains analysis results.

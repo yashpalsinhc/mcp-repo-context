@@ -31,6 +31,20 @@ func MergeConfigs(orgConfig, repoOverride *OrgConfig) *OrgConfig {
 		merged.MaxFileSize = orgConfig.MaxFileSize
 	}
 
+	// AnalyzerName: repo override wins when non-empty
+	if repoOverride.AnalyzerName != "" {
+		merged.AnalyzerName = repoOverride.AnalyzerName
+	} else {
+		merged.AnalyzerName = orgConfig.AnalyzerName
+	}
+
+	// EmbedderName: repo override wins when non-empty
+	if repoOverride.EmbedderName != "" {
+		merged.EmbedderName = repoOverride.EmbedderName
+	} else {
+		merged.EmbedderName = orgConfig.EmbedderName
+	}
+
 	return merged
 }
 
@@ -39,7 +53,9 @@ func copyConfig(c *OrgConfig) *OrgConfig {
 		return nil
 	}
 	cp := &OrgConfig{
-		MaxFileSize: c.MaxFileSize,
+		MaxFileSize:  c.MaxFileSize,
+		AnalyzerName: c.AnalyzerName,
+		EmbedderName: c.EmbedderName,
 	}
 	if c.ExcludePatterns != nil {
 		cp.ExcludePatterns = make([]string, len(c.ExcludePatterns))

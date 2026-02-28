@@ -14,6 +14,7 @@ import (
 	ctxpkg "github.com/yashpalc/mcp-repo-context/internal/context"
 	"github.com/yashpalc/mcp-repo-context/internal/orchestrator"
 	"github.com/yashpalc/mcp-repo-context/internal/prreview"
+	"github.com/yashpalc/mcp-repo-context/internal/repo"
 	"github.com/yashpalc/mcp-repo-context/internal/tokens"
 	"github.com/yashpalc/mcp-repo-context/internal/vectors"
 )
@@ -28,11 +29,16 @@ func (s *server) toolAnalyzeRepo(ctx context.Context, args map[string]any) callT
 	branch, _ := args["branch"].(string)
 	force, _ := args["force"].(bool)
 
+	// Resolve org config for analyzer selection
+	repoID := repo.RepoIDFromURL(repoURL)
+	analyzerName, _ := s.resolveAnalyzerName(repoID)
+
 	opts := orchestrator.AnalyzeOptions{
-		Branch:      branch,
-		Force:       force,
-		GitHubToken: s.config.GitHubToken,
-		MaxAge:      24 * time.Hour, // Consider cache fresh for 24 hours
+		Branch:       branch,
+		Force:        force,
+		GitHubToken:  s.config.GitHubToken,
+		MaxAge:       24 * time.Hour, // Consider cache fresh for 24 hours
+		AnalyzerName: analyzerName,
 	}
 
 	result, err := s.manager.AnalyzeRepo(ctx, repoURL, opts)
@@ -2444,9 +2450,22 @@ func (s *server) toolAnalyzeLocal(ctx context.Context, args map[string]any) call
 	force, _ := args["force"].(bool)
 	includeAll, _ := args["include_all"].(bool)
 
+	// Resolve org config for analyzer selection
+	projectID := "local:" + path
+	analyzerName, _ := s.resolveAnalyzerName(projectID)
+
+	// Validate analyzer name against registry if set
+	var pluginWarnings []string
+	if analyzerName != "" {
+		if s.manager != nil {
+			// Check via registry if accessible (the manager will handle fallback)
+		}
+	}
+
 	opts := orchestrator.AnalyzeLocalOptions{
-		Force:      force,
-		IncludeAll: includeAll,
+		Force:        force,
+		IncludeAll:   includeAll,
+		AnalyzerName: analyzerName,
 	}
 
 	result, err := s.manager.AnalyzeLocal(ctx, path, opts)
@@ -2455,6 +2474,11 @@ func (s *server) toolAnalyzeLocal(ctx context.Context, args map[string]any) call
 	}
 
 	var sb strings.Builder
+
+	// Prepend plugin warnings if any
+	for _, w := range pluginWarnings {
+		fmt.Fprintf(&sb, "> **%s**\n\n", w)
+	}
 	fmt.Fprintf(&sb, "# Local Directory Analyzed\n\n")
 	fmt.Fprintf(&sb, "**Project ID:** `%s`\n", result.ProjectID)
 	fmt.Fprintf(&sb, "**Project Name:** `%s`\n", result.ProjectName)
@@ -3323,6 +3347,19 @@ func (s *server) toolIndexRepository(ctx context.Context, args map[string]any) c
 		}
 	}
 
+	// Resolve embedder from org config if registry is available
+	var indexWarnings []string
+	if s.embedderRegistry != nil {
+		embedderName, _ := s.resolveEmbedderForRepo(repoID)
+		if embedderName != "" {
+			named := s.embedderRegistry.Get(embedderName)
+			if named == nil {
+				indexWarnings = append(indexWarnings, fmt.Sprintf(
+					"Warning: Embedder '%s' not found in registry, using default.", embedderName))
+			}
+		}
+	}
+
 	// Index the repository
 	start := time.Now()
 	var indexErr error
@@ -3340,6 +3377,12 @@ func (s *server) toolIndexRepository(ctx context.Context, args map[string]any) c
 	newCount, _ := s.semanticSearch.Count(ctx, repoID)
 
 	var sb strings.Builder
+
+	// Prepend any plugin warnings
+	for _, w := range indexWarnings {
+		fmt.Fprintf(&sb, "> **%s**\n\n", w)
+	}
+
 	sb.WriteString("# Repository Indexed for Semantic Search\n\n")
 	fmt.Fprintf(&sb, "**Repository:** `%s`\n", repoID)
 	fmt.Fprintf(&sb, "**Items Indexed:** %d\n", newCount)

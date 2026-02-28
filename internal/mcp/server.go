@@ -17,6 +17,7 @@ import (
 	"github.com/yashpalc/mcp-repo-context/internal/logging"
 	"github.com/yashpalc/mcp-repo-context/internal/org"
 	"github.com/yashpalc/mcp-repo-context/internal/orchestrator"
+	"github.com/yashpalc/mcp-repo-context/internal/recipes"
 	"github.com/yashpalc/mcp-repo-context/internal/skills"
 	"github.com/yashpalc/mcp-repo-context/internal/vectors"
 )
@@ -30,12 +31,16 @@ type server struct {
 	logger   *logging.Logger
 
 	// New integrations for vectors, tokens, compose
-	semanticSearch  *vectors.SemanticSearch
-	patternRegistry *compose.PatternRegistry
+	semanticSearch   *vectors.SemanticSearch
+	embedderRegistry vectors.EmbedderRegistry
+	patternRegistry  *compose.PatternRegistry
 
 	// Usage analytics
 	usageTracker      *analytics.UsageTracker
 	trackingMiddleware *analytics.TrackingMiddleware
+
+	// Recipe system
+	recipeRunner *recipes.RecipeRunner
 
 	mu        sync.Mutex
 	nextID    int
@@ -66,6 +71,9 @@ type ServerConfig struct {
 	// Optional: Org-scoped search (keyword, concept, hybrid)
 	OrgSearcher OrgSearcher
 
+	// Optional: Embedder registry for per-org embedder selection
+	EmbedderRegistry vectors.EmbedderRegistry
+
 	// Optional: Flow tracing components
 	TopologyBuilder *flow.TopologyBuilder
 	EndpointMatcher *flow.EndpointMatcher
@@ -91,10 +99,19 @@ func NewServer(manager orchestrator.Manager, comparer comparison.Comparer, confi
 		patternRegistry: compose.DefaultRegistry(),
 	}
 
+	// Store embedder registry if provided
+	if config.EmbedderRegistry != nil {
+		s.embedderRegistry = config.EmbedderRegistry
+	}
+
 	// Initialize semantic search if vector store is provided
 	if config.VectorStore != nil {
-		embedder := config.Embedder
-		if embedder == nil {
+		var embedder vectors.Embedder
+		if config.EmbedderRegistry != nil {
+			embedder = config.EmbedderRegistry.Default()
+		} else if config.Embedder != nil {
+			embedder = config.Embedder
+		} else {
 			embedder = vectors.NewDefaultEmbedder()
 		}
 		s.semanticSearch = vectors.NewSemanticSearch(embedder, config.VectorStore)
@@ -106,7 +123,29 @@ func NewServer(manager orchestrator.Manager, comparer comparison.Comparer, confi
 		s.trackingMiddleware = analytics.NewTrackingMiddleware(config.UsageTracker)
 	}
 
+	// Initialize recipe system
+	s.initRecipeRunner(config)
+
 	return s
+}
+
+// initRecipeRunner initializes the recipe system with adapters bridging
+// orchestrator.Manager to the recipes.OrchestratorManager interface.
+func (s *server) initRecipeRunner(config *ServerConfig) {
+	registry := recipes.DefaultRegistry()
+
+	orchAdapter := &orchestratorAdapter{mgr: s.manager}
+	orgMgrAdapter := &orgAdapter{mgr: config.OrgManager}
+
+	opts := []recipes.RunnerOption{
+		recipes.WithRegistry(registry),
+	}
+
+	if s.semanticSearch != nil {
+		opts = append(opts, recipes.WithVectors(&vectorAdapter{ss: s.semanticSearch}))
+	}
+
+	s.recipeRunner = recipes.NewRecipeRunner(orchAdapter, orgMgrAdapter, opts...)
 }
 
 // log logs a tool call with fields.
@@ -1198,10 +1237,130 @@ func (s *server) handleListTools(req *jsonRPCRequest) *jsonRPCResponse {
 				"required": []string{"repo_id", "query"},
 			},
 		},
-		// NEW: Compose pattern tools (using internal/compose)
+		// Recipe tools
+		{
+			Name:        "analyze_pr_impact",
+			Description: "Comprehensive PR impact analysis with cross-repo awareness and AI risk assessment. Returns changed functions, affected callers, risk level, and gaps for unavailable data.",
+			InputSchema: map[string]interface{}{
+				"type": "object",
+				"properties": map[string]interface{}{
+					"repo_id": map[string]interface{}{
+						"type":        "string",
+						"description": "Repository ID",
+					},
+					"changed_files": map[string]interface{}{
+						"type":        "array",
+						"items":       map[string]interface{}{"type": "object", "properties": map[string]interface{}{"path": map[string]interface{}{"type": "string"}, "change_type": map[string]interface{}{"type": "string"}}},
+						"description": "Files changed in the PR",
+					},
+					"org_id": map[string]interface{}{
+						"type":        "string",
+						"description": "Org ID for cross-repo analysis",
+					},
+					"token_budget": map[string]interface{}{
+						"type":        "integer",
+						"description": "Max context tokens (default: 8000)",
+					},
+					"include_ai": map[string]interface{}{
+						"type":        "boolean",
+						"description": "Include AI risk assessment (default: true)",
+					},
+				},
+				"required": []string{"repo_id", "changed_files"},
+			},
+		},
+		{
+			Name:        "explain_api_flow",
+			Description: "Trace and explain the execution flow of a function through the codebase with Mermaid visualization. Shows call chain, side effects, and cross-service hops.",
+			InputSchema: map[string]interface{}{
+				"type": "object",
+				"properties": map[string]interface{}{
+					"function_name": map[string]interface{}{
+						"type":        "string",
+						"description": "Entry function name",
+					},
+					"repo_id": map[string]interface{}{
+						"type":        "string",
+						"description": "Repository ID",
+					},
+					"endpoint": map[string]interface{}{
+						"type":        "string",
+						"description": "HTTP endpoint (future: resolved to handler)",
+					},
+					"org_id": map[string]interface{}{
+						"type":        "string",
+						"description": "Org ID for cross-service tracing",
+					},
+					"token_budget": map[string]interface{}{
+						"type":        "integer",
+						"description": "Max context tokens (default: 8000)",
+					},
+				},
+				"required": []string{"function_name", "repo_id"},
+			},
+		},
+		{
+			Name:        "review_architecture",
+			Description: "Assess architecture across multiple repositories or an org. Returns service inventory, shared patterns, health indicators, and AI recommendations.",
+			InputSchema: map[string]interface{}{
+				"type": "object",
+				"properties": map[string]interface{}{
+					"org_id": map[string]interface{}{
+						"type":        "string",
+						"description": "Org ID",
+					},
+					"repo_ids": map[string]interface{}{
+						"type":        "array",
+						"items":       map[string]interface{}{"type": "string"},
+						"description": "Repo IDs (alternative to org_id)",
+					},
+					"token_budget": map[string]interface{}{
+						"type":        "integer",
+						"description": "Max context tokens (default: 12000)",
+					},
+					"focus_areas": map[string]interface{}{
+						"type":        "array",
+						"items":       map[string]interface{}{"type": "string"},
+						"description": "Focus areas: dependencies, testing, patterns, health",
+					},
+				},
+			},
+		},
+		{
+			Name:        "execute_recipe",
+			Description: "Execute any registered recipe by name. Use list_recipes to see available recipes and their input schemas.",
+			InputSchema: map[string]interface{}{
+				"type": "object",
+				"properties": map[string]interface{}{
+					"recipe_name": map[string]interface{}{
+						"type":        "string",
+						"description": "Name of the recipe to execute",
+					},
+					"params": map[string]interface{}{
+						"type":        "object",
+						"description": "Parameters for the recipe",
+					},
+					"output_format": map[string]interface{}{
+						"type":        "string",
+						"enum":        []string{"markdown", "json"},
+						"description": "Output format (default: markdown)",
+					},
+				},
+				"required": []string{"recipe_name", "params"},
+			},
+		},
+		{
+			Name:        "list_recipes",
+			Description: "List all available recipes with their descriptions and input schemas.",
+			InputSchema: map[string]interface{}{
+				"type":       "object",
+				"properties": map[string]interface{}{},
+			},
+		},
+		// Compose pattern tools (DEPRECATED: use execute_recipe instead)
 		{
 			Name:        "execute_pattern",
-			Description: "Execute a pre-defined pattern of tool calls. Patterns automate common workflows like searching then expanding details, or analyzing impact of changes.",
+			Description: "**DEPRECATED: Use execute_recipe instead.** Execute a pre-defined pattern of tool calls. Patterns automate common workflows like searching then expanding details, or analyzing impact of changes.",
 			InputSchema: map[string]interface{}{
 				"type": "object",
 				"properties": map[string]interface{}{
@@ -1411,8 +1570,20 @@ func (s *server) handleCallToolWithID(ctx context.Context, req *jsonRPCRequest, 
 	// NEW: Token-budgeted context (using internal/tokens)
 	case "get_context_budgeted":
 		result = s.toolGetContextBudgeted(ctx, params.Arguments)
-	// NEW: Compose pattern tools (using internal/compose)
+	// Recipe tools
+	case "analyze_pr_impact":
+		result = s.toolAnalyzePRImpact(ctx, params.Arguments)
+	case "explain_api_flow":
+		result = s.toolExplainAPIFlow(ctx, params.Arguments)
+	case "review_architecture":
+		result = s.toolReviewArchitecture(ctx, params.Arguments)
+	case "execute_recipe":
+		result = s.toolExecuteRecipe(ctx, params.Arguments)
+	case "list_recipes":
+		result = s.toolListRecipes(ctx, params.Arguments)
+	// Compose pattern tools (deprecated)
 	case "execute_pattern":
+		s.logger.Warn("execute_pattern is deprecated, use execute_recipe instead")
 		result = s.toolExecutePattern(ctx, params.Arguments)
 	case "list_patterns":
 		result = s.toolListPatterns(ctx, params.Arguments)

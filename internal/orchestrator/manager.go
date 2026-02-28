@@ -31,9 +31,30 @@ type manager struct {
 	locks *LockManager
 }
 
-// NewManager creates a new context manager.
-func NewManager(store storage.ContextStore, cloner repo.Source, scanner repo.FileScanner) Manager {
-	return &manager{
+// ManagerOption configures optional Manager behavior.
+type ManagerOption func(*manager)
+
+// WithAnalyzerRegistry provides a custom analyzer registry.
+func WithAnalyzerRegistry(reg analyzer.Registry) ManagerOption {
+	return func(m *manager) {
+		if reg != nil {
+			m.registry = reg
+		}
+	}
+}
+
+// WithAIRegistry provides a custom AI registry.
+func WithAIRegistry(reg *ai.Registry) ManagerOption {
+	return func(m *manager) {
+		if reg != nil {
+			m.aiRegistry = reg
+		}
+	}
+}
+
+// NewManager creates a new context manager with optional configuration.
+func NewManager(store storage.ContextStore, cloner repo.Source, scanner repo.FileScanner, opts ...ManagerOption) Manager {
+	m := &manager{
 		store:      store,
 		cloner:     cloner,
 		scanner:    scanner,
@@ -41,18 +62,10 @@ func NewManager(store storage.ContextStore, cloner repo.Source, scanner repo.Fil
 		aiRegistry: ai.NewRegistryFromEnv(),
 		locks:      NewLockManager(),
 	}
-}
-
-// NewManagerWithAI creates a new context manager with custom AI registry.
-func NewManagerWithAI(store storage.ContextStore, cloner repo.Source, scanner repo.FileScanner, aiReg *ai.Registry) Manager {
-	return &manager{
-		store:      store,
-		cloner:     cloner,
-		scanner:    scanner,
-		registry:   analyzer.DefaultRegistry(),
-		aiRegistry: aiReg,
-		locks:      NewLockManager(),
+	for _, opt := range opts {
+		opt(m)
 	}
+	return m
 }
 
 // AnalyzeRepo analyzes a repository and stores the context.

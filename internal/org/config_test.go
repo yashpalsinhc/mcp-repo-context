@@ -1,7 +1,9 @@
 package org
 
 import (
+	"encoding/json"
 	"reflect"
+	"strings"
 	"testing"
 )
 
@@ -118,6 +120,113 @@ func TestMergeConfigs_NilOrgReturnsDifferentPointer(t *testing.T) {
 
 	if result == override {
 		t.Error("MergeConfigs with nil org returned same pointer as override")
+	}
+}
+
+// Section 3: Tests for AnalyzerName and EmbedderName fields
+
+func TestOrgConfig_JSON_RoundTrip(t *testing.T) {
+	config := OrgConfig{AnalyzerName: "python", EmbedderName: "voyage"}
+	data, err := json.Marshal(config)
+	if err != nil {
+		t.Fatalf("marshal: %v", err)
+	}
+	var decoded OrgConfig
+	if err := json.Unmarshal(data, &decoded); err != nil {
+		t.Fatalf("unmarshal: %v", err)
+	}
+	if decoded.AnalyzerName != "python" {
+		t.Errorf("AnalyzerName = %q, want 'python'", decoded.AnalyzerName)
+	}
+	if decoded.EmbedderName != "voyage" {
+		t.Errorf("EmbedderName = %q, want 'voyage'", decoded.EmbedderName)
+	}
+}
+
+func TestOrgConfig_OmitEmpty(t *testing.T) {
+	config := OrgConfig{MaxFileSize: 1000}
+	data, err := json.Marshal(config)
+	if err != nil {
+		t.Fatalf("marshal: %v", err)
+	}
+	s := string(data)
+	if strings.Contains(s, "analyzer_name") {
+		t.Errorf("JSON should not contain analyzer_name, got %s", s)
+	}
+	if strings.Contains(s, "embedder_name") {
+		t.Errorf("JSON should not contain embedder_name, got %s", s)
+	}
+}
+
+func TestMergeConfigs_AnalyzerName_PreservesOrg(t *testing.T) {
+	orgCfg := &OrgConfig{AnalyzerName: "python"}
+	override := &OrgConfig{}
+	merged := MergeConfigs(orgCfg, override)
+	if merged.AnalyzerName != "python" {
+		t.Errorf("AnalyzerName = %q, want 'python'", merged.AnalyzerName)
+	}
+}
+
+func TestMergeConfigs_AnalyzerName_OverrideTakesPrecedence(t *testing.T) {
+	orgCfg := &OrgConfig{AnalyzerName: "python"}
+	override := &OrgConfig{AnalyzerName: "typescript"}
+	merged := MergeConfigs(orgCfg, override)
+	if merged.AnalyzerName != "typescript" {
+		t.Errorf("AnalyzerName = %q, want 'typescript'", merged.AnalyzerName)
+	}
+}
+
+func TestMergeConfigs_EmbedderName_PreservesOrg(t *testing.T) {
+	orgCfg := &OrgConfig{EmbedderName: "local"}
+	override := &OrgConfig{}
+	merged := MergeConfigs(orgCfg, override)
+	if merged.EmbedderName != "local" {
+		t.Errorf("EmbedderName = %q, want 'local'", merged.EmbedderName)
+	}
+}
+
+func TestMergeConfigs_EmbedderName_OverrideTakesPrecedence(t *testing.T) {
+	orgCfg := &OrgConfig{EmbedderName: "local"}
+	override := &OrgConfig{EmbedderName: "voyage"}
+	merged := MergeConfigs(orgCfg, override)
+	if merged.EmbedderName != "voyage" {
+		t.Errorf("EmbedderName = %q, want 'voyage'", merged.EmbedderName)
+	}
+}
+
+func TestCopyConfig_CopiesNewFields(t *testing.T) {
+	src := &OrgConfig{
+		ExcludePatterns: []string{"*.tmp"},
+		MaxFileSize:     1000,
+		AnalyzerName:    "go",
+		EmbedderName:    "local",
+	}
+	dst := copyConfig(src)
+	if dst.AnalyzerName != "go" {
+		t.Errorf("AnalyzerName = %q, want 'go'", dst.AnalyzerName)
+	}
+	if dst.EmbedderName != "local" {
+		t.Errorf("EmbedderName = %q, want 'local'", dst.EmbedderName)
+	}
+	if dst.MaxFileSize != 1000 {
+		t.Errorf("MaxFileSize = %d, want 1000", dst.MaxFileSize)
+	}
+	if len(dst.ExcludePatterns) != 1 || dst.ExcludePatterns[0] != "*.tmp" {
+		t.Errorf("ExcludePatterns = %v, want [*.tmp]", dst.ExcludePatterns)
+	}
+}
+
+func TestMergeConfigs_NilOrgPreservesOverrideFields(t *testing.T) {
+	merged := MergeConfigs(nil, &OrgConfig{AnalyzerName: "python"})
+	if merged.AnalyzerName != "python" {
+		t.Errorf("AnalyzerName = %q, want 'python'", merged.AnalyzerName)
+	}
+}
+
+func TestMergeConfigs_NilOverridePreservesOrgFields(t *testing.T) {
+	merged := MergeConfigs(&OrgConfig{EmbedderName: "local"}, nil)
+	if merged.EmbedderName != "local" {
+		t.Errorf("EmbedderName = %q, want 'local'", merged.EmbedderName)
 	}
 }
 

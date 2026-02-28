@@ -23,4 +23,10 @@ type Analyzer interface {
 type Registry interface {
 	// Get returns the appropriate analyzer for a language.
 	Get(lang string) Analyzer
+
+	// GetByName returns the analyzer with the given name, or nil if not found.
+	GetByName(name string) Analyzer
+
+	// Names returns a list of all registered analyzer names.
+	Names() []string
 }
