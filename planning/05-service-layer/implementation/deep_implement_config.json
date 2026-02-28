@@ -1,0 +1,28 @@
+{
+  "plugin_root": "/Users/yashpalc/.claude/plugins/cache/piercelamb-plugins/deep-implement/0.2.0",
+  "sections_dir": "/Users/yashpalc/yashpalc-mcp/mcp-repo-context/planning/05-service-layer/sections",
+  "target_dir": "/Users/yashpalc/yashpalc-mcp/mcp-repo-context",
+  "state_dir": "/Users/yashpalc/yashpalc-mcp/mcp-repo-context/planning/05-service-layer/implementation",
+  "git_root": "/Users/yashpalc/yashpalc-mcp/mcp-repo-context",
+  "commit_style": "conventional",
+  "test_command": "uv run pytest",
+  "sections": [
+    "section-01-http-foundation",
+    "section-02-rest-endpoints",
+    "section-03-job-queue",
+    "section-04-webhooks",
+    "section-05-health-ops",
+    "section-06-docker",
+    "section-07-integration-tests"
+  ],
+  "sections_state": {},
+  "pre_commit": {
+    "present": false,
+    "type": "none",
+    "config_file": null,
+    "native_hook": null,
+    "may_modify_files": false,
+    "detected_formatters": []
+  },
+  "created_at": "2026-02-28T17:24:25.102161+00:00"
+}
