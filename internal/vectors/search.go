@@ -2,13 +2,21 @@ package vectors
 
 import (
 	"context"
+	"database/sql"
 	"encoding/json"
 	"fmt"
 	"log"
+	"sync"
 	"time"
 
 	ctxpkg "github.com/yashpalc/mcp-repo-context/internal/context"
 )
+
+// cachedVocab holds a cached vocabulary for a repo.
+type cachedVocab struct {
+	vocabData *VocabularyData
+	version   int
+}
 
 // SemanticSearch provides semantic search capabilities over code.
 type SemanticSearch struct {
@@ -17,13 +25,18 @@ type SemanticSearch struct {
 	hashStore       FunctionHashStore
 	vocabStore      OrgVocabularyStore
 	embedderFactory func() Embedder // creates fresh embedder instances for org-scoped operations
+
+	// Vocabulary cache per repo
+	vocabCache   map[string]*cachedVocab
+	vocabCacheMu sync.RWMutex
 }
 
 // NewSemanticSearch creates a new semantic search service.
 func NewSemanticSearch(embedder Embedder, store *SQLiteVectorStore) *SemanticSearch {
 	return &SemanticSearch{
-		embedder: embedder,
-		store:    store,
+		embedder:   embedder,
+		store:      store,
+		vocabCache: make(map[string]*cachedVocab),
 	}
 }
 
@@ -139,7 +152,266 @@ func (s *SemanticSearch) IndexRepository(ctx context.Context, repo *ctxpkg.RepoC
 	}
 
 	// Store all records
-	return s.store.StoreBatch(ctx, records)
+	if err := s.store.StoreBatch(ctx, records); err != nil {
+		return err
+	}
+
+	// Persist vocabulary for incremental updates and search
+	if localEmb, ok := s.embedder.(*LocalEmbedder); ok {
+		vocabData := localEmb.ExportVocabulary()
+		vocabJSON, err := json.Marshal(vocabData.WordIDF)
+		if err == nil {
+			idfJSON, err2 := json.Marshal(vocabData.WordSlots)
+			if err2 == nil {
+				if storeErr := s.store.StoreVocabulary(ctx, repo.ID, vocabJSON, idfJSON, 0); storeErr != nil {
+					log.Printf("Warning: failed to persist vocabulary for %s: %v", repo.ID, storeErr)
+				}
+			}
+		}
+		// Clear cache so next load picks up fresh vocabulary
+		s.vocabCacheMu.Lock()
+		delete(s.vocabCache, repo.ID)
+		s.vocabCacheMu.Unlock()
+	}
+
+	return nil
+}
+
+// FileContext holds functions and types for a single file, used by RefreshFile.
+type FileContext struct {
+	Functions []ctxpkg.FunctionDef
+	Types     []ctxpkg.TypeDef
+}
+
+// RefreshFile updates vectors for a single file using the repo's persisted vocabulary.
+// It deletes all vectors for the file and re-generates them from the provided functions/types.
+func (s *SemanticSearch) RefreshFile(ctx context.Context, repoID, filePath string, functions []ctxpkg.FunctionDef, types []ctxpkg.TypeDef) error {
+	start := time.Now()
+	defer func() {
+		logTiming("RefreshFile", start,
+			fmt.Sprintf("repo=%s", repoID),
+			fmt.Sprintf("file=%s", filePath),
+		)
+	}()
+
+	// Load vocabulary for this repo
+	if err := s.ensureVocabulary(ctx, repoID); err != nil {
+		log.Printf("Warning: vocabulary load failed for %s, using hash fallback: %v", repoID, err)
+	}
+
+	// Delete existing vectors for this file
+	if err := s.store.DeleteByFile(ctx, repoID, filePath); err != nil {
+		return fmt.Errorf("failed to delete vectors for file %s: %w", filePath, err)
+	}
+
+	// Generate new vectors
+	var records []VectorRecord
+	for _, fn := range functions {
+		doc := buildFunctionDocument(fn, filePath)
+		vec := s.embedder.Embed(doc)
+		record := VectorRecord{
+			ID:       fmt.Sprintf("%s:func:%s:%s", repoID, filePath, fn.Name),
+			RepoID:   repoID,
+			Type:     "function",
+			Name:     fn.Name,
+			FilePath: filePath,
+			Vector:   vec,
+			Metadata: map[string]string{
+				"signature":   fn.Signature,
+				"description": fn.Description,
+				"is_public":   fmt.Sprintf("%v", fn.IsPublic),
+			},
+		}
+		if fn.Behavior != nil && fn.Behavior.Summary != "" {
+			record.Metadata["summary"] = fn.Behavior.Summary
+		}
+		records = append(records, record)
+	}
+	for _, t := range types {
+		doc := buildTypeDocument(t, filePath)
+		vec := s.embedder.Embed(doc)
+		record := VectorRecord{
+			ID:       fmt.Sprintf("%s:type:%s:%s", repoID, filePath, t.Name),
+			RepoID:   repoID,
+			Type:     "type",
+			Name:     t.Name,
+			FilePath: filePath,
+			Vector:   vec,
+			Metadata: map[string]string{
+				"kind":        t.Kind,
+				"description": t.Description,
+				"is_public":   fmt.Sprintf("%v", t.IsPublic),
+			},
+		}
+		records = append(records, record)
+	}
+
+	if len(records) > 0 {
+		if err := s.store.StoreBatch(ctx, records); err != nil {
+			return fmt.Errorf("failed to store vectors: %w", err)
+		}
+	}
+
+	// Increment vocabulary version
+	version, err := s.store.IncrementVocabularyVersion(ctx, repoID)
+	if err != nil {
+		// Not fatal, just log
+		log.Printf("Warning: failed to increment vocabulary version for %s: %v", repoID, err)
+	} else if version >= 50 {
+		log.Printf("Warning: vocabulary for %s is stale (version=%d). Run index_repository(force=true) to rebuild.", repoID, version)
+	}
+
+	return nil
+}
+
+// RefreshFiles updates vectors for multiple files in a single batch.
+func (s *SemanticSearch) RefreshFiles(ctx context.Context, repoID string, files map[string]FileContext) error {
+	// Load vocabulary once for all files
+	if err := s.ensureVocabulary(ctx, repoID); err != nil {
+		log.Printf("Warning: vocabulary load failed for %s, using hash fallback: %v", repoID, err)
+	}
+
+	var allRecords []VectorRecord
+
+	for filePath, fc := range files {
+		// Delete existing vectors for this file
+		if err := s.store.DeleteByFile(ctx, repoID, filePath); err != nil {
+			return fmt.Errorf("failed to delete vectors for file %s: %w", filePath, err)
+		}
+
+		for _, fn := range fc.Functions {
+			doc := buildFunctionDocument(fn, filePath)
+			vec := s.embedder.Embed(doc)
+			record := VectorRecord{
+				ID:       fmt.Sprintf("%s:func:%s:%s", repoID, filePath, fn.Name),
+				RepoID:   repoID,
+				Type:     "function",
+				Name:     fn.Name,
+				FilePath: filePath,
+				Vector:   vec,
+				Metadata: map[string]string{
+					"signature":   fn.Signature,
+					"description": fn.Description,
+					"is_public":   fmt.Sprintf("%v", fn.IsPublic),
+				},
+			}
+			if fn.Behavior != nil && fn.Behavior.Summary != "" {
+				record.Metadata["summary"] = fn.Behavior.Summary
+			}
+			allRecords = append(allRecords, record)
+		}
+		for _, t := range fc.Types {
+			doc := buildTypeDocument(t, filePath)
+			vec := s.embedder.Embed(doc)
+			record := VectorRecord{
+				ID:       fmt.Sprintf("%s:type:%s:%s", repoID, filePath, t.Name),
+				RepoID:   repoID,
+				Type:     "type",
+				Name:     t.Name,
+				FilePath: filePath,
+				Vector:   vec,
+				Metadata: map[string]string{
+					"kind":        t.Kind,
+					"description": t.Description,
+					"is_public":   fmt.Sprintf("%v", t.IsPublic),
+				},
+			}
+			allRecords = append(allRecords, record)
+		}
+	}
+
+	if len(allRecords) > 0 {
+		if err := s.store.StoreBatch(ctx, allRecords); err != nil {
+			return fmt.Errorf("failed to store vectors: %w", err)
+		}
+	}
+
+	// Increment vocabulary version once
+	version, err := s.store.IncrementVocabularyVersion(ctx, repoID)
+	if err != nil {
+		log.Printf("Warning: failed to increment vocabulary version for %s: %v", repoID, err)
+	} else if version >= 50 {
+		log.Printf("Warning: vocabulary for %s is stale (version=%d). Run index_repository(force=true) to rebuild.", repoID, version)
+	}
+
+	return nil
+}
+
+// ensureVocabulary loads the vocabulary for a repo into the embedder if not already loaded.
+// This fixes the "vocabulary lost on server restart" bug.
+func (s *SemanticSearch) ensureVocabulary(ctx context.Context, repoID string) error {
+	// Check if embedder already has vocabulary
+	if localEmb, ok := s.embedder.(*LocalEmbedder); ok {
+		if localEmb.VocabularySize() > 0 {
+			return nil
+		}
+	}
+
+	return s.loadVocabularyForRepo(ctx, repoID)
+}
+
+// loadVocabularyForRepo loads vocabulary from cache or DB and imports it into the embedder.
+func (s *SemanticSearch) loadVocabularyForRepo(ctx context.Context, repoID string) error {
+	// Check cache first
+	s.vocabCacheMu.RLock()
+	cached, ok := s.vocabCache[repoID]
+	s.vocabCacheMu.RUnlock()
+
+	if ok && cached.vocabData != nil {
+		if va, ok := s.embedder.(VocabularyAwareEmbedder); ok {
+			return va.ImportVocabulary(cached.vocabData)
+		}
+		return nil
+	}
+
+	// Load from DB
+	if s.store == nil {
+		return fmt.Errorf("vector store not available")
+	}
+
+	vocabJSON, idfJSON, version, err := s.store.LoadVocabulary(ctx, repoID)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return fmt.Errorf("no vocabulary found for repo %s", repoID)
+		}
+		return fmt.Errorf("failed to load vocabulary: %w", err)
+	}
+
+	// Parse vocabulary data
+	var wordIDF map[string]float64
+	if err := json.Unmarshal(vocabJSON, &wordIDF); err != nil {
+		return fmt.Errorf("failed to unmarshal vocabulary: %w", err)
+	}
+
+	var wordSlots map[string]int
+	if err := json.Unmarshal(idfJSON, &wordSlots); err != nil {
+		// Fallback: idfJSON might not be word slots in older format
+		wordSlots = nil
+	}
+
+	vocabData := &VocabularyData{
+		WordIDF:     wordIDF,
+		WordSlots:   wordSlots,
+		DocCount:    len(wordIDF),
+		VersionHash: ComputeVersionHash(wordIDF),
+	}
+
+	// Import into embedder
+	if va, ok := s.embedder.(VocabularyAwareEmbedder); ok {
+		if err := va.ImportVocabulary(vocabData); err != nil {
+			return fmt.Errorf("failed to import vocabulary: %w", err)
+		}
+	}
+
+	// Cache
+	s.vocabCacheMu.Lock()
+	s.vocabCache[repoID] = &cachedVocab{
+		vocabData: vocabData,
+		version:   version,
+	}
+	s.vocabCacheMu.Unlock()
+
+	return nil
 }
 
 // SearchFunctions searches for functions similar to the query.
@@ -151,6 +423,11 @@ func (s *SemanticSearch) SearchFunctions(ctx context.Context, query string, repo
 			fmt.Sprintf("query=%q", truncateQuery(query, 50)),
 		)
 	}()
+
+	// Ensure vocabulary is loaded for correct query embedding
+	if err := s.ensureVocabulary(ctx, repoID); err != nil {
+		log.Printf("Warning: vocabulary load failed for search on %s: %v", repoID, err)
+	}
 
 	queryVec := s.embedder.Embed(query)
 
@@ -198,6 +475,11 @@ func (s *SemanticSearch) SearchTypes(ctx context.Context, query string, repoID s
 
 // SearchAll searches across all indexed items.
 func (s *SemanticSearch) SearchAll(ctx context.Context, query string, repoID string, limit int) ([]SearchResult, error) {
+	// Ensure vocabulary is loaded for correct query embedding
+	if err := s.ensureVocabulary(ctx, repoID); err != nil {
+		log.Printf("Warning: vocabulary load failed for search on %s: %v", repoID, err)
+	}
+
 	queryVec := s.embedder.Embed(query)
 	return s.store.Search(ctx, queryVec, repoID, limit)
 }

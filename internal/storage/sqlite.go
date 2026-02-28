@@ -270,15 +270,19 @@ func (s *SQLiteStore) StoreRepoContext(ctx context.Context, repoID string, repoC
 	statsJSON, _ := json.Marshal(repoCtx.Statistics)
 	aiSummaryJSON, _ := json.Marshal(repoCtx.AISummary)
 	archJSON, _ := json.Marshal(repoCtx.Architecture)
+	moduleInfoJSON, _ := json.Marshal(repoCtx.ModuleInfo)
+	importSummaryJSON, _ := json.Marshal(repoCtx.ImportSummary)
 
 	_, err = tx.ExecContext(ctx, `
 		INSERT INTO repos (id, url, branch, commit_hash, analyzed_at, file_count, total_lines,
-		                   function_count, type_count, stats_json, ai_summary_json, architecture_json)
-		VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+		                   function_count, type_count, stats_json, ai_summary_json, architecture_json,
+		                   module_info_json, import_summary_json)
+		VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
 		repoCtx.ID, repoCtx.URL, repoCtx.Branch, repoCtx.CommitHash, repoCtx.AnalyzedAt,
 		repoCtx.Statistics.TotalFiles, repoCtx.Statistics.TotalLines,
 		repoCtx.Statistics.FunctionCount, repoCtx.Statistics.TypeCount,
 		string(statsJSON), string(aiSummaryJSON), string(archJSON),
+		string(moduleInfoJSON), string(importSummaryJSON),
 	)
 	if err != nil {
 		return fmt.Errorf("failed to insert repo: %w", err)
@@ -454,13 +458,14 @@ func (s *SQLiteStore) insertConstant(ctx context.Context, tx *sql.Tx, fileID int
 func (s *SQLiteStore) GetRepoContext(ctx context.Context, repoID string) (*ctxpkg.RepoContext, error) {
 	// Get repo metadata
 	var repo ctxpkg.RepoContext
-	var statsJSON, aiSummaryJSON, archJSON sql.NullString
+	var statsJSON, aiSummaryJSON, archJSON, moduleInfoJSON, importSummaryJSON sql.NullString
 
 	err := s.db.QueryRowContext(ctx, `
-		SELECT id, url, branch, commit_hash, analyzed_at, stats_json, ai_summary_json, architecture_json
+		SELECT id, url, branch, commit_hash, analyzed_at, stats_json, ai_summary_json, architecture_json,
+		       module_info_json, import_summary_json
 		FROM repos WHERE id = ?`, repoID,
 	).Scan(&repo.ID, &repo.URL, &repo.Branch, &repo.CommitHash, &repo.AnalyzedAt,
-		&statsJSON, &aiSummaryJSON, &archJSON)
+		&statsJSON, &aiSummaryJSON, &archJSON, &moduleInfoJSON, &importSummaryJSON)
 
 	if err == sql.ErrNoRows {
 		return nil, ErrNotFound
@@ -480,6 +485,14 @@ func (s *SQLiteStore) GetRepoContext(ctx context.Context, repoID string) (*ctxpk
 	if archJSON.Valid && archJSON.String != "null" {
 		repo.Architecture = &ctxpkg.ArchitectureContext{}
 		json.Unmarshal([]byte(archJSON.String), repo.Architecture)
+	}
+	if moduleInfoJSON.Valid && moduleInfoJSON.String != "null" {
+		repo.ModuleInfo = &ctxpkg.ModuleInfo{}
+		json.Unmarshal([]byte(moduleInfoJSON.String), repo.ModuleInfo)
+	}
+	if importSummaryJSON.Valid && importSummaryJSON.String != "null" {
+		repo.ImportSummary = &ctxpkg.ImportSummary{}
+		json.Unmarshal([]byte(importSummaryJSON.String), repo.ImportSummary)
 	}
 
 	// Get files

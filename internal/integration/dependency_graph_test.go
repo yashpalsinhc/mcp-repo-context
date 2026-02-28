@@ -49,11 +49,14 @@ func TestAnalyzeGorillaMux_GoModParsed(t *testing.T) {
 	defer cleanup()
 
 	ctx := context.Background()
-	_, err := mgr.AnalyzeRepo(ctx, "https://github.com/gorilla/mux", orchestrator.AnalyzeOptions{
+	result, err := mgr.AnalyzeRepo(ctx, "https://github.com/gorilla/mux", orchestrator.AnalyzeOptions{
 		Force: true,
 	})
 	if err != nil {
 		t.Fatalf("AnalyzeRepo failed: %v", err)
+	}
+	if len(result.Warnings) > 0 {
+		t.Logf("Warnings: %v", result.Warnings)
 	}
 
 	repoCtx, err := mgr.GetContext(ctx, "github.com/gorilla/mux")
@@ -62,7 +65,8 @@ func TestAnalyzeGorillaMux_GoModParsed(t *testing.T) {
 	}
 
 	if repoCtx.ModuleInfo == nil {
-		t.Fatal("ModuleInfo is nil")
+		t.Logf("RepoCtx ID=%s, Files=%d", repoCtx.ID, len(repoCtx.Files))
+		t.Fatal("ModuleInfo is nil — go.mod was not parsed during analysis")
 	}
 	if repoCtx.ModuleInfo.ModulePath != "github.com/gorilla/mux" {
 		t.Errorf("ModulePath = %q, want github.com/gorilla/mux", repoCtx.ModuleInfo.ModulePath)
