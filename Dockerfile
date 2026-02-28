@@ -28,6 +28,9 @@ USER mcp
 
 COPY --from=builder /mcp-server /usr/local/bin/mcp-server
 
+# Expose HTTP port (for --mode http)
+EXPOSE 8080
+
 # Create data directories
 RUN mkdir -p /home/mcp/data/contexts /home/mcp/tmp
 

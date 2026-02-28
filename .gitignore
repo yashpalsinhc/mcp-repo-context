@@ -20,3 +20,5 @@ Thumbs.db
 
 # Git worktrees (parallel development)
 .worktrees/
+/mcp-server
+.cursor/

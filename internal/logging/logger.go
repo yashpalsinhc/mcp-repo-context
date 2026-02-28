@@ -81,6 +81,13 @@ func (l *Logger) SetOutput(out io.Writer) {
 	l.out = out
 }
 
+// Writer returns the underlying io.Writer.
+func (l *Logger) Writer() io.Writer {
+	l.mu.Lock()
+	defer l.mu.Unlock()
+	return l.out
+}
+
 // WithField returns a new logger with the given field.
 func (l *Logger) WithField(key string, value interface{}) *Logger {
 	l.mu.Lock()
@@ -153,7 +160,9 @@ func (l *Logger) log(level Level, msg string, args ...interface{}) {
 
 	sb.WriteString("\n")
 
-	l.out.Write([]byte(sb.String()))
+	if l.out != nil {
+		l.out.Write([]byte(sb.String()))
+	}
 }
 
 // Debug logs a debug message.

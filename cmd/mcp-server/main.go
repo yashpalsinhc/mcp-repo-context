@@ -12,10 +12,14 @@ import (
 	"strings"
 	"syscall"
 
+	"github.com/yashpalc/mcp-repo-context/internal/analyzer"
+	"github.com/yashpalc/mcp-repo-context/internal/api"
 	"github.com/yashpalc/mcp-repo-context/internal/comparison"
+	"github.com/yashpalc/mcp-repo-context/internal/logging"
 	"github.com/yashpalc/mcp-repo-context/internal/mcp"
 	"github.com/yashpalc/mcp-repo-context/internal/org"
 	"github.com/yashpalc/mcp-repo-context/internal/orchestrator"
+	"github.com/yashpalc/mcp-repo-context/internal/queue"
 	"github.com/yashpalc/mcp-repo-context/internal/repo"
 	"github.com/yashpalc/mcp-repo-context/internal/storage"
 	"github.com/yashpalc/mcp-repo-context/internal/vectors"
@@ -33,6 +37,8 @@ func main() {
 	tempDir := flag.String("temp", getEnvOrDefault("MCP_TEMP_DIR", "/tmp/mcp-repos"), "Temporary directory for cloning repos")
 	githubToken := flag.String("github-token", os.Getenv("GITHUB_TOKEN"), "GitHub personal access token")
 	showVersion := flag.Bool("version", false, "Show version")
+	mode := flag.String("mode", getEnvOrDefault("MCP_MODE", "mcp"), "Server mode: mcp (stdio) or http")
+	listenAddr := flag.String("listen", getEnvOrDefault("MCP_LISTEN", ":8080"), "HTTP listen address (only for http mode)")
 	flag.Parse()
 
 	if *showVersion {
@@ -88,8 +94,14 @@ func main() {
 	}
 	scanner := repo.NewScanner(excludePatterns, 1024*1024) // 1MB max file size
 
-	// Create orchestrator manager
-	manager := orchestrator.NewManager(store, cloner, scanner)
+	// Create analyzer and embedder registries
+	analyzerReg := analyzer.DefaultRegistry()
+	embedderReg := vectors.DefaultEmbedderRegistry()
+
+	// Create orchestrator manager with registries
+	manager := orchestrator.NewManager(store, cloner, scanner,
+		orchestrator.WithAnalyzerRegistry(analyzerReg),
+	)
 
 	// Create comparer for multi-repo analysis
 	comparer := comparison.NewComparer()
@@ -116,37 +128,59 @@ func main() {
 		defer vectorStore.Close()
 	}
 
-	// Create MCP server
-	serverConfig := &mcp.ServerConfig{
-		Name:        "mcp-repo-context",
-		Version:     version,
-		GitHubToken: *githubToken,
-		OrgManager:  orgManager,
-		OrgSearcher: store,
-		Embedder:    embedder,
-		AutoIndex:   getAutoIndex(),
-	}
-	if vectorStore != nil {
-		serverConfig.VectorStore = vectorStore
-	}
-	server := mcp.NewServer(manager, comparer, serverConfig)
-
-	// Setup context with cancellation
-	ctx, cancel := context.WithCancel(context.Background())
+	// Setup context with signal handling
+	ctx, cancel := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
 	defer cancel()
 
-	// Handle shutdown signals
-	sigCh := make(chan os.Signal, 1)
-	signal.Notify(sigCh, syscall.SIGINT, syscall.SIGTERM)
-	go func() {
-		<-sigCh
-		cancel()
-	}()
+	switch *mode {
+	case "http":
+		logger := logging.InitFromEnv()
+		logger.Info("Starting HTTP server mode")
 
-	// Run server
-	log.Println("Starting MCP server on stdio...")
-	if err := server.ServeStdio(ctx); err != nil && err != context.Canceled {
-		log.Fatalf("Server error: %v", err)
+		apiConfig := api.DefaultAPIConfig()
+		apiConfig.ListenAddr = *listenAddr
+		apiConfig.GithubWebhookSecret = os.Getenv("GITHUB_WEBHOOK_SECRET")
+		apiConfig.GitlabWebhookSecret = os.Getenv("GITLAB_WEBHOOK_SECRET")
+
+		apiServer := api.NewAPIServer(manager, orgManager, apiConfig, logger)
+
+		// Create job queue
+		jobsDBPath := filepath.Join(*storagePath, "jobs.db")
+		jobQueue, err := queue.NewJobQueue(jobsDBPath, manager, orgManager, 3, logger)
+		if err != nil {
+			log.Fatalf("Failed to create job queue: %v", err)
+		}
+		apiServer.SetJobQueue(jobQueue)
+		jobQueue.Start(ctx)
+
+		if err := apiServer.Start(ctx); err != nil && err != context.Canceled {
+			log.Fatalf("HTTP server error: %v", err)
+		}
+
+		// Graceful shutdown: stop job queue
+		jobQueue.Stop()
+
+	default: // "mcp" mode
+		// Create MCP server
+		serverConfig := &mcp.ServerConfig{
+			Name:             "mcp-repo-context",
+			Version:          version,
+			GitHubToken:      *githubToken,
+			OrgManager:       orgManager,
+			OrgSearcher:      store,
+			Embedder:         embedder,
+			EmbedderRegistry: embedderReg,
+			AutoIndex:        getAutoIndex(),
+		}
+		if vectorStore != nil {
+			serverConfig.VectorStore = vectorStore
+		}
+		server := mcp.NewServer(manager, comparer, serverConfig)
+
+		log.Println("Starting MCP server on stdio...")
+		if err := server.ServeStdio(ctx); err != nil && err != context.Canceled {
+			log.Fatalf("Server error: %v", err)
+		}
 	}
 }
 
