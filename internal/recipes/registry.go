@@ -50,10 +50,10 @@ func (r *Registry) List() []RecipeInfo {
 }
 
 // DefaultRegistry returns a registry with all built-in recipes.
-// Recipes from sections 03-05 are registered here.
 func DefaultRegistry() *Registry {
 	registry := NewRegistry()
-	// Recipes will be registered in sections 03-05
-	// This will be populated as recipes are implemented
+	registry.Register(&PRImpactRecipe{})
+	registry.Register(&APIFlowRecipe{})
+	registry.Register(&ArchitectureRecipe{})
 	return registry
 }
