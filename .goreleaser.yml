@@ -1,0 +1,43 @@
+# GoReleaser config for mcp-repo-context
+# Publishes versioned binaries to GitHub Releases with checksums (no binaries in repo).
+# See: https://github.com/yashpalsinhc/mcp-repo-context/issues/2
+
+version: 2
+
+project_name: mcp-repo-context
+
+builds:
+  - id: mcp-server
+    main: ./cmd/mcp-server
+    binary: mcp-server
+    env:
+      - CGO_ENABLED=1
+      # Cross-compile linux/arm64 with aarch64 gcc (install gcc-aarch64-linux-gnu in CI)
+      - 'CC={{ if eq .Arch "arm64" }}aarch64-linux-gnu-gcc{{ end }}'
+    ldflags:
+      - -s -w -X main.version={{.Version}}
+    # Linux only for CGO (sqlite); cross-compile arm64 with aarch64-linux-gnu-gcc in CI.
+    # Add darwin/windows via matrix or goreleaser-cross in a follow-up if needed.
+    goos:
+      - linux
+    goarch:
+      - amd64
+      - arm64
+
+archives:
+  - id: default
+    name_template: "{{ .ProjectName }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}{{ if .Arm }}v{{ .Arm }}{{ end }}"
+    format: tar.gz
+    format_overrides:
+      - goos: windows
+        format: zip
+    builds:
+      - mcp-server
+
+checksum:
+  name_template: "checksums.txt"
+  algorithm: sha256
+
+release:
+  name_template: "{{ .Tag }}"
+  draft: false

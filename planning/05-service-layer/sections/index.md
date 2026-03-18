@@ -27,5 +27,5 @@ END_MANIFEST -->
 - section-05-health-ops: Health/status endpoints, rate limiting, structured logging, graceful shutdown
 
 ## Batch 4 (depends on batch 3)
-- section-06-docker: Dockerfile updates, docker-compose.http.yml, health check
+- section-06-docker: Dockerfile updates, docker-compose.yml (profiles: http, with-postgres), health check
 - section-07-integration-tests: End-to-end tests for full API flow, webhooks, job queue

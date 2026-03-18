@@ -20,47 +20,15 @@ Modify the existing multi-stage Dockerfile:
 
 3. **No other changes needed** — The existing build stages, non-root user, data volumes, and binary compilation all work for both modes.
 
-## docker-compose.http.yml
+## docker-compose.yml (single file with profiles)
 
-New file — Docker Compose override for HTTP mode:
+One `docker-compose.yml` contains all modes. HTTP and Postgres are optional profiles.
 
-```yaml
-version: "3.8"
+- **Stdio (default):** `docker compose up` — MCP over stdio for Claude Code.
+- **HTTP mode:** `docker compose --profile http up -d` — service `mcp-repo-context-http` with port 8080, health check, webhook env vars.
+- **With Postgres:** `docker compose --profile with-postgres up -d` — adds optional PostgreSQL for index storage.
 
-services:
-  mcp-repo-context:
-    build: .
-    command: ["--mode", "http", "--listen", ":8080"]
-    ports:
-      - "8080:8080"
-    environment:
-      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
-      - GITHUB_TOKEN=${GITHUB_TOKEN}
-      - GITHUB_WEBHOOK_SECRET=${GITHUB_WEBHOOK_SECRET}
-      - GITLAB_WEBHOOK_SECRET=${GITLAB_WEBHOOK_SECRET}
-    volumes:
-      - repo-data:/data
-    healthcheck:
-      test: ["CMD", "wget", "-q", "--spider", "http://localhost:8080/health"]
-      interval: 30s
-      timeout: 5s
-      retries: 3
-      start_period: 10s
-    restart: unless-stopped
-
-volumes:
-  repo-data:
-```
-
-### Usage
-
-```bash
-# HTTP mode
-docker compose -f docker-compose.yml -f docker-compose.http.yml up
-
-# MCP mode (default, existing behavior)
-docker compose up
-```
+No separate override file; use `--profile http` or `--profile with-postgres` as needed.
 
 ## Environment Variables
 
@@ -96,10 +64,10 @@ docker build -t mcp-repo-context .
 
 **Test: HTTP mode starts and responds**
 ```bash
-docker compose -f docker-compose.yml -f docker-compose.http.yml up -d
+docker compose --profile http up -d
 curl http://localhost:8080/health
 # Assert: {"status": "ok"}
-docker compose down
+docker compose --profile http down
 ```
 
 **Test: MCP mode still works**
@@ -113,11 +81,11 @@ docker compose down
 
 **Test: Health check reports healthy**
 ```bash
-docker compose -f docker-compose.yml -f docker-compose.http.yml up -d
+docker compose --profile http up -d
 sleep 35  # Wait for health check interval
-docker inspect --format='{{.State.Health.Status}}' mcp-repo-context-mcp-repo-context-1
+docker inspect --format='{{.State.Health.Status}}' mcp-repo-context-mcp-repo-context-http-1
 # Assert: "healthy"
-docker compose down
+docker compose --profile http down
 ```
 
 ## File Inventory
@@ -125,7 +93,7 @@ docker compose down
 | File | Purpose |
 |------|---------|
 | `Dockerfile` | Updated with EXPOSE 8080 |
-| `docker-compose.http.yml` | New compose override for HTTP mode |
+| `docker-compose.yml` | Single compose: stdio default, `--profile http` for HTTP, `--profile with-postgres` for Postgres |
 
 ## Acceptance Criteria
 

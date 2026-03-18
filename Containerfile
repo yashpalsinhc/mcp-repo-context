@@ -1,3 +1,7 @@
+# Containerfile (same as Dockerfile) for Podman, buildah, and tools that prefer this name.
+# See: https://github.com/yashpalsinhc/mcp-repo-context/issues/2
+# Build: podman build -t mcp-repo-context .   OR   docker build -f Containerfile -t mcp-repo-context .
+
 # Build stage
 FROM golang:1.24-alpine AS builder
 

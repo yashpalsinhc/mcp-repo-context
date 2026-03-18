@@ -52,7 +52,23 @@ Analyzer  Storage  Vector Store  AI Module  Comparer
 - GitHub token (for private repos)
 - Anthropic API key (optional, for AI features)
 
-### Build
+### Install from release (recommended)
+
+Binaries are published to [GitHub Releases](https://github.com/yashpalsinhc/mcp-repo-context/releases) with SHA256 checksums (no binaries in the repo). Pre-built binaries are currently provided for **Linux** (amd64, arm64). Install the latest on Linux:
+
+```bash
+curl -sSL https://raw.githubusercontent.com/yashpalsinhc/mcp-repo-context/main/scripts/install.sh | bash
+# Binary installed to ./bin/mcp-server
+```
+
+Or a specific version and destination:
+
+```bash
+./scripts/install.sh v1.0.0 /usr/local/bin
+# Or: VERSION=v1.0.0 DEST=/usr/local/bin ./scripts/install.sh
+```
+
+### Build from source
 
 ```bash
 git clone https://github.com/yashpalsinhc/mcp-repo-context.git
@@ -71,8 +87,11 @@ go build -o mcp-server ./cmd/mcp-server
 
 ### Docker
 
+The image is built from source (no committed binaries). Use `Dockerfile` or `Containerfile` (for Podman/buildah):
+
 ```bash
 docker build -t mcp-repo-context .
+# Or: podman build -t mcp-repo-context .   (Containerfile is used by default)
 docker run -it \
   -v $(pwd)/data:/home/mcp/data \
   -e GITHUB_TOKEN \
@@ -185,6 +204,17 @@ internal/
   vectors/          Local embeddings, SQLite vector store, semantic search
   skills/           Built-in AI prompts (Go expert, PR review, security)
 ```
+
+## Releasing
+
+Releases are built by [GoReleaser](https://goreleaser.com) on tag push. No binaries are committed; they are published to GitHub Releases with SHA256 checksums.
+
+```bash
+git tag -a v1.0.0 -m "Release v1.0.0"
+git push origin v1.0.0
+```
+
+CI builds Linux amd64/arm64 binaries and uploads them to the [Releases](https://github.com/yashpalsinhc/mcp-repo-context/releases) page.
 
 ## Dependencies
 
